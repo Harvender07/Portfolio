@@ -1,17 +1,20 @@
 /**
- * HARVENDER SINGH RAWAT | POKÉMON THEME MASTER PORTFOLIO
- * Core JavaScript: Thunderbolt Lightning Engine, Web Audio Synthesizer,
- * Interactive Pikachu Companion, and Pokémon Roster Catcher.
+ * HARVENDER SINGH RAWAT | QUIDDITCH THEME MASTER PORTFOLIO
+ * Core JavaScript: 3D Flight Tunnel Engine, Flying Broomstick Seeker,
+ * Procedural Web Audio Synthesizer, Interactive Golden Snitch, and Hogwarts Atmosphere.
  */
 
 (function () {
   'use strict';
 
-  // --- AUDIO SYNTHESIZER (WEB AUDIO API) ---
-  class SoundFX {
+  // =========================================================================
+  // 1. WEB AUDIO SYNTHESIZER (QUIDDITCH SOUND FX)
+  // =========================================================================
+  class QuidditchAudio {
     constructor() {
       this.ctx = null;
       this.enabled = true;
+      this.lastWhooshTime = 0;
     }
 
     init() {
@@ -29,15 +32,19 @@
       return this.enabled;
     }
 
-    // Procedural Thunderbolt Zap & Crackle
-    playThunderbolt() {
+    // Procedural aerodynamic broom flight whoosh (modulated by scroll)
+    playBroomWhoosh(intensity = 1.0) {
       if (!this.enabled) return;
+      const now = Date.now();
+      if (now - this.lastWhooshTime < 250) return; // throttle
+      this.lastWhooshTime = now;
+
       this.init();
       const ctx = this.ctx;
-      const now = ctx.currentTime;
+      const t = ctx.currentTime;
 
-      // 1. White Noise burst for thunder crackle
-      const bufferSize = ctx.sampleRate * 0.35;
+      // Bandpass noise burst
+      const bufferSize = ctx.sampleRate * 0.3;
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
@@ -49,779 +56,944 @@
 
       const filter = ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(1400, now);
-      filter.frequency.exponentialRampToValueAtTime(120, now + 0.35);
-      filter.Q.setValueAtTime(3, now);
+      filter.frequency.setValueAtTime(450 * intensity, t);
+      filter.frequency.exponentialRampToValueAtTime(180, t + 0.3);
+      filter.Q.setValueAtTime(2.5, t);
 
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.5, now);
-      noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.18 * Math.min(intensity, 1.5), t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
 
       noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(ctx.destination);
-      noise.start(now);
-
-      // 2. High voltage electric zap tone (sawtooth slide)
-      const osc = ctx.createOscillator();
-      const oscGain = ctx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(880, now);
-      osc.frequency.exponentialRampToValueAtTime(80, now + 0.28);
-
-      oscGain.gain.setValueAtTime(0.4, now);
-      oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
-
-      osc.connect(oscGain);
-      oscGain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.3);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start(t);
     }
 
-    // 8-Bit Pokéball Click & Catch Chime
-    playCatchFanfare() {
+    // Golden Snitch Catch Fanfare (Triumphant magical arpeggio)
+    playSnitchCatch() {
       if (!this.enabled) return;
       this.init();
       const ctx = this.ctx;
-      const now = ctx.currentTime;
+      const t = ctx.currentTime;
 
-      // Three quick clicks
-      [0, 0.1, 0.2].forEach((timeOffset, idx) => {
+      // Sparkling chime chord: E5, G#5, B5, E6
+      const notes = [659.25, 830.61, 987.77, 1318.51, 1661.22];
+      notes.forEach((freq, idx) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(600 + idx * 80, now + timeOffset);
-        gain.gain.setValueAtTime(0.15, now + timeOffset);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + timeOffset + 0.05);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t + idx * 0.08);
+
+        gain.gain.setValueAtTime(0.25, t + idx * 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.6);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
-        osc.start(now + timeOffset);
-        osc.stop(now + timeOffset + 0.06);
-      });
-
-      // Triumphant 8-bit jingle
-      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
-      notes.forEach((freq, i) => {
-        const noteOsc = ctx.createOscillator();
-        const noteGain = ctx.createGain();
-        noteOsc.type = 'triangle';
-        noteOsc.frequency.setValueAtTime(freq, now + 0.35 + i * 0.08);
-
-        noteGain.gain.setValueAtTime(0.2, now + 0.35 + i * 0.08);
-        noteGain.gain.exponentialRampToValueAtTime(0.001, now + 0.45 + i * 0.08);
-
-        noteOsc.connect(noteGain);
-        noteGain.connect(ctx.destination);
-        noteOsc.start(now + 0.35 + i * 0.08);
-        noteOsc.stop(now + 0.5 + i * 0.08);
+        osc.start(t + idx * 0.08);
+        osc.stop(t + idx * 0.08 + 0.65);
       });
     }
 
-    // Quick chirp when hovering or minor interaction
-    playBeep(freq = 700) {
+    // Wand Spell Cast (Frequency sweep + glitter)
+    playSpellCast() {
       if (!this.enabled) return;
       this.init();
       const ctx = this.ctx;
-      const now = ctx.currentTime;
+      const t = ctx.currentTime;
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(520, t);
+      osc.frequency.exponentialRampToValueAtTime(1400, t + 0.2);
+
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.3);
+    }
+
+    // Lumos Light Maxima Chime
+    playLumos() {
+      if (!this.enabled) return;
+      this.init();
+      const ctx = this.ctx;
+      const t = ctx.currentTime;
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, now);
-      gain.gain.setValueAtTime(0.08, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+      osc.frequency.setValueAtTime(880, t);
+      osc.frequency.exponentialRampToValueAtTime(1760, t + 0.4);
+
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + 0.09);
+      osc.start(t);
+      osc.stop(t + 0.55);
+    }
+
+    // Parchment / Owl Post Dispatch sound
+    playOwlPost() {
+      if (!this.enabled) return;
+      this.init();
+      const ctx = this.ctx;
+      const t = ctx.currentTime;
+
+      // Soft wing flap & chime
+      [0, 0.12].forEach((offset) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, t + offset);
+        gain.gain.setValueAtTime(0.12, t + offset);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t + offset);
+        osc.stop(t + offset + 0.16);
+      });
     }
   }
 
-  const sfx = new SoundFX();
+  const audio = new QuidditchAudio();
 
-  // --- PROCEDURAL LIGHTNING CANVAS ENGINE ---
-  const canvas = document.getElementById('lightning-canvas');
-  const ctx = canvas.getContext('2d');
-  const thunderFlash = document.getElementById('thunder-flash');
-  let activeBolts = [];
+  // =========================================================================
+  // 2. CANVAS ENGINE: HOGWARTS NIGHT SKY, STADIUM & MAGICAL PARTICLES
+  // =========================================================================
+  class QuidditchPitchCanvas {
+    constructor(canvasId) {
+      this.canvas = document.getElementById(canvasId);
+      if (!this.canvas) return;
+      this.ctx = this.canvas.getContext('2d');
+      this.stars = [];
+      this.magicDust = [];
+      this.sparkSpirals = [];
+      this.width = 0;
+      this.height = 0;
+      this.mouseX = -100;
+      this.mouseY = -100;
+      this.isScrollingFast = false;
 
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  class LightningBolt {
-    constructor(startX, startY, endX, endY) {
-      this.startX = startX;
-      this.startY = startY;
-      this.endX = endX;
-      this.endY = endY;
-      this.segments = [];
-      this.life = 1.0;
-      this.decay = 0.08;
-      this.sparks = [];
-
-      this.generateBolt();
-      this.generateSparks();
+      this.resize();
+      this.initStars();
+      this.bindEvents();
+      this.animate();
     }
 
-    generateBolt() {
-      const dx = this.endX - this.startX;
-      const dy = this.endY - this.startY;
-      const dist = Math.hypot(dx, dy);
-      const steps = Math.max(8, Math.floor(dist / 22));
+    resize() {
+      this.width = this.canvas.width = window.innerWidth;
+      this.height = this.canvas.height = window.innerHeight;
+    }
 
-      let currentX = this.startX;
-      let currentY = this.startY;
-
-      for (let i = 1; i <= steps; i++) {
-        const progress = i / steps;
-        const targetX = this.startX + dx * progress;
-        const targetY = this.startY + dy * progress;
-
-        // Jagged displacement perpendicular to main trajectory
-        const jitter = (Math.random() - 0.5) * 35 * Math.sin(progress * Math.PI);
-        const perpX = -dy / dist;
-        const perpY = dx / dist;
-
-        const nextX = i === steps ? this.endX : targetX + perpX * jitter;
-        const nextY = i === steps ? this.endY : targetY + perpY * jitter;
-
-        this.segments.push({
-          x1: currentX,
-          y1: currentY,
-          x2: nextX,
-          y2: nextY,
-          branch: null
+    initStars() {
+      this.stars = [];
+      const starCount = Math.floor((this.width * this.height) / 7000);
+      for (let i = 0; i < starCount; i++) {
+        this.stars.push({
+          x: Math.random() * this.width,
+          y: Math.random() * this.height,
+          radius: Math.random() * 1.6 + 0.4,
+          alpha: Math.random() * 0.8 + 0.2,
+          speed: Math.random() * 0.02 + 0.005,
+          color: Math.random() > 0.4 ? '#ffd700' : '#ffffff'
         });
-
-        // 30% chance of branching out sub-bolts
-        if (Math.random() < 0.3 && i < steps - 2) {
-          const branchAngle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 1.2;
-          const branchLength = dist * 0.25 * (Math.random() + 0.5);
-          const bEndX = currentX + Math.cos(branchAngle) * branchLength;
-          const bEndY = currentY + Math.sin(branchAngle) * branchLength;
-          this.segments[this.segments.length - 1].branch = {
-            startX: currentX,
-            startY: currentY,
-            endX: bEndX,
-            endY: bEndY
-          };
-        }
-
-        currentX = nextX;
-        currentY = nextY;
       }
     }
 
-    generateSparks() {
-      const count = 18;
+    addSpark(x, y, count = 4) {
       for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 8 + 3;
-        this.sparks.push({
-          x: this.endX,
-          y: this.endY,
+        const speed = Math.random() * 3 + 1;
+        this.magicDust.push({
+          x,
+          y,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
-          life: 1.0,
-          decay: Math.random() * 0.08 + 0.04,
-          size: Math.random() * 3 + 2,
-          color: Math.random() > 0.4 ? '#ffe600' : '#00e5ff'
+          radius: Math.random() * 2.5 + 1,
+          alpha: 1,
+          decay: Math.random() * 0.03 + 0.015,
+          color: Math.random() > 0.5 ? '#ffd700' : '#eeba30'
         });
       }
     }
 
-    update() {
-      this.life -= this.decay;
-      for (let s of this.sparks) {
-        s.x += s.vx;
-        s.y += s.vy;
-        s.life -= s.decay;
-      }
+    bindEvents() {
+      window.addEventListener('resize', () => {
+        this.resize();
+        this.initStars();
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        this.mouseX = e.clientX;
+        this.mouseY = e.clientY;
+        if (Math.random() > 0.6) {
+          this.addSpark(this.mouseX, this.mouseY, 1);
+        }
+      });
     }
 
-    draw(ctx) {
-      if (this.life <= 0) return;
+    animate() {
+      const ctx = this.ctx;
+      ctx.clearRect(0, 0, this.width, this.height);
 
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, this.life);
-
-      // 1. Outer Glow (Electric Pikachu Yellow)
-      ctx.strokeStyle = '#ffe600';
-      ctx.lineWidth = 7;
-      ctx.shadowColor = '#ffe600';
-      ctx.shadowBlur = 24;
-      ctx.beginPath();
-      for (let seg of this.segments) {
-        ctx.moveTo(seg.x1, seg.y1);
-        ctx.lineTo(seg.x2, seg.y2);
-        if (seg.branch) {
-          ctx.moveTo(seg.branch.startX, seg.branch.startY);
-          ctx.lineTo(seg.branch.endX, seg.branch.endY);
-        }
-      }
-      ctx.stroke();
-
-      // 2. Inner Hot Core (Electric Cyan / Pure White)
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2.5;
-      ctx.shadowColor = '#00e5ff';
-      ctx.shadowBlur = 12;
-      ctx.stroke();
-
-      // 3. Draw Impact Sparks
-      for (let s of this.sparks) {
-        if (s.life > 0) {
-          ctx.fillStyle = s.color;
-          ctx.shadowColor = s.color;
-          ctx.shadowBlur = 8;
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.size * s.life, 0, Math.PI * 2);
-          ctx.fill();
-        }
+      // Draw distant stars
+      for (let s of this.stars) {
+        s.alpha += s.speed;
+        const currentAlpha = Math.abs(Math.sin(s.alpha));
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = currentAlpha * 0.7;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
       }
 
-      ctx.restore();
+      // Draw floating golden magical dust
+      if (Math.random() < 0.2 && this.magicDust.length < 100) {
+        this.magicDust.push({
+          x: Math.random() * this.width,
+          y: this.height + 10,
+          vx: (Math.random() - 0.5) * 0.8,
+          vy: -(Math.random() * 1.5 + 0.5),
+          radius: Math.random() * 2 + 1,
+          alpha: Math.random() * 0.6 + 0.4,
+          decay: Math.random() * 0.005 + 0.002,
+          color: '#ffd700'
+        });
+      }
+
+      for (let i = this.magicDust.length - 1; i >= 0; i--) {
+        const p = this.magicDust[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          this.magicDust.splice(i, 1);
+          continue;
+        }
+
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = '#ffd700';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+
+      requestAnimationFrame(() => this.animate());
     }
   }
 
-  function animateLightning() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = activeBolts.length - 1; i >= 0; i--) {
-      const bolt = activeBolts[i];
-      bolt.update();
-      bolt.draw(ctx);
-      if (bolt.life <= 0) {
-        activeBolts.splice(i, 1);
-      }
-    }
-    requestAnimationFrame(animateLightning);
-  }
-  requestAnimationFrame(animateLightning);
+  // =========================================================================
+  // 3. THE FLYING BROOM CHARACTER & 3D SCROLL DIVE CONTROLLER
+  // =========================================================================
+  class FlyingBroomFlightController {
+    constructor() {
+      this.broomEl = document.getElementById('flying-broom-character');
+      this.speedValEl = document.getElementById('broom-speed-val');
+      this.speechEl = document.getElementById('seeker-speech');
+      this.speechTextEl = document.getElementById('seeker-speech-text');
+      this.altitudeFillEl = document.getElementById('altitude-fill');
+      this.hoopSections = document.querySelectorAll('.hoop-section');
+      this.hoopDots = document.querySelectorAll('.hoop-dot');
 
-  // --- CAST THUNDERBOLT FUNCTION ---
-  const pikachuCompanion = document.getElementById('pikachu-companion');
+      this.currentSpeed = 85;
+      this.targetSpeed = 85;
+      this.lastScrollY = window.scrollY;
+      this.scrollVelocity = 0;
+      this.scrollTimer = null;
+      this.activeHoopNum = 1;
 
-  function getPikachuOrigin() {
-    if (pikachuCompanion) {
-      const rect = pikachuCompanion.getBoundingClientRect();
-      return {
-        x: rect.left + rect.width / 2,
-        y: rect.top + rect.height * 0.4
+      this.hoopCallouts = {
+        1: 'Welcome to the Pitch! Hold tight to your broom! ⚡',
+        2: 'Flying over the Great Pyramids of Giza with AIESEC! 🇪🇬',
+        3: 'Entering the Seeker\'s Spellbook: C++, Python & VFX! ✨',
+        4: 'Tournament Match Blueprints: Raytracer, AI Agent, Motion Reel! 🏆',
+        5: 'Soaring through the Tower of Polyglot Charms! 📜',
+        6: 'The Hogwarts Trophy Room! Golden honors await! 👑',
+        7: 'Gryffindor First Team Roster assembled on the pitch! 🦁',
+        8: 'The Owl Post! Dispatch an enchanted parchment letter! ✉️'
       };
+
+      this.init();
     }
-    return { x: window.innerWidth - 60, y: window.innerHeight - 60 };
-  }
 
-  function castThunderbolt(targetX, targetY, options = {}) {
-    const origin = options.origin || getPikachuOrigin();
+    init() {
+      if (!this.broomEl) return;
+      this.bindEvents();
+      this.updateFlightTelemetry();
+    }
 
-    // Trigger audio
-    sfx.playThunderbolt();
+    bindEvents() {
+      // Mouse Parallax & Dynamic Broom Banking
+      window.addEventListener('mousemove', (e) => {
+        const normX = (e.clientX / window.innerWidth) * 2 - 1; // -1 to 1
+        const normY = (e.clientY / window.innerHeight) * 2 - 1;
 
-    // Trigger visual screen flash briefly
-    thunderFlash.classList.add('active');
-    setTimeout(() => thunderFlash.classList.remove('active'), 80);
+        const tiltX = -normY * 12;
+        const tiltY = normX * 18;
+        const transX = normX * 15;
 
-    // Make Pikachu animate into attack stance
-    if (pikachuCompanion) {
-      pikachuCompanion.classList.add('attacking');
-      updatePikaBubble('⚡ THUNDERBOLT! ⚡');
+        if (!this.broomEl.classList.contains('dive-mode')) {
+          this.broomEl.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateX(${transX}px)`;
+        }
+      });
+
+      // Scroll Event: 3D Depth Zoom, Dive acceleration & Hoop tracking
+      window.addEventListener('scroll', () => {
+        const currentY = window.scrollY;
+        const delta = Math.abs(currentY - this.lastScrollY);
+        this.scrollVelocity = delta;
+        this.lastScrollY = currentY;
+
+        // Accelerate broom into dive mode
+        this.targetSpeed = Math.min(85 + delta * 2.5, 175);
+        this.broomEl.classList.add('dive-mode');
+
+        // Play aerodynamic whoosh sound
+        if (delta > 20) {
+          audio.playBroomWhoosh(delta / 25);
+        }
+
+        clearTimeout(this.scrollTimer);
+        this.scrollTimer = setTimeout(() => {
+          this.targetSpeed = 85;
+          this.broomEl.classList.remove('dive-mode');
+        }, 220);
+
+        this.updateActiveHoop();
+        this.updateAltitudeHUD();
+      }, { passive: true });
+
+      // Click on broom to boost speed
+      this.broomEl.addEventListener('click', () => {
+        this.triggerBroomBoost();
+      });
+
+      // Hero action buttons
+      const diveBtn = document.getElementById('hero-dive-btn');
+      if (diveBtn) {
+        diveBtn.addEventListener('click', () => {
+          const targetSection = document.getElementById('egypt');
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+            this.triggerBroomBoost();
+          }
+        });
+      }
+
+      const cardBoostBtn = document.getElementById('card-broom-boost-btn');
+      if (cardBoostBtn) {
+        cardBoostBtn.addEventListener('click', () => {
+          this.triggerBroomBoost();
+        });
+      }
+    }
+
+    triggerBroomBoost() {
+      audio.playBroomWhoosh(2.2);
+      this.targetSpeed = 195;
+      this.broomEl.classList.add('dive-mode');
+      this.showSpeech('⚡ FIREBOLT TURBO BOOST ENGAGED! 195 MPH!');
+
+      // Screen flash effect
+      const flash = document.getElementById('spell-flash');
+      if (flash) {
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 250);
+      }
+
       setTimeout(() => {
-        pikachuCompanion.classList.remove('attacking');
-        resetPikaBubble();
-      }, 700);
+        this.targetSpeed = 85;
+        this.broomEl.classList.remove('dive-mode');
+      }, 1000);
     }
 
-    // Spawn 2-3 overlapping bolts for thick jagged lightning
-    const count = options.intensity || 3;
-    for (let i = 0; i < count; i++) {
+    updateFlightTelemetry() {
+      // Smooth lerp speed
+      this.currentSpeed += (this.targetSpeed - this.currentSpeed) * 0.12;
+      if (this.speedValEl) {
+        this.speedValEl.textContent = Math.round(this.currentSpeed);
+      }
+
+      requestAnimationFrame(() => this.updateFlightTelemetry());
+    }
+
+    updateActiveHoop() {
+      const scrollPos = window.scrollY + window.innerHeight * 0.4;
+
+      this.hoopSections.forEach((section) => {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        const hoopNum = parseInt(section.getAttribute('data-hoop-num') || '1', 10);
+
+        if (scrollPos >= top && scrollPos < top + height) {
+          if (this.activeHoopNum !== hoopNum) {
+            this.activeHoopNum = hoopNum;
+            this.onHoopEnter(hoopNum);
+          }
+        }
+      });
+    }
+
+    onHoopEnter(hoopNum) {
+      // Update speech text
+      if (this.hoopCallouts[hoopNum]) {
+        this.showSpeech(this.hoopCallouts[hoopNum]);
+      }
+
+      // Update route minimap dots
+      this.hoopDots.forEach((dot) => {
+        const dotHoop = parseInt(dot.getAttribute('data-hoop') || '0', 10);
+        dot.classList.toggle('active', dotHoop === hoopNum);
+      });
+
+      // Update main navigation active state
+      const navLinks = document.querySelectorAll('.nav-links .nav-link');
+      const activeSection = document.querySelector(`.hoop-section[data-hoop-num="${hoopNum}"]`);
+      if (activeSection) {
+        const activeId = activeSection.id;
+        navLinks.forEach((link) => {
+          const href = link.getAttribute('href');
+          link.classList.toggle('active', href === `#${activeId}`);
+        });
+      }
+    }
+
+    showSpeech(text) {
+      if (!this.speechTextEl) return;
+      this.speechTextEl.textContent = text;
+      if (this.speechEl) {
+        this.speechEl.style.opacity = '1';
+        this.speechEl.style.transform = 'translateY(-6px)';
+        clearTimeout(this._speechTimeout);
+        this._speechTimeout = setTimeout(() => {
+          this.speechEl.style.transform = 'translateY(0)';
+        }, 1500);
+      }
+    }
+
+    updateAltitudeHUD() {
+      if (!this.altitudeFillEl) return;
+      const totalDoc = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = totalDoc > 0 ? (window.scrollY / totalDoc) * 100 : 0;
+      this.altitudeFillEl.style.height = `${Math.min(Math.max(progress, 5), 100)}%`;
+    }
+  }
+
+  // =========================================================================
+  // 4. INTERACTIVE GOLDEN SNITCH (CHASE & CATCH GAME)
+  // =========================================================================
+  class GoldenSnitchGame {
+    constructor() {
+      this.snitchEl = document.getElementById('golden-snitch');
+      this.scoreEl = document.getElementById('gryffindor-score');
+      this.toastEl = document.getElementById('quidditch-toast');
+      this.score = 150;
+      this.posX = window.innerWidth * 0.6;
+      this.posY = 220;
+      this.targetX = this.posX;
+      this.targetY = this.posY;
+      this.time = 0;
+      this.isCaught = false;
+
+      this.init();
+    }
+
+    init() {
+      if (!this.snitchEl) return;
+      this.bindEvents();
+      this.flyLoop();
+    }
+
+    bindEvents() {
+      // Click Snitch to catch
+      this.snitchEl.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.catchSnitch();
+      });
+
+      // Chase button in hero
+      const heroChaseBtn = document.getElementById('hero-catch-snitch-btn');
+      if (heroChaseBtn) {
+        heroChaseBtn.addEventListener('click', () => {
+          this.catchSnitch();
+        });
+      }
+
+      // Snitch playfully flees when mouse gets very close
+      window.addEventListener('mousemove', (e) => {
+        if (this.isCaught) return;
+        const dx = e.clientX - this.posX;
+        const dy = e.clientY - this.posY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 80) {
+          // Dash away
+          this.targetX -= (dx / dist) * 120;
+          this.targetY -= (dy / dist) * 120;
+          this.clampBounds();
+        }
+      });
+    }
+
+    flyLoop() {
+      if (!this.isCaught) {
+        this.time += 0.035;
+        // Natural figure-eight Lissajous flutter
+        this.targetX += Math.cos(this.time * 0.8) * 4;
+        this.targetY += Math.sin(this.time * 1.6) * 3;
+
+        // Smooth glide toward target
+        this.posX += (this.targetX - this.posX) * 0.08;
+        this.posY += (this.targetY - this.posY) * 0.08;
+
+        this.clampBounds();
+        this.snitchEl.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
+      }
+
+      requestAnimationFrame(() => this.flyLoop());
+    }
+
+    clampBounds() {
+      const pad = 60;
+      const maxX = window.innerWidth - pad;
+      const maxY = window.innerHeight - pad;
+
+      if (this.targetX < pad) this.targetX = pad + 40;
+      if (this.targetX > maxX) this.targetX = maxX - 40;
+      if (this.targetY < 80) this.targetY = 120;
+      if (this.targetY > maxY) this.targetY = maxY - 40;
+    }
+
+    catchSnitch() {
+      if (this.isCaught) return;
+      this.isCaught = true;
+
+      // Play triumphant fanfare
+      audio.playSnitchCatch();
+
+      // Update score
+      this.score += 150;
+      if (this.scoreEl) {
+        this.scoreEl.textContent = this.score;
+        this.scoreEl.style.color = '#ffd700';
+        this.scoreEl.style.transform = 'scale(1.4)';
+        setTimeout(() => {
+          this.scoreEl.style.transform = 'scale(1)';
+        }, 400);
+      }
+
+      // Show popup on snitch
+      const popup = document.getElementById('snitch-popup');
+      if (popup) {
+        popup.classList.add('pop');
+      }
+
+      // Show toast
+      this.showToast('🏆 GOLDEN SNITCH CAUGHT! 150 POINTS TO GRYFFINDOR!');
+
+      // Seeker cheer
+      const seekerVoice = document.getElementById('seeker-speech-text');
+      if (seekerVoice) {
+        seekerVoice.textContent = '⚡ What a catch! 150 points for Gryffindor!';
+      }
+
+      // Respawn after victory lap
       setTimeout(() => {
-        activeBolts.push(new LightningBolt(origin.x, origin.y, targetX, targetY));
-      }, i * 40);
+        if (popup) popup.classList.remove('pop');
+        this.targetX = Math.random() * (window.innerWidth - 200) + 100;
+        this.targetY = Math.random() * (window.innerHeight - 300) + 120;
+        this.isCaught = false;
+      }, 1600);
+    }
+
+    showToast(msg) {
+      if (!this.toastEl) return;
+      this.toastEl.innerHTML = `<i class="fa-solid fa-trophy"></i> <span>${msg}</span>`;
+      this.toastEl.classList.add('show');
+      setTimeout(() => {
+        this.toastEl.classList.remove('show');
+      }, 3500);
     }
   }
 
-  // --- PIKACHU COMPANION QUOTES & BUBBLE ---
-  const pikaSpeech = document.getElementById('pika-speech');
-  const pikaQuotes = [
-    'Pika Pika! Click me or any card! ⚡',
-    '⚡ Thunderbolt charged and ready!',
-    'Catching new Pokémon with code!',
-    'Traveled to Egypt with AIESEC! 🇪🇬',
-    'C++, Python & Visuals are elite!',
-    'Pikachuuuuuuu! ⚡⚡⚡'
-  ];
-  let quoteIndex = 0;
+  // =========================================================================
+  // 5. QUIDDITCH SQUAD ROSTER (INTERACTIVE PLAYER SUMMONS)
+  // =========================================================================
+  class QuidditchSquadRoster {
+    constructor() {
+      this.gridEl = document.getElementById('squad-roster-grid');
+      this.badgeCountEl = document.getElementById('squad-count-badge');
+      this.summonBtn = document.getElementById('summon-player-btn');
+      this.resetBtn = document.getElementById('reset-squad-btn');
 
-  function updatePikaBubble(text) {
-    if (pikaSpeech) pikaSpeech.textContent = text;
-  }
+      this.initialPlayers = [
+        { name: 'Harvender S. Rawat', role: 'Seeker (Captain)', broom: 'Nimbus 2000 Pro', img: 'assets/images/trainer_avatar.jpg', crest: '⚡' },
+        { name: 'Oliver Wood', role: 'Keeper', broom: 'Cleansweep Seven', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', crest: '🛡️' },
+        { name: 'Angelina Johnson', role: 'Chaser', broom: 'Nimbus 2001', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80', crest: '🔥' },
+        { name: 'Fred Weasley', role: 'Beater', broom: 'Cleansweep Five', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', crest: '💥' },
+        { name: 'George Weasley', role: 'Beater', broom: 'Cleansweep Five', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', crest: '💥' },
+        { name: 'Alicia Spinnet', role: 'Chaser', broom: 'Comet 260', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80', crest: '🎯' },
+        { name: 'Katie Bell', role: 'Chaser', broom: 'Silver Arrow', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80', crest: '⚡' }
+      ];
 
-  function resetPikaBubble() {
-    quoteIndex = (quoteIndex + 1) % pikaQuotes.length;
-    if (pikaSpeech) pikaSpeech.textContent = pikaQuotes[quoteIndex];
-  }
+      this.summonPool = [
+        { name: 'Harry Potter', role: 'Seeker Reserve', broom: 'Firebolt Supreme', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80', crest: '⚡' },
+        { name: 'Ginny Weasley', role: 'Chaser Specialist', broom: 'Cleansweep Eleven', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80', crest: '🦁' },
+        { name: 'Hermione Granger', role: 'Tactical Arithmancer', broom: 'Enchanted Comet', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', crest: '📚' },
+        { name: 'Ron Weasley', role: 'Keeper Reserve', broom: 'Cleansweep Eleven', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80', crest: '👑' }
+      ];
 
-  setInterval(resetPikaBubble, 6000);
+      this.currentSquad = [...this.initialPlayers];
+      this.init();
+    }
 
-  // Clicking Pikachu directly strikes center and triggers sound
-  if (pikachuCompanion) {
-    pikachuCompanion.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const origin = getPikachuOrigin();
-      const targetX = window.innerWidth / 2 + (Math.random() - 0.5) * 200;
-      const targetY = window.innerHeight * 0.4 + (Math.random() - 0.5) * 150;
-      castThunderbolt(targetX, targetY, { origin });
-      showToast('⚡ PIKACHU USED THUNDERBOLT! CRITICAL HIT!');
-    });
-  }
+    init() {
+      this.render();
+      if (this.summonBtn) {
+        this.summonBtn.addEventListener('click', () => this.summonPlayer());
+      }
+      if (this.resetBtn) {
+        this.resetBtn.addEventListener('click', () => {
+          this.currentSquad = [...this.initialPlayers];
+          this.render();
+          audio.playSpellCast();
+        });
+      }
+    }
 
-  // --- TOAST NOTIFICATIONS ---
-  const battleToast = document.getElementById('battle-toast');
-  let toastTimer = null;
+    render() {
+      if (!this.gridEl) return;
+      this.gridEl.innerHTML = '';
 
-  function showToast(message, duration = 3000) {
-    if (!battleToast) return;
-    battleToast.innerHTML = `<i class="fa-solid fa-bolt"></i> <span>${message}</span>`;
-    battleToast.classList.add('visible');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => {
-      battleToast.classList.remove('visible');
-    }, duration);
-  }
-
-  // --- POKÉMON ROSTER & CATCH SYSTEM ---
-  // Over 20+ exciting Pokémon that can be summoned and added!
-  const POKEMON_CATALOG = [
-    { id: 25, name: 'Pikachu', type: 'Electric', role: 'Partner / Electric Lead', hp: 999, atk: 980, sprite: 'pikachu.gif', cry: 'Pika Pika!' },
-    { id: 6, name: 'Charizard', type: 'Fire/Flying', role: 'High-Impact Creative Flame', hp: 920, atk: 950, sprite: 'charizard.gif', cry: 'Roaaar!' },
-    { id: 448, name: 'Lucario', type: 'Fighting/Steel', role: 'C++ Algorithmic Aura', hp: 890, atk: 960, sprite: 'lucario.gif', cry: 'Aura Sphere!' },
-    { id: 94, name: 'Gengar', type: 'Ghost/Poison', role: 'Python Automation Shadow', hp: 860, atk: 940, sprite: 'gengar.gif', cry: 'Kekeke!' },
-    { id: 150, name: 'Mewtwo', type: 'Psychic', role: 'Deep Learning / Neural Core', hp: 990, atk: 990, sprite: 'mewtwo.gif', cry: 'Hmph...' },
-    { id: 658, name: 'Greninja', type: 'Water/Dark', role: 'Agile Code Sprints & Logic', hp: 880, atk: 930, sprite: 'greninja.gif', cry: 'Nin-nin!' },
-    { id: 133, name: 'Eevee', type: 'Normal', role: 'Adaptable Multi-Stack Polyglot', hp: 800, atk: 820, sprite: 'eevee.gif', cry: 'Eev-vee!' },
-    { id: 384, name: 'Rayquaza', type: 'Dragon/Flying', role: 'Cloud & Systems Supremacy', hp: 990, atk: 980, sprite: 'rayquaza.gif', cry: 'Screeech!' },
-    { id: 143, name: 'Snorlax', type: 'Normal', role: 'Rock-Solid Database Storage', hp: 990, atk: 870, sprite: 'snorlax.gif', cry: 'Zzzzz!' },
-    { id: 149, name: 'Dragonite', type: 'Dragon/Flying', role: 'AIESEC Egypt Global Diplomat', hp: 940, atk: 950, sprite: 'dragonite.gif', cry: 'Dra-go!' },
-    { id: 26, name: 'Raichu', type: 'Electric', role: 'Volt Overdrive Specialist', hp: 870, atk: 920, sprite: 'raichu.gif', cry: 'Rai-chu!' },
-    { id: 445, name: 'Garchomp', type: 'Dragon/Ground', role: 'C++ Low-Latency Pointer Speed', hp: 960, atk: 970, sprite: 'garchomp.gif', cry: 'Gaaarch!' },
-    { id: 1, name: 'Bulbasaur', type: 'Grass/Poison', role: 'Seed of Innovation', hp: 790, atk: 800, sprite: 'bulbasaur.gif', cry: 'Bulba!' },
-    { id: 7, name: 'Squirtle', type: 'Water', role: 'Fluid Motion Design Flow', hp: 790, atk: 810, sprite: 'squirtle.gif', cry: 'Squirtle!' }
-  ];
-
-  // Active party starts with Pikachu, Charizard, Lucario, Gengar, Mewtwo, and Dragonite
-  let currentParty = [
-    { ...POKEMON_CATALOG[0] }, // Pikachu
-    { ...POKEMON_CATALOG[1] }, // Charizard
-    { ...POKEMON_CATALOG[2] }, // Lucario
-    { ...POKEMON_CATALOG[3] }, // Gengar
-    { ...POKEMON_CATALOG[4] }, // Mewtwo
-    { ...POKEMON_CATALOG[9] }  // Dragonite (Egypt Diplomat)
-  ];
-
-  const partyGrid = document.getElementById('party-roster-grid');
-  const partyCountBadge = document.getElementById('party-count-badge');
-
-  function renderPartyRoster() {
-    if (!partyGrid) return;
-    partyGrid.innerHTML = '';
-    currentParty.forEach((poke, index) => {
-      const card = document.createElement('div');
-      card.className = 'pokemon-party-card holo-tilt zap-target';
-      card.dataset.pokeIndex = index;
-
-      // Online Showdown animated sprite CDN with reliable fallback
-      const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${poke.id}.gif`;
-      const fallbackUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.id}.png`;
-
-      card.innerHTML = `
-        <span class="party-card-num">#${String(poke.id).padStart(3, '0')}</span>
-        <span class="party-card-type">${poke.type}</span>
-        <div class="party-sprite-wrapper">
-          <img src="${spriteUrl}" alt="${poke.name}" class="party-sprite-img" onerror="this.src='${fallbackUrl}'">
-        </div>
-        <h4 class="party-pokemon-name">${poke.name}</h4>
-        <span class="party-pokemon-role">${poke.role}</span>
-        <div class="party-stat-bar-mini">
-          <div class="mini-stat-row">
-            <span>BATTLE POWER</span>
-            <span>${poke.atk}</span>
+      this.currentSquad.forEach((player) => {
+        const card = document.createElement('div');
+        card.className = 'squad-player-card holo-tilt';
+        card.innerHTML = `
+          <div class="player-avatar-circle">
+            <img src="${player.img}" alt="${player.name}" loading="lazy">
           </div>
-          <div class="mini-stat-track">
-            <div class="mini-stat-fill" style="width: ${(poke.atk / 1000) * 100}%;"></div>
-          </div>
+          <h4 class="player-name">${player.name}</h4>
+          <span class="player-role">${player.crest} ${player.role}</span>
+          <span class="player-broom"><i class="fa-solid fa-broom"></i> ${player.broom}</span>
+        `;
+        this.gridEl.appendChild(card);
+      });
+
+      if (this.badgeCountEl) {
+        this.badgeCountEl.textContent = this.currentSquad.length;
+      }
+    }
+
+    summonPlayer() {
+      if (this.summonPool.length === 0) {
+        this.currentSquad.push({
+          name: `Hogwarts Prodigy #${this.currentSquad.length + 1}`,
+          role: 'Flying Chaser',
+          broom: 'Nimbus 2000 Pro',
+          img: 'assets/images/trainer_avatar.jpg',
+          crest: '✨'
+        });
+      } else {
+        const next = this.summonPool.shift();
+        this.currentSquad.push(next);
+      }
+
+      audio.playSpellCast();
+      this.render();
+
+      // Trigger screen spell flash
+      const flash = document.getElementById('spell-flash');
+      if (flash) {
+        flash.classList.add('active');
+        setTimeout(() => flash.classList.remove('active'), 200);
+      }
+    }
+  }
+
+  // =========================================================================
+  // 6. PARCHMENT MODAL INSPECTOR (MATCHES & PROJECTS ARCHIVE)
+  // =========================================================================
+  class ParchmentModalInspector {
+    constructor() {
+      this.modalEl = document.getElementById('parchment-modal');
+      this.titleEl = document.getElementById('parchment-modal-title');
+      this.bodyEl = document.getElementById('parchment-modal-body');
+      this.closeBtn = document.getElementById('modal-close-btn');
+      this.castBtn = document.getElementById('modal-cast-btn');
+
+      this.projectsData = {
+        p1: {
+          title: 'C++ High-Performance Raytracer & Physics Sandbox',
+          type: 'C++ Core Systems & Memory Architecture',
+          tags: ['C++20', 'BVH Trees', 'Linear Algebra', 'Multithreading'],
+          desc: 'A custom, low-level multi-threaded rendering and physical simulation engine engineered in modern C++20. Features bounding volume hierarchy (BVH) spatial acceleration, specular/diffuse Monte Carlo path tracing, custom memory pools, and SIMD mathematical optimization. Built for peak frame rates and computational purity.'
+        },
+        p2: {
+          title: 'Python Autonomous Intelligence & Workflow Agent',
+          type: 'Intelligent AI Automation & Scraping',
+          tags: ['Python 3.x', 'FastAPI', 'AsyncIO', 'NLP', 'BeautifulSoup'],
+          desc: 'An autonomous pipeline capable of ingesting high volumes of unstructured web data, conducting semantic classification and contextual summarization, and triggering automated REST webhooks. Utilizes asynchronous task queues and resilient error recovery patterns.'
+        },
+        p3: {
+          title: 'Cinematic Motion Showcase & VFX Showreel',
+          type: 'Visual Storytelling & Sound Design',
+          tags: ['Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Sound Design'],
+          desc: 'A master collection of high-energy commercial edits, kinetic typography, dynamic speed ramps, and seamless Foley sound design. Crafted with surgical frame timing to maximize audience engagement and emotional resonance across digital media.'
+        },
+        p4: {
+          title: 'AIESEC Egypt Cross-Cultural Media & Outreach',
+          type: 'International Leadership & Visual Archival',
+          tags: ['AIESEC Global', 'Cultural Diplomacy', 'Cairo & Giza', 'Content Strategy'],
+          desc: 'An international documentary and media initiative chronicling youth empowerment workshops and intercultural dialogues in Cairo and Giza. Brought together delegates from over 15 nations to build educational frameworks and cross-cultural solidarity.'
+        }
+      };
+
+      this.init();
+    }
+
+    init() {
+      if (!this.modalEl) return;
+
+      // Bind blueprint buttons
+      document.querySelectorAll('.btn-inspect-parchment').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const pId = btn.getAttribute('data-project-id');
+          this.open(pId);
+        });
+      });
+
+      // Bind close buttons
+      if (this.closeBtn) {
+        this.closeBtn.addEventListener('click', () => this.close());
+      }
+      this.modalEl.addEventListener('click', (e) => {
+        if (e.target === this.modalEl || e.target.classList.contains('modal-backdrop')) {
+          this.close();
+        }
+      });
+
+      // Modal Cast Lumos
+      if (this.castBtn) {
+        this.castBtn.addEventListener('click', () => {
+          audio.playSpellCast();
+          this.bodyEl.style.boxShadow = 'inset 0 0 30px rgba(255, 215, 0, 0.4)';
+          setTimeout(() => {
+            this.bodyEl.style.boxShadow = 'none';
+          }, 800);
+        });
+      }
+    }
+
+    open(projectId) {
+      const data = this.projectsData[projectId];
+      if (!data) return;
+
+      audio.playSpellCast();
+      this.titleEl.textContent = `HOGWARTS REGISTRY • ${data.type.toUpperCase()}`;
+      this.bodyEl.innerHTML = `
+        <h3>${data.title}</h3>
+        <p><strong>Discipline:</strong> ${data.type}</p>
+        <p>${data.desc}</p>
+        <div class="project-tags" style="margin-top: 16px;">
+          ${data.tags.map(t => `<span class="tag">${t}</span>`).join('')}
         </div>
       `;
 
-      // Clicking any Pokémon party card triggers thunderbolt & cry
-      card.addEventListener('click', (e) => {
-        const rect = card.getBoundingClientRect();
-        castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2);
-        sfx.playBeep(880);
-        showToast(`⚡ ${poke.name.toUpperCase()} roared: "${poke.cry}"`);
+      this.modalEl.classList.add('active');
+      this.modalEl.setAttribute('aria-hidden', 'false');
+    }
+
+    close() {
+      this.modalEl.classList.remove('active');
+      this.modalEl.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  // =========================================================================
+  // 7. LUMOS MAXIMA & AUDIO HUD CONTROLS
+  // =========================================================================
+  function setupHudControls() {
+    // SFX Toggle
+    const sfxBtn = document.getElementById('sfx-toggle-btn');
+    if (sfxBtn) {
+      sfxBtn.addEventListener('click', () => {
+        const state = audio.toggle();
+        const icon = sfxBtn.querySelector('i');
+        const label = sfxBtn.querySelector('.hud-label');
+        if (state) {
+          icon.className = 'fa-solid fa-volume-high';
+          label.textContent = 'SFX: ON';
+          audio.playSpellCast();
+        } else {
+          icon.className = 'fa-solid fa-volume-xmark';
+          label.textContent = 'SFX: OFF';
+        }
       });
-
-      partyGrid.appendChild(card);
-    });
-
-    if (partyCountBadge) {
-      partyCountBadge.textContent = currentParty.length;
-    }
-  }
-
-  // Add Pokémon function triggered by Thunderbolt
-  function addPokemonToParty(targetElement = null) {
-    // Pick a random pokemon from catalog
-    const randomIndex = Math.floor(Math.random() * POKEMON_CATALOG.length);
-    const chosenPoke = { ...POKEMON_CATALOG[randomIndex] };
-
-    // Get position to target lightning
-    let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 2;
-
-    if (targetElement) {
-      const rect = targetElement.getBoundingClientRect();
-      targetX = rect.left + rect.width / 2;
-      targetY = rect.top + rect.height / 2;
-    } else {
-      const addBtn = document.getElementById('add-pokemon-btn');
-      if (addBtn) {
-        const rect = addBtn.getBoundingClientRect();
-        targetX = rect.left + rect.width / 2;
-        targetY = rect.top + rect.height / 2;
-      }
     }
 
-    // 1. Pikachu strikes with Thunderbolt
-    castThunderbolt(targetX, targetY, { intensity: 4 });
+    // Lumos Spell Button
+    const lumosBtn = document.getElementById('lumos-spell-btn');
+    if (lumosBtn) {
+      lumosBtn.addEventListener('click', () => {
+        document.body.classList.toggle('lumos-active');
+        audio.playLumos();
 
-    // 2. Play catch fanfare sound
-    setTimeout(() => {
-      sfx.playCatchFanfare();
-    }, 150);
+        const flash = document.getElementById('spell-flash');
+        if (flash) {
+          flash.classList.add('active');
+          setTimeout(() => flash.classList.remove('active'), 350);
+        }
 
-    // 3. Add to party & re-render
-    currentParty.unshift(chosenPoke);
-    renderPartyRoster();
-
-    // 4. Scroll to or highlight in party section
-    showToast(`⚡ THUNDERBOLT! A wild ${chosenPoke.name.toUpperCase()} was caught and added to Harvender's Party!`);
-  }
-
-  // Hook Add Pokémon Buttons
-  const addPokeBtn = document.getElementById('add-pokemon-btn');
-  if (addPokeBtn) {
-    addPokeBtn.addEventListener('click', (e) => {
-      addPokemonToParty(addPokeBtn);
-    });
-  }
-
-  const heroAddPokeBtn = document.getElementById('hero-add-pokemon-btn');
-  if (heroAddPokeBtn) {
-    heroAddPokeBtn.addEventListener('click', (e) => {
-      addPokemonToParty(heroAddPokeBtn);
-    });
-  }
-
-  const summonQuickBtn = document.getElementById('summon-quick-btn');
-  if (summonQuickBtn) {
-    summonQuickBtn.addEventListener('click', (e) => {
-      addPokemonToParty(summonQuickBtn);
-    });
-  }
-
-  const heroThunderboltBtn = document.getElementById('hero-thunderbolt-btn');
-  if (heroThunderboltBtn) {
-    heroThunderboltBtn.addEventListener('click', () => {
-      const rect = heroThunderboltBtn.getBoundingClientRect();
-      castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      showToast('⚡ PIKACHU STRUCK THE STADIUM WITH MAXIMUM VOLTAGE!');
-    });
-  }
-
-  const cardThunderTrigger = document.getElementById('card-thunder-trigger');
-  if (cardThunderTrigger) {
-    cardThunderTrigger.addEventListener('click', () => {
-      const trainerCard = document.getElementById('trainer-main-card');
-      const rect = trainerCard.getBoundingClientRect();
-      castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      showToast('⚡ TRAINER ID CARD OVERCHARGED BY PIKACHU!');
-    });
-  }
-
-  const clearWildBtn = document.getElementById('clear-wild-btn');
-  if (clearWildBtn) {
-    clearWildBtn.addEventListener('click', () => {
-      currentParty = [
-        { ...POKEMON_CATALOG[0] },
-        { ...POKEMON_CATALOG[1] },
-        { ...POKEMON_CATALOG[2] },
-        { ...POKEMON_CATALOG[3] },
-        { ...POKEMON_CATALOG[4] },
-        { ...POKEMON_CATALOG[9] }
-      ];
-      renderPartyRoster();
-      sfx.playBeep(440);
-      showToast('Party reset to Harvender\'s Core Starters.');
-    });
-  }
-
-  // --- GLOBAL CLICK INTERACTION: THUNDERBOLT ON ANY CLICK ---
-  // Every time user clicks on interactive elements, zap with Thunderbolt!
-  document.addEventListener('click', (e) => {
-    // If clicked on a target with .zap-target or button or link
-    const target = e.target.closest('.zap-target, .btn, .skill-card, .project-card, .badge-card, .comm-channel');
-    if (target) {
-      const rect = target.getBoundingClientRect();
-      castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    }
-  });
-
-  // Double click anywhere on screen summons a Pokémon with thunderbolt!
-  document.addEventListener('dblclick', (e) => {
-    castThunderbolt(e.clientX, e.clientY);
-    addPokemonToParty();
-  });
-
-  // --- AUDIO SFX TOGGLE ---
-  const sfxToggleBtn = document.getElementById('sfx-toggle-btn');
-  if (sfxToggleBtn) {
-    sfxToggleBtn.addEventListener('click', () => {
-      const isEnabled = sfx.toggle();
-      const label = sfxToggleBtn.querySelector('.hud-label');
-      const icon = sfxToggleBtn.querySelector('i');
-      if (isEnabled) {
-        label.textContent = 'SFX: ON';
-        icon.className = 'fa-solid fa-volume-high';
-        sfx.playBeep(880);
-        showToast('🔊 Audio Synthesizer: ON (Pikachu Ready)');
-      } else {
-        label.textContent = 'SFX: OFF';
-        icon.className = 'fa-solid fa-volume-xmark';
-        showToast('🔇 Audio Synthesizer: MUTED');
-      }
-    });
-  }
-
-  // --- POKÉDEX MODAL DATA & INSPECTION ---
-  const dexModal = document.getElementById('dex-modal');
-  const dexModalBody = document.getElementById('dex-modal-body');
-  const dexModalTitle = document.getElementById('dex-modal-title');
-  const dexModalClose = document.getElementById('dex-modal-close');
-  const dexModalZap = document.getElementById('dex-modal-zap');
-
-  const PROJECT_DETAILS = {
-    p1: {
-      title: 'C++ HIGH-PERFORMANCE RAYTRACER & PHYSICS ENGINE',
-      category: 'C++ Systems Architecture',
-      overview: 'A multithreaded 3D raytracing and physics simulation sandbox engineered from scratch in modern C++20 with custom vector math, spatial bounding volume hierarchies (BVH), and cache-coherent memory layouts.',
-      features: [
-        'Multi-threaded tile rendering reaching 120 FPS physics updates',
-        'SIMD-friendly custom vector and matrix math libraries',
-        'Realistic Lambertian, metallic reflection, and dielectric refraction optics',
-        'Zero-overhead memory allocators and low-level pointer safety'
-      ],
-      tech: ['C++20', 'Multithreading', 'Linear Algebra', 'Memory Management', 'BVH Trees'],
-      status: 'OPERATIONAL & HIGH PERFORMANCE'
-    },
-    p2: {
-      title: 'PYTHON AUTONOMOUS INTELLIGENCE & WORKFLOW AGENT',
-      category: 'Python AI & Data Automation',
-      overview: 'An asynchronous autonomous data aggregation and workflow intelligence engine designed in Python. Extracts unstructured web content, applies natural language processing models, summarizes telemetry, and triggers webhooks in real-time.',
-      features: [
-        'Asynchronous event-loop scraping engine with proxy rotation and rate limiting',
-        'Automated summary pipelines extracting key business and data metrics',
-        'RESTful API built with FastAPI with Swagger documentation',
-        'High test coverage with automated unit and regression testing'
-      ],
-      tech: ['Python 3.x', 'FastAPI', 'BeautifulSoup', 'AsyncIO', 'NLP Models', 'Pandas'],
-      status: 'DEPLOYED & SCALABLE'
-    },
-    p3: {
-      title: 'CINEMATIC MOTION DESIGN & VFX SHOWREEL',
-      category: 'Video & Visual Production',
-      overview: 'A master showcase of cinematic short-form and commercial video edits, featuring custom kinetic typography, seamless sound design, 3D object tracking, and color grading tuned to commercial broadcast standards.',
-      features: [
-        'Precision rhythmic pacing synchronized with multi-layered audio stems',
-        'Custom After Effects motion graphics, speed ramps, and 3D camera projections',
-        'DaVinci Resolve color grading using LUTs and custom curve mastering',
-        'Over 500,000+ collective digital impressions generated for creators'
-      ],
-      tech: ['Adobe Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Photoshop', 'Sound Mastering'],
-      status: 'CREATIVE PERFECTION'
-    },
-    p4: {
-      title: 'AIESEC EGYPT CROSS-CULTURAL IMPACT PLATFORM',
-      category: 'International Diplomacy & Web Portal',
-      overview: 'A digital archival and cultural storytelling hub built to document the AIESEC Global Volunteer exchange in Cairo, Giza, and the Nile valley. Connects youth empowerment initiatives, workshop curricula, and volunteer media.',
-      features: [
-        'Curated photo & video documentary archive of Giza Pyramids and Cairo youth workshops',
-        'Interactive bilingual learning modules bridging English and Egyptian Arabic',
-        'Cross-cultural leadership case studies representing 15+ international delegations',
-        'Awarded the Pharaoh\'s Solar Badge of Excellence by global coordinators'
-      ],
-      tech: ['AIESEC Global', 'Digital Storytelling', 'Cross-Cultural Leadership', 'Responsive Web'],
-      status: 'GLOBAL MILESTONE'
-    }
-  };
-
-  function openDexModal(projectId) {
-    const data = PROJECT_DETAILS[projectId];
-    if (!data || !dexModal) return;
-
-    dexModalTitle.textContent = `POKÉDEX BLUEPRINT: ${data.category}`;
-    dexModalBody.innerHTML = `
-      <div style="margin-bottom: 16px;">
-        <span style="font-family: var(--font-retro); font-size: 0.65rem; color: var(--pika-yellow); display: block; margin-bottom: 6px;">
-          ${data.category.toUpperCase()} • ${data.status}
-        </span>
-        <h3 style="font-family: var(--font-title); font-size: 1.45rem; color: #fff; margin-bottom: 12px;">
-          ${data.title}
-        </h3>
-        <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px;">
-          ${data.overview}
-        </p>
-      </div>
-
-      <div style="background: rgba(0,0,0,0.4); padding: 16px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 18px;">
-        <h4 style="font-family: var(--font-retro); font-size: 0.65rem; color: var(--thunder-cyan); margin-bottom: 10px;">
-          CORE CAPABILITIES & BENCHMARKS:
-        </h4>
-        <ul style="list-style: none; padding-left: 0;">
-          ${data.features.map(f => `<li style="font-size: 0.85rem; color: #e2e8f0; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px;"><span style="color: var(--pika-yellow);">⚡</span> <span>${f}</span></li>`).join('')}
-        </ul>
-      </div>
-
-      <div>
-        <h4 style="font-family: var(--font-retro); font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px;">
-          WEAPONRY & TECH STACK:
-        </h4>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-          ${data.tech.map(t => `<span style="background: rgba(0,229,255,0.15); border: 1px solid var(--thunder-cyan); color: var(--thunder-cyan); font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 4px;">${t}</span>`).join('')}
-        </div>
-      </div>
-    `;
-
-    dexModal.classList.add('open');
-    dexModal.setAttribute('aria-hidden', 'false');
-
-    // Strike the opened modal with lightning
-    const rect = dexModal.getBoundingClientRect();
-    castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2);
-  }
-
-  function closeDexModal() {
-    if (!dexModal) return;
-    dexModal.classList.remove('open');
-    dexModal.setAttribute('aria-hidden', 'true');
-    sfx.playBeep(440);
-  }
-
-  // Hook Project Click Inspection
-  document.querySelectorAll('.btn-dex-open, .project-card').forEach(item => {
-    item.addEventListener('click', (e) => {
-      const btn = e.target.closest('.btn-dex-open') || item.querySelector('.btn-dex-open');
-      if (btn && btn.dataset.projectId) {
-        openDexModal(btn.dataset.projectId);
-      }
-    });
-  });
-
-  if (dexModalClose) {
-    dexModalClose.addEventListener('click', closeDexModal);
-  }
-
-  if (dexModalZap) {
-    dexModalZap.addEventListener('click', () => {
-      const rect = dexModalZap.getBoundingClientRect();
-      castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      showToast('⚡ POKÉDEX MODAL OVERLOADED WITH ELECTRICITY!');
-    });
-  }
-
-  // Close modal with Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeDexModal();
-    if (e.key === 'p' || e.key === 'P') addPokemonToParty();
-  });
-
-  // --- DYNAMIC HERO TYPING EFFECT ---
-  const typingEl = document.getElementById('typing-text');
-  const typingPhrases = [
-    'C++ Systems Architect',
-    'Python AI & Automation Dev',
-    'Cinematic Video & VFX Editor',
-    'AIESEC Egypt Global Fellow',
-    'Pokédex Code Master'
-  ];
-  let phraseIndex = 0;
-  let charIndex = 0;
-  let isDeleting = false;
-
-  function typeEffect() {
-    if (!typingEl) return;
-    const currentPhrase = typingPhrases[phraseIndex];
-
-    if (isDeleting) {
-      typingEl.textContent = currentPhrase.substring(0, charIndex - 1);
-      charIndex--;
-    } else {
-      typingEl.textContent = currentPhrase.substring(0, charIndex + 1);
-      charIndex++;
+        const isLumos = document.body.classList.contains('lumos-active');
+        lumosBtn.querySelector('.hud-label').textContent = isLumos ? 'NOX' : 'LUMOS';
+      });
     }
 
-    let delay = isDeleting ? 40 : 90;
-
-    if (!isDeleting && charIndex === currentPhrase.length) {
-      delay = 2000;
-      isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      phraseIndex = (phraseIndex + 1) % typingPhrases.length;
-      delay = 400;
-    }
-
-    setTimeout(typeEffect, delay);
-  }
-  setTimeout(typeEffect, 600);
-
-  // --- MOBILE NAV TOGGLE ---
-  const mobileToggle = document.getElementById('mobile-menu-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  if (mobileToggle && navLinks) {
-    mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('mobile-open');
-      sfx.playBeep(600);
-    });
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => navLinks.classList.remove('mobile-open'));
+    // Spell Cast on cards
+    document.querySelectorAll('.btn-cast-spell').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        audio.playSpellCast();
+        const card = btn.closest('.spell-card');
+        if (card) {
+          card.style.transform = 'scale(1.04) translateY(-10px)';
+          setTimeout(() => card.style.transform = '', 350);
+        }
+      });
     });
   }
 
-  // --- INTERACTIVE CONTACT FORM ---
-  const pokeForm = document.getElementById('poke-contact-form');
-  if (pokeForm) {
-    pokeForm.addEventListener('submit', (e) => {
+  // =========================================================================
+  // 8. OWL POST CONTACT FORM (INTERACTIVE DISPATCH)
+  // =========================================================================
+  function setupOwlPostForm() {
+    const form = document.getElementById('quidditch-contact-form');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const submitBtn = document.getElementById('submit-transmission-btn');
-      const rect = submitBtn.getBoundingClientRect();
+      audio.playOwlPost();
 
-      // Zap the submit button
-      castThunderbolt(rect.left + rect.width / 2, rect.top + rect.height / 2, { intensity: 4 });
-      sfx.playCatchFanfare();
+      const btn = document.getElementById('submit-letter-btn');
+      const origText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-feather"></i> DISPATCHING OWL...';
+      btn.disabled = true;
 
-      showToast('⚡ TRANSMISSION SENT! Harvender will respond with lightning speed!');
-      pokeForm.reset();
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> OWL DISPATCHED!';
+        form.reset();
+
+        const toast = document.getElementById('quidditch-toast');
+        if (toast) {
+          toast.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> <span>Owl dispatched to Harvender! Expect a swift reply!</span>';
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        setTimeout(() => {
+          btn.innerHTML = origText;
+          btn.disabled = false;
+        }, 2500);
+      }, 900);
     });
   }
 
-  // Initial render of Pokémon Party
-  renderPartyRoster();
+  // =========================================================================
+  // 9. TYPING ANIMATION (HERO VOCATION)
+  // =========================================================================
+  function setupTypingAnimation() {
+    const typingEl = document.getElementById('typing-text');
+    if (!typingEl) return;
 
-  // Initial welcome greeting
-  console.log('%c⚡ HARVENDER SINGH RAWAT | POKÉMON THEME PORTFOLIO LOADED! ⚡', 'background: #ffe600; color: #000; font-size: 14px; font-weight: bold; padding: 6px 12px; border-radius: 4px;');
+    const phrases = [
+      'C++ & Python Sorcerer • High-Performance Code',
+      'Cinematic Motion Video Editor & VFX Visualist',
+      'AIESEC Egypt Global Volunteer & Leader',
+      'Gryffindor Quidditch Seeker • Always Chasing the Snitch'
+    ];
+
+    let phraseIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+
+    function typeLoop() {
+      const current = phrases[phraseIdx];
+      if (isDeleting) {
+        typingEl.textContent = current.substring(0, charIdx - 1);
+        charIdx--;
+      } else {
+        typingEl.textContent = current.substring(0, charIdx + 1);
+        charIdx++;
+      }
+
+      let speed = isDeleting ? 30 : 60;
+
+      if (!isDeleting && charIdx === current.length) {
+        speed = 2200; // Pause at full phrase
+        isDeleting = true;
+      } else if (isDeleting && charIdx === 0) {
+        isDeleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+        speed = 400;
+      }
+
+      setTimeout(typeLoop, speed);
+    }
+
+    typeLoop();
+  }
+
+  // =========================================================================
+  // 10. MOBILE MENU TOGGLE
+  // =========================================================================
+  function setupMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const links = document.querySelector('.nav-links');
+    if (toggle && links) {
+      toggle.addEventListener('click', () => {
+        const isOpen = links.style.display === 'flex';
+        links.style.display = isOpen ? 'none' : 'flex';
+        if (!isOpen) {
+          links.style.flexDirection = 'column';
+          links.style.position = 'absolute';
+          links.style.top = '72px';
+          links.style.left = '0';
+          links.style.width = '100%';
+          links.style.background = 'rgba(7, 9, 20, 0.98)';
+          links.style.padding = '20px';
+          links.style.borderBottom = '1px solid #eeba30';
+        }
+      });
+    }
+  }
+
+  // =========================================================================
+  // DOM READY INITIALIZER
+  // =========================================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    new QuidditchPitchCanvas('quidditch-canvas');
+    new FlyingBroomFlightController();
+    new GoldenSnitchGame();
+    new QuidditchSquadRoster();
+    new ParchmentModalInspector();
+    setupHudControls();
+    setupOwlPostForm();
+    setupTypingAnimation();
+    setupMobileMenu();
+  });
+
 })();
