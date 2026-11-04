@@ -1,1193 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Harvender Singh Rawat | Quidditch Seeker &amp; Master Developer</title>
-  <meta name="description" content="Harvender Singh Rawat (Rocky) - Quidditch Seeker Portfolio. Flying Broomstick, Interactive Golden Snitch, C++ High-Performance Systems, Python AI & Automation, and Cinematic Video Editing.">
-
-  <!-- Google Fonts: Medieval & Magical Wizarding Typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Cinzel+Decorative:wght@700;900&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvender Singh Rawat — Quidditch Seeker Portfolio</title>
+  <meta name="description" content="Harvender Singh Rawat (Rocky) — C++ Systems, Python AI, Cinematic Video Editing, Interactive Web. Gryffindor Seeker. Hire me." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body class="quidditch-theme">
 
-  <!-- Quidditch Pitch Dynamic Starfield & Magical Atmosphere Canvas -->
+  <!-- ========== CANVAS BACKGROUND ========== -->
   <canvas id="quidditch-canvas"></canvas>
 
-  <!-- Golden Spell Flash / Dive Screen FX -->
-  <div id="spell-flash" class="spell-flash"></div>
+  <!-- ========== SPELL FLASH OVERLAY ========== -->
+  <div id="spell-flash" aria-hidden="true"></div>
 
-  <!-- Snitch Victory Banner / Toast Container -->
-  <div id="quidditch-toast" class="quidditch-toast" aria-live="polite"></div>
+  <!-- ========== TOAST ========== -->
+  <div id="quidditch-toast" role="status" aria-live="polite"></div>
 
-  <!-- FLOATING QUIDDITCH HUD (Scoreboard, Audio, Lumos, Broom Telemetry) -->
-  <aside class="quidditch-hud" aria-label="Quidditch Match Telemetry">
-    <div class="hud-score-card">
-      <div class="score-house gryffindor">
-        <span class="house-crest">🦁</span>
-        <span class="house-name">GRYFFINDOR</span>
-        <span class="house-score" id="gryffindor-score">150</span>
-      </div>
-      <div class="score-vs">VS</div>
-      <div class="score-house slytherin">
-        <span class="house-crest">🐍</span>
-        <span class="house-name">SLYTHERIN</span>
-        <span class="house-score">0</span>
-      </div>
-    </div>
-
-    <div class="hud-controls">
-      <button id="sfx-toggle-btn" class="hud-pill" title="Toggle Magical Sound (Web Audio)">
-        <i class="fa-solid fa-volume-high"></i>
-        <span class="hud-label">SFX: ON</span>
-      </button>
-
-      <button id="lumos-spell-btn" class="hud-pill gold-pill" title="Cast Lumos Maxima Spell">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-        <span class="hud-label">LUMOS</span>
-      </button>
-
-      <div class="speed-gauge" title="Broom Flight Speed">
-        <i class="fa-solid fa-wind"></i>
-        <span id="broom-speed-val">85</span> <small>MPH</small>
-      </div>
-    </div>
-  </aside>
-
-  <!-- FLIGHT ROUTE MINIMAP / HOOP NAVIGATOR (Quick Hoop Leap) -->
-  <nav class="flight-route-hud" aria-label="Pitch Altitude Navigator">
-    <div class="route-title">FLIGHT HOOPS</div>
-    <ul class="route-hoops">
-      <li><a href="#hero" class="hoop-dot active" data-hoop="1" title="Hoop 1: Seeker Pitch"><span class="hoop-ring"></span><span class="hoop-tag">Pitch</span></a></li>
-      <li><a href="#skills" class="hoop-dot" data-hoop="2" title="Hoop 2: Spellbook"><span class="hoop-ring"></span><span class="hoop-tag">Spells</span></a></li>
-      <li><a href="#projects" class="hoop-dot" data-hoop="3" title="Hoop 3: Tournament Matches"><span class="hoop-ring"></span><span class="hoop-tag">Matches</span></a></li>
-      <li><a href="#languages" class="hoop-dot" data-hoop="4" title="Hoop 4: Polyglot Tower"><span class="hoop-ring"></span><span class="hoop-tag">Tongues</span></a></li>
-      <li><a href="#achievements" class="hoop-dot" data-hoop="5" title="Hoop 5: Trophy Room"><span class="hoop-ring"></span><span class="hoop-tag">Trophies</span></a></li>
-      <li><a href="#squad" class="hoop-dot" data-hoop="6" title="Hoop 6: Quidditch Squad"><span class="hoop-ring"></span><span class="hoop-tag">Squad</span></a></li>
-      <li><a href="#contact" class="hoop-dot" data-hoop="7" title="Hoop 7: Owl Post"><span class="hoop-ring"></span><span class="hoop-tag">Owl Post</span></a></li>
-    </ul>
-    <div class="altitude-meter">
-      <div class="altitude-fill" id="altitude-fill"></div>
-    </div>
-  </nav>
-
-  <!-- INTERACTIVE GOLDEN SNITCH (Darts across the pitch, click to catch for +150 Pts) -->
-  <div id="golden-snitch" class="golden-snitch" title="Click to catch the Golden Snitch! (+150 Pts)">
-    <div class="snitch-sphere">
-      <div class="snitch-sheen"></div>
+  <!-- ========== GOLDEN SNITCH ========== -->
+  <div id="golden-snitch" role="button" aria-label="Catch the Golden Snitch! +150 points" tabindex="0">
+    <div class="snitch-body">
       <div class="snitch-core"></div>
     </div>
-    <div class="snitch-wing wing-left"></div>
-    <div class="snitch-wing wing-right"></div>
-    <div class="snitch-burst" id="snitch-burst"></div>
-    <div class="snitch-popup" id="snitch-popup">+150 PTS!</div>
+    <div class="snitch-wing snitch-wing-left">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="15" rx="28" ry="12" fill="rgba(255,220,80,0.5)" stroke="#eeba30" stroke-width="1.5"/>
+        <line x1="10" y1="8" x2="50" y2="22" stroke="#ffd700" stroke-width="0.8" opacity="0.6"/>
+        <line x1="10" y1="15" x2="52" y2="15" stroke="#ffd700" stroke-width="0.8" opacity="0.6"/>
+        <line x1="10" y1="22" x2="50" y2="8" stroke="#ffd700" stroke-width="0.8" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="snitch-wing snitch-wing-right">
+      <svg viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="15" rx="28" ry="12" fill="rgba(255,220,80,0.5)" stroke="#eeba30" stroke-width="1.5"/>
+        <line x1="10" y1="8" x2="50" y2="22" stroke="#ffd700" stroke-width="0.8" opacity="0.6"/>
+        <line x1="10" y1="15" x2="52" y2="15" stroke="#ffd700" stroke-width="0.8" opacity="0.6"/>
+        <line x1="10" y1="22" x2="50" y2="8" stroke="#ffd700" stroke-width="0.8" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="snitch-catch-ring"></div>
   </div>
 
-  <!-- DYNAMIC FLYING BROOM CHARACTER (HARVENDER "ROCKY" RAWAT ON FIREBOLT BROOMSTICK) -->
-  <div id="flying-broom-character" class="flying-broom-character" aria-label="Harvender Singh Rawat flying on racing broom">
-    <div class="broom-flight-anchor">
-      
-      <!-- Wind Streaks / Aero Slipstream -->
-      <div class="slipstream-wrap">
-        <span class="aero-streak s1"></span>
-        <span class="aero-streak s2"></span>
-        <span class="aero-streak s3"></span>
-      </div>
-
-      <!-- Magical Thruster Particle Tail -->
-      <div class="broom-thruster" id="broom-thruster">
-        <span class="thruster-core"></span>
-        <span class="thruster-spark sp1"></span>
-        <span class="thruster-spark sp2"></span>
-        <span class="thruster-spark sp3"></span>
-      </div>
-
-      <!-- THE RACING BROOMSTICK -->
-      <div class="broomstick-assembly">
-        <!-- Tail Twigs & Gold Wire Binding -->
-        <div class="broom-twigs">
-          <div class="twig-band gold-band-1"></div>
-          <div class="twig-band gold-band-2"></div>
+  <!-- ========== FLYING BROOM CHARACTER ========== -->
+  <div id="flying-broom-character" aria-hidden="true">
+    <div class="broom-assembly">
+      <div class="broom-rider">
+        <div class="rider-portrait">
+          <img src="assets/images/quidditch_seeker_avatar.jpg" alt="Harvender — Gryffindor Seeker" />
         </div>
-
-        <!-- Polished Mahogany Shaft -->
-        <div class="broom-shaft">
-          <div class="shaft-grain"></div>
-          <div class="shaft-rune-glow">NIMBUS 2000 • HARVENDER</div>
-          <div class="footrest footrest-left"></div>
-          <div class="footrest footrest-right"></div>
-        </div>
-
-        <!-- Aerodynamic Nose -->
-        <div class="broom-prow"></div>
-      </div>
-
-      <!-- THE SEEKER RIDER (HARVENDER SINGH RAWAT) -->
-      <div class="seeker-rider">
-        <!-- Gryffindor Scarlet & Gold Flowing Cape -->
         <div class="rider-cape"></div>
-
-        <!-- Rider Torso in Quidditch Robes -->
-        <div class="rider-torso">
-          <div class="quidditch-jersey">
-            <span class="jersey-number">07</span>
-            <span class="jersey-crest"><i class="fa-solid fa-shield-halved"></i></span>
-          </div>
-          <!-- Arms gripping the broomstick -->
-          <div class="rider-arms">
-            <div class="arm arm-left"></div>
-            <div class="arm arm-right"></div>
-          </div>
-          <!-- Seeker Legs on footpegs -->
-          <div class="rider-legs">
-            <div class="leg leg-left"></div>
-            <div class="leg leg-right"></div>
-          </div>
-        </div>
-
-        <!-- Rider Head with Harvender's Actual Likeness from avatar -->
-        <div class="rider-head-group">
-          <!-- Quidditch Seeker Flying Goggles -->
-          <div class="seeker-goggles">
-            <span class="lens lens-l"></span>
-            <span class="lens lens-r"></span>
-            <span class="goggle-strap"></span>
-          </div>
-
-          <!-- Harvender's Portrait Blended Face -->
-          <div class="rider-face-portal">
-            <img src="assets/images/quidditch_seeker_avatar.jpg" alt="Harvender Singh Rawat Seeker" class="rider-avatar-img">
-            <div class="face-lighting-sheen"></div>
-          </div>
-
-          <!-- Flowing Gryffindor Scarf in the wind -->
-          <div class="rider-scarf"></div>
-        </div>
-
+        <div class="rider-arm"></div>
       </div>
-
-      <!-- Seeker Flight Callout / Voice -->
-      <div class="seeker-speech-bubble" id="seeker-speech">
-        <span class="bubble-speaker">HARVENDER:</span>
-        <span class="bubble-text" id="seeker-speech-text">Diving deep into the pitch! Scroll to fly inside! ⚡</span>
+      <div class="broom-stick">
+        <div class="broom-handle"></div>
+        <div class="broom-bristles">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
-
+    </div>
+    <div id="broom-speech" class="broom-speech-bubble">
+      <span id="broom-speech-text">Seeking glory on the Quidditch pitch!</span>
     </div>
   </div>
 
-  <!-- NAVIGATION HEADER (Hogwarts Grand Hall & Pitch Ribbon) -->
-  <header class="main-header">
-    <nav class="nav-container">
-      <a href="#hero" class="brand-crest">
-        <div class="golden-snitch-mini">
-          <div class="mini-ball"></div>
-          <div class="mini-w-left"></div>
-          <div class="mini-w-right"></div>
-        </div>
-        <div class="brand-titles">
-          <span class="brand-sub">HOGWARTS QUIDDITCH LEAGUE</span>
-          <span class="brand-main">HARVENDER S. RAWAT</span>
-        </div>
-      </a>
-
-      <ul class="nav-links">
-        <li><a href="#hero" class="nav-link active"><i class="fa-solid fa-broom"></i> Pitch</a></li>
-        <li><a href="#skills" class="nav-link"><i class="fa-solid fa-wand-magic-sparkles"></i> Spellbook</a></li>
-        <li><a href="#projects" class="nav-link"><i class="fa-solid fa-trophy"></i> Matches</a></li>
-        <li><a href="#languages" class="nav-link"><i class="fa-solid fa-scroll"></i> Languages</a></li>
-        <li><a href="#achievements" class="nav-link"><i class="fa-solid fa-medal"></i> Badges</a></li>
-        <li><a href="#squad" class="nav-link"><i class="fa-solid fa-users-viewfinder"></i> Squad (<span id="squad-count-badge">7</span>)</a></li>
-        <li><a href="#contact" class="nav-link nav-btn"><i class="fa-solid fa-feather-pointed"></i> Owl Post</a></li>
-      </ul>
-
-      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation">
-        <i class="fa-solid fa-bars"></i>
+  <!-- ========== HUD ========== -->
+  <div id="quidditch-hud" role="complementary" aria-label="Quidditch HUD">
+    <div class="hud-scoreboard">
+      <div class="hud-house hud-gryffindor">
+        <span class="hud-house-name">Gryffindor</span>
+        <span class="hud-score" id="gryffindor-score">0</span>
+      </div>
+      <div class="hud-vs">VS</div>
+      <div class="hud-house hud-slytherin">
+        <span class="hud-house-name">Slytherin</span>
+        <span class="hud-score" id="slytherin-score">160</span>
+      </div>
+    </div>
+    <div class="hud-controls">
+      <button id="btn-sfx" class="hud-btn" aria-label="Toggle sound effects" title="Toggle SFX">
+        <span class="btn-icon">🔊</span>
       </button>
+      <button id="btn-lumos" class="hud-btn" aria-label="Cast Lumos / Nox" title="Lumos / Nox">
+        <span class="btn-icon">✨</span>
+      </button>
+    </div>
+    <div class="hud-speed">
+      <div class="hud-speed-label">BROOM SPEED</div>
+      <div class="hud-speed-bar"><div class="hud-speed-fill" id="hud-speed-fill"></div></div>
+      <div class="hud-speed-val" id="hud-speed-val">0 mph</div>
+    </div>
+  </div>
+
+  <!-- ========== FLIGHT MINIMAP ========== -->
+  <nav id="flight-minimap" aria-label="Section navigation">
+    <div class="minimap-label">PITCH MAP</div>
+    <ul class="minimap-route">
+      <li class="hoop-dot active" data-target="hero"      data-label="Pitch">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Pitch</span>
+      </li>
+      <li class="hoop-dot" data-target="skills"      data-label="Spellbook">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Spellbook</span>
+      </li>
+      <li class="hoop-dot" data-target="projects"    data-label="Matches">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Matches</span>
+      </li>
+      <li class="hoop-dot" data-target="languages"   data-label="Languages">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Languages</span>
+      </li>
+      <li class="hoop-dot" data-target="achievements" data-label="Trophies">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Trophies</span>
+      </li>
+      <li class="hoop-dot" data-target="squad"       data-label="Squad">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Squad</span>
+      </li>
+      <li class="hoop-dot" data-target="contact"     data-label="Owl Post">
+        <span class="hoop-dot-ring"></span>
+        <span class="hoop-dot-label">Owl Post</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ========== TOP NAVBAR ========== -->
+  <header id="main-header" role="banner">
+    <nav class="nav-bar" aria-label="Main navigation">
+      <a href="#hero" class="nav-brand" aria-label="Home">
+        <span class="brand-crest">⚡</span>
+        <span class="brand-text">Hogwarts Quidditch League</span>
+      </a>
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#hero"         class="nav-link">Pitch</a></li>
+        <li><a href="#skills"       class="nav-link">Spellbook</a></li>
+        <li><a href="#projects"     class="nav-link">Matches</a></li>
+        <li><a href="#languages"    class="nav-link">Languages</a></li>
+        <li><a href="#achievements" class="nav-link">Trophies</a></li>
+        <li><a href="#squad"        class="nav-link">Squad</a></li>
+        <li><a href="#contact"      class="nav-link nav-owl">Owl Post 🦉</a></li>
+      </ul>
     </nav>
   </header>
 
-  <!-- 3D FLIGHT STAGE & PORTFOLIO HOOPS CONTAINER -->
-  <main class="flight-tunnel-viewport" id="flight-tunnel">
+  <!-- ========== MAIN FLIGHT TUNNEL ========== -->
+  <main class="flight-tunnel-viewport" id="main-content">
 
-    <!-- ========================================================
-         HOOP 1: THE GRAND QUIDDITCH PITCH (HERO & BIO)
-         ======================================================== -->
-    <section id="hero" class="hoop-section hero-section" data-hoop-num="1">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop hoop-large">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">⚡ SEEKER HARVENDER • NIMBUS RACING ⚡</div>
-          <span class="hoop-milestone-tag">HOOP I • THE PITCH</span>
-        </div>
+    <!-- ===== HOOP 1 — PITCH (HERO) ===== -->
+    <div class="hoop-gate" data-hoop-num="1" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP I</div>
       </div>
-
-      <div class="container hero-grid">
-        
-        <!-- Left: Seeker Bio & Identity -->
-        <div class="hero-info">
-          <div class="wizard-badge-row">
-            <span class="wizard-pill pill-gryffindor"><i class="fa-solid fa-shield-halved"></i> GRYFFINDOR SEEKER</span>
-            <span class="wizard-pill pill-gold"><i class="fa-solid fa-bolt"></i> HIGH-PERFORMANCE CODE</span>
-            <span class="wizard-pill pill-azure"><i class="fa-solid fa-code-branch"></i> FULL-STACK &amp; GRAPHICS</span>
-          </div>
-
-          <h1 class="seeker-hero-name">
-            <span class="proclamation">WELCOME TO THE ARENA, I AM</span>
-            <span class="name-gold">Harvender Singh Rawat</span>
-            <span class="aka-title">(Rocky)</span>
-          </h1>
-
-          <div class="magic-typing-box">
-            <span class="spell-prefix"><i class="fa-solid fa-wand-sparkles"></i> VOCATION:</span>
-            <span id="typing-text" class="typing-text">C++ &amp; Python Sorcerer • Cinematic Video Editor</span>
-            <span class="cursor-spark">|</span>
-          </div>
-
-          <p class="hero-description">
-            A fearless Quidditch Seeker on the digital pitch, harnessing lightning-fast <strong>C++ systems</strong>, intelligent <strong>Python transfigurations</strong>, and master-level <strong>cinematic video editing</strong>. Passionate about high-performance graphics engines, autonomous AI workflows, and cinematic storytelling. Grab your broomstick and dive into the match!
-          </p>
-
-          <!-- Interactive Action Controls -->
-          <div class="hero-actions">
-            <button id="hero-dive-btn" class="btn btn-firebolt">
-              <span class="btn-icon"><i class="fa-solid fa-wind"></i></span>
-              <span class="btn-text">DIVE INTO THE HOOPS!</span>
-            </button>
-
-            <button id="hero-catch-snitch-btn" class="btn btn-snitch">
-              <span class="snitch-icon-anim"></span>
-              <span class="btn-text">CHASE THE SNITCH (+150 PTS)</span>
-            </button>
-
-            <a href="#projects" class="btn btn-parchment">
-              <i class="fa-solid fa-scroll"></i> INSPECT MATCH REELS
-            </a>
-          </div>
-
-          <!-- Quidditch Flight & Seeker Telemetry -->
-          <div class="seeker-metrics">
-            <div class="metric-card">
-              <span class="metric-num">3+</span>
-              <span class="metric-label">SPELL WEAPONS</span>
-              <span class="metric-sub">Premiere/VFX, Python, C++</span>
-            </div>
-            <div class="metric-card">
-              <span class="metric-num">120+</span>
-              <span class="metric-label">GRAPHICS FPS</span>
-              <span class="metric-sub">C++ Physics &amp; Raytracer</span>
-            </div>
-            <div class="metric-card">
-              <span class="metric-num">150</span>
-              <span class="metric-label">GOLDEN SNITCH PTS</span>
-              <span class="metric-sub">Reflexes &amp; Speed</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right: Enchanted Holographic Seeker Trading Card -->
-        <div class="hero-card-container">
-          <div class="seeker-parchment-card holo-tilt" id="seeker-main-card">
-            <div class="card-gold-corner corner-tl"></div>
-            <div class="card-gold-corner corner-tr"></div>
-            <div class="card-gold-corner corner-bl"></div>
-            <div class="card-gold-corner corner-br"></div>
-            
-            <div class="card-wax-seal">
-              <i class="fa-solid fa-shield-halved"></i>
-            </div>
-
-            <div class="card-header-bar">
-              <span class="card-house">GRYFFINDOR FIRST TEAM</span>
-              <span class="card-stars">★★★★★</span>
-              <span class="card-num">SEEKER #07</span>
-            </div>
-
-            <div class="seeker-avatar-frame">
-              <img src="assets/images/quidditch_seeker_avatar.jpg" alt="Harvender Singh Rawat Quidditch Seeker" class="seeker-avatar-photo">
-              <div class="avatar-magic-crest">
-                <i class="fa-solid fa-broom"></i>
+    </div>
+    <section id="hero" class="flight-section" aria-labelledby="hero-heading">
+      <div class="section-inner">
+        <div class="hero-layout">
+          <div class="hero-left">
+            <div class="seeker-card" role="img" aria-label="Harvender as Gryffindor Seeker">
+              <div class="seeker-card-portrait">
+                <img src="assets/images/quidditch_seeker_avatar.jpg" alt="Harvender Singh Rawat — Gryffindor Seeker" />
+              </div>
+              <div class="seeker-card-info">
+                <div class="seeker-card-house">🦁 GRYFFINDOR</div>
+                <div class="seeker-card-name">Rocky</div>
+                <div class="seeker-card-role">Seeker · Class of 2024</div>
+              </div>
+              <div class="seeker-card-badges">
+                <span class="card-badge">⚡ 150 Pts</span>
+                <span class="card-badge">🏆 Cup Winner</span>
               </div>
             </div>
-
-            <div class="seeker-card-body">
-              <div class="seeker-identity">
-                <h3 class="seeker-title-name">HARVENDER S. RAWAT</h3>
-                <span class="seeker-sub">Elite Quidditch Seeker &amp; System Architect</span>
+            <div class="flight-gauges">
+              <div class="gauge">
+                <div class="gauge-label">Altitude</div>
+                <div class="gauge-bar"><div class="gauge-fill" style="width:85%"></div></div>
               </div>
-
-              <!-- Interactive Flight Skill Gauges -->
-              <div class="flight-gauges">
-                <div class="gauge-group">
-                  <div class="gauge-label-row">
-                    <span>Flight Reflexes &amp; Agility</span>
-                    <span class="gauge-val">99 / 100</span>
-                  </div>
-                  <div class="gauge-track"><div class="gauge-fill fill-gold" style="width: 99%;"></div></div>
-                </div>
-
-                <div class="gauge-group">
-                  <div class="gauge-label-row">
-                    <span>C++ &amp; Python Mana</span>
-                    <span class="gauge-val">MAX LEVEL 98</span>
-                  </div>
-                  <div class="gauge-track"><div class="gauge-fill fill-crimson" style="width: 96%;"></div></div>
-                </div>
-
-                <div class="gauge-group">
-                  <div class="gauge-label-row">
-                    <span>Cinematic Visual Timing</span>
-                    <span class="gauge-val">97 / 100</span>
-                  </div>
-                  <div class="gauge-track"><div class="gauge-fill fill-azure" style="width: 97%;"></div></div>
-                </div>
+              <div class="gauge">
+                <div class="gauge-label">Speed</div>
+                <div class="gauge-bar"><div class="gauge-fill" style="width:92%"></div></div>
               </div>
-
-              <!-- House Badges Row -->
-              <div class="mini-badges-row">
-                <span class="mini-badge" title="Full-Stack Web Sorcery"><i class="fa-solid fa-globe"></i></span>
-                <span class="mini-badge" title="Python Transfiguration"><i class="fa-brands fa-python"></i></span>
-                <span class="mini-badge" title="C++ Core Alchemy"><i class="fa-solid fa-microchip"></i></span>
-                <span class="mini-badge" title="Cinematic Video Editing"><i class="fa-solid fa-film"></i></span>
-                <span class="mini-badge" title="Golden Snitch Master"><i class="fa-solid fa-trophy"></i></span>
+              <div class="gauge">
+                <div class="gauge-label">Snitch Proximity</div>
+                <div class="gauge-bar snitch-gauge"><div class="gauge-fill" id="snitch-prox-fill" style="width:30%"></div></div>
               </div>
-
-              <!-- Quick Broom Acceleration Trigger -->
-              <button class="card-cast-action" id="card-broom-boost-btn">
-                <i class="fa-solid fa-wind"></i> Test Broomstick Acceleration!
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="hero-eyebrow">★ Gryffindor's Finest ★</div>
+            <h1 id="hero-heading" class="hero-name">Harvender<br/><span class="hero-name-accent">Singh Rawat</span></h1>
+            <div class="hero-title-row">
+              <span class="hero-title-static">I am a </span>
+              <span class="hero-typewriter" id="typewriter-text" aria-live="polite">C++ Sorcerer</span>
+              <span class="hero-cursor-blink">|</span>
+            </div>
+            <p class="hero-bio">
+              A Gryffindor-spirited developer who builds with the precision of a Seeker and the
+              fire of a Beater. From raytraced C++ engines to Python AI agents, cinematic edits to
+              interactive 3D web — I catch bugs and snitches alike.
+            </p>
+            <div class="hero-location">
+              <span class="loc-icon">🌍</span>
+              <span>India &nbsp;•&nbsp; Open to Global Roles</span>
+            </div>
+            <div class="hero-actions">
+              <a href="#contact" class="btn-primary">Send Owl 🦉</a>
+              <a href="#projects" class="btn-secondary">View Matches →</a>
+              <button id="btn-dive" class="btn-dive" aria-label="Dive to Skills section">
+                DIVE ↓ Accio Skills
               </button>
             </div>
+            <div class="hero-social">
+              <a href="mailto:harvendersinghrawat@gmail.com" class="social-link" aria-label="Email">✉️ Email</a>
+              <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="social-link" aria-label="GitHub">⚙️ GitHub</a>
+              <a href="https://linkedin.com/in/harvendersinghrawat" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn">🔗 LinkedIn</a>
+            </div>
           </div>
         </div>
-
       </div>
     </section>
 
-    <!-- ========================================================
-         HOOP 2: THE SEEKER'S SPELLBOOK (SKILLS & ARSENAL)
-         ======================================================== -->
-    <section id="skills" class="hoop-section skills-section" data-hoop-num="2">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">⚡ ARCANUM TECHNOLOGICA • SPELLS OF MASTERY ⚡</div>
-          <span class="hoop-milestone-tag">HOOP II • THE SPELLBOOK</span>
-        </div>
+    <!-- ===== HOOP 2 — SPELLBOOK (SKILLS) ===== -->
+    <div class="hoop-gate" data-hoop-num="2" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP II</div>
       </div>
-
-      <div class="container">
-        
-        <div class="section-badge-header">
-          <span class="section-tag-crimson"><i class="fa-solid fa-wand-magic-sparkles"></i> TECHNICAL SPELLBOOK</span>
-          <h2 class="section-title">The Seeker's <span class="accent-gold">Arsenal of Spells</span></h2>
-          <p class="section-subtitle">Click any enchanted spell card to unleash a burst of broom sparks and inspect the technical telemetry!</p>
+    </div>
+    <section id="skills" class="flight-section" aria-labelledby="skills-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">📖 Year 7 Spellbook</div>
+          <h2 id="skills-heading" class="section-title">Mastered Spells</h2>
+          <p class="section-sub">Every great Seeker knows their spells. These are mine.</p>
         </div>
+        <div class="spell-grid">
 
-        <div class="skills-grid">
-          
-          <!-- Spell 1: Video & Photo Editing -->
-          <div class="spell-card holo-tilt zap-target" data-spell="editing">
-            <div class="spell-card-header">
-              <div class="school-pill school-creative">
-                <i class="fa-solid fa-film"></i> TIME-TURNER / CINEMATIC
-              </div>
-              <span class="spell-mastery">MASTERY 96%</span>
+          <div class="spell-card holo-tilt" data-spell="cinematic" role="article" tabindex="0" aria-label="Cinematic Editing spell card">
+            <div class="spell-card-rune">🎬</div>
+            <div class="spell-card-incantation">Cinematicus!</div>
+            <h3 class="spell-card-name">Cinematic Editing</h3>
+            <p class="spell-card-desc">Premiere Pro · After Effects · DaVinci Resolve · Motion Graphics · Color Grading</p>
+            <div class="spell-power-bar">
+              <div class="spell-power-fill" style="--power:94%"></div>
             </div>
-
-            <div class="spell-icon-box">
-              <i class="fa-solid fa-video"></i>
-            </div>
-
-            <h3 class="spell-title">Cinematic Video &amp; Motion Editing</h3>
-            <span class="signature-spell">Signature Enchantment: <em>Hyper Timeline Render</em></span>
-
-            <p class="spell-desc">
-              Mastery over pacing, rhythmic cuts, dynamic typography, color grading, sound design, and VFX transitions. Transforming raw footage into emotionally resonant cinematic experiences.
-            </p>
-
-            <div class="rune-tags">
-              <span class="rune-tag">Premiere Pro</span>
-              <span class="rune-tag">After Effects</span>
-              <span class="rune-tag">DaVinci Resolve</span>
-              <span class="rune-tag">Photoshop</span>
-              <span class="rune-tag">Sound Design</span>
-              <span class="rune-tag">Motion VFX</span>
-            </div>
-
-            <div class="mana-meter">
-              <div class="meter-info">
-                <span>Enchantment Potency</span>
-                <span class="meter-val">96%</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill fill-creative" style="width: 96%;"></div></div>
-            </div>
-
-            <button class="btn-cast-spell" title="Cast spell effect">
-              <i class="fa-solid fa-wand-sparkles"></i> Cast Enchantment
-            </button>
+            <div class="spell-power-label">Power: 94 / 100</div>
+            <div class="spell-card-glow spell-glow-gold"></div>
           </div>
 
-          <!-- Spell 2: Python Architecture -->
-          <div class="spell-card holo-tilt zap-target" data-spell="python">
-            <div class="spell-card-header">
-              <div class="school-pill school-transfiguration">
-                <i class="fa-brands fa-python"></i> TRANSFIGURATION / AI
-              </div>
-              <span class="spell-mastery">MASTERY 94%</span>
+          <div class="spell-card holo-tilt" data-spell="python" role="article" tabindex="0" aria-label="Python AI spell card">
+            <div class="spell-card-rune">🐍</div>
+            <div class="spell-card-incantation">Pythonis AI!</div>
+            <h3 class="spell-card-name">Python AI & Automation</h3>
+            <p class="spell-card-desc">Machine Learning · LLM Agents · FastAPI · Data Processing · Automation Scripts</p>
+            <div class="spell-power-bar">
+              <div class="spell-power-fill" style="--power:88%"></div>
             </div>
-
-            <div class="spell-icon-box">
-              <i class="fa-brands fa-python"></i>
-            </div>
-
-            <h3 class="spell-title">Python Transfiguration &amp; AI</h3>
-            <span class="signature-spell">Signature Enchantment: <em>Neural Voltage Surge</em></span>
-
-            <p class="spell-desc">
-              Architecting autonomous web scrapers, data extraction engines, intelligent NLP workflows, asynchronous pipelines, and high-concurrency RESTful APIs with elegant Pythonic wizardry.
-            </p>
-
-            <div class="rune-tags">
-              <span class="rune-tag">Python 3.x</span>
-              <span class="rune-tag">Automation</span>
-              <span class="rune-tag">FastAPI / Flask</span>
-              <span class="rune-tag">NumPy / Pandas</span>
-              <span class="rune-tag">AsyncIO</span>
-              <span class="rune-tag">AI Workflows</span>
-            </div>
-
-            <div class="mana-meter">
-              <div class="meter-info">
-                <span>Enchantment Potency</span>
-                <span class="meter-val">94%</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill fill-transfiguration" style="width: 94%;"></div></div>
-            </div>
-
-            <button class="btn-cast-spell" title="Cast spell effect">
-              <i class="fa-solid fa-wand-sparkles"></i> Cast Enchantment
-            </button>
+            <div class="spell-power-label">Power: 88 / 100</div>
+            <div class="spell-card-glow spell-glow-green"></div>
           </div>
 
-          <!-- Spell 3: C++ Systems Alchemy -->
-          <div class="spell-card holo-tilt zap-target" data-spell="cpp">
-            <div class="spell-card-header">
-              <div class="school-pill school-alchemy">
-                <i class="fa-solid fa-microchip"></i> CORE ALCHEMY / SYSTEMS
-              </div>
-              <span class="spell-mastery">MASTERY 92%</span>
+          <div class="spell-card holo-tilt" data-spell="cpp" role="article" tabindex="0" aria-label="C++ Systems spell card">
+            <div class="spell-card-rune">⚙️</div>
+            <div class="spell-card-incantation">Compilicus!</div>
+            <h3 class="spell-card-name">C++ Systems</h3>
+            <p class="spell-card-desc">Raytracer · Physics Engines · Memory Management · OpenGL · High-Perf Computing</p>
+            <div class="spell-power-bar">
+              <div class="spell-power-fill" style="--power:91%"></div>
             </div>
-
-            <div class="spell-icon-box">
-              <i class="fa-solid fa-code"></i>
-            </div>
-
-            <h3 class="spell-title">C++ High-Performance Systems</h3>
-            <span class="signature-spell">Signature Enchantment: <em>Pointer Overdrive Blitz</em></span>
-
-            <p class="spell-desc">
-              Low-level hardware affinity, pointer mechanics, custom memory pools, multithreaded task scheduling, BVH spatial indexing, and cache-optimized data structures.
-            </p>
-
-            <div class="rune-tags">
-              <span class="rune-tag">C++17 / C++20</span>
-              <span class="rune-tag">OOP &amp; STL</span>
-              <span class="rune-tag">Memory Safety</span>
-              <span class="rune-tag">Multithreading</span>
-              <span class="rune-tag">Algorithms</span>
-              <span class="rune-tag">Graphics Math</span>
-            </div>
-
-            <div class="mana-meter">
-              <div class="meter-info">
-                <span>Enchantment Potency</span>
-                <span class="meter-val">92%</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill fill-alchemy" style="width: 92%;"></div></div>
-            </div>
-
-            <button class="btn-cast-spell" title="Cast spell effect">
-              <i class="fa-solid fa-wand-sparkles"></i> Cast Enchantment
-            </button>
+            <div class="spell-power-label">Power: 91 / 100</div>
+            <div class="spell-card-glow spell-glow-silver"></div>
           </div>
 
-          <!-- Spell 4: Interactive Web & UI Charms -->
-          <div class="spell-card holo-tilt zap-target" data-spell="web">
-            <div class="spell-card-header">
-              <div class="school-pill school-charms">
-                <i class="fa-solid fa-layer-group"></i> ENCHANTED WEB / UI
-              </div>
-              <span class="spell-mastery">MASTERY 95%</span>
+          <div class="spell-card holo-tilt" data-spell="web" role="article" tabindex="0" aria-label="Interactive Web spell card">
+            <div class="spell-card-rune">🌐</div>
+            <div class="spell-card-incantation">Webicus 3D!</div>
+            <h3 class="spell-card-name">Interactive Web / Canvas</h3>
+            <p class="spell-card-desc">Three.js · WebGL · Canvas API · GSAP · Vanilla JS · Particle Systems</p>
+            <div class="spell-power-bar">
+              <div class="spell-power-fill" style="--power:85%"></div>
             </div>
-
-            <div class="spell-icon-box">
-              <i class="fa-brands fa-html5"></i>
-            </div>
-
-            <h3 class="spell-title">Interactive Web Sorcery &amp; Canvas</h3>
-            <span class="signature-spell">Signature Enchantment: <em>Quidditch 3D Tunnel</em></span>
-
-            <p class="spell-desc">
-              Building dynamic, GPU-accelerated web experiences with modern responsive CSS3, procedural HTML5 Canvas particle physics, Web Audio sound synthesis, and silky 60fps animations.
-            </p>
-
-            <div class="rune-tags">
-              <span class="rune-tag">HTML5 &amp; CSS3</span>
-              <span class="rune-tag">JavaScript (ES6+)</span>
-              <span class="rune-tag">HTML5 Canvas</span>
-              <span class="rune-tag">Web Audio API</span>
-              <span class="rune-tag">3D Transforms</span>
-              <span class="rune-tag">Responsive UI</span>
-            </div>
-
-            <div class="mana-meter">
-              <div class="meter-info">
-                <span>Enchantment Potency</span>
-                <span class="meter-val">95%</span>
-              </div>
-              <div class="meter-bar"><div class="meter-fill fill-charms" style="width: 95%;"></div></div>
-            </div>
-
-            <button class="btn-cast-spell" title="Cast spell effect">
-              <i class="fa-solid fa-wand-sparkles"></i> Cast Enchantment
-            </button>
+            <div class="spell-power-label">Power: 85 / 100</div>
+            <div class="spell-card-glow spell-glow-blue"></div>
           </div>
 
         </div>
-
       </div>
     </section>
 
-    <!-- ========================================================
-         HOOP 3: LEGENDARY MATCHES & ARTIFACTS (PROJECTS)
-         ======================================================== -->
-    <section id="projects" class="hoop-section projects-section" data-hoop-num="3">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">🏆 TRIWIZARD ARCHIVES • MASTER INVENTIONS 🏆</div>
-          <span class="hoop-milestone-tag">HOOP III • LEGENDARY MATCHES</span>
-        </div>
+    <!-- ===== HOOP 3 — MATCHES (PROJECTS) ===== -->
+    <div class="hoop-gate" data-hoop-num="3" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP III</div>
       </div>
-
-      <div class="container">
-        
-        <div class="section-badge-header">
-          <span class="section-tag-gold"><i class="fa-solid fa-trophy"></i> TOURNAMENT ARCHIVES</span>
-          <h2 class="section-title">Legendary Matches &amp; <span class="accent-gold">Projects</span></h2>
-          <p class="section-subtitle">Click any tournament entry to inspect its detailed parchment blueprint and technical stats!</p>
+    </div>
+    <section id="projects" class="flight-section" aria-labelledby="projects-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">⚡ Match Records</div>
+          <h2 id="projects-heading" class="section-title">Championship Matches</h2>
+          <p class="section-sub">Every project is a Quidditch match — won or still in play.</p>
         </div>
-
         <div class="projects-grid">
-          
-          <!-- Match 1: C++ Raytracer & Physics -->
-          <article class="project-parchment-card holo-tilt zap-target" data-project-id="p1">
-            <div class="project-header-row">
-              <span class="project-dex-num">MATCH #01</span>
-              <span class="badge-house gryff-badge"><i class="fa-solid fa-gear"></i> C++ ENGINE</span>
+
+          <article class="project-parchment-card holo-tilt" data-project-id="p1" role="button" tabindex="0" aria-label="Open C++ Raytracer project details">
+            <div class="parchment-corner parchment-corner-tl"></div>
+            <div class="parchment-corner parchment-corner-tr"></div>
+            <div class="parchment-corner parchment-corner-bl"></div>
+            <div class="parchment-corner parchment-corner-br"></div>
+            <div class="parchment-match-number">Match #001</div>
+            <div class="parchment-icon">🔭</div>
+            <h3 class="parchment-title">C++ Raytracer Engine</h3>
+            <p class="parchment-desc">Physics-accurate raytracer built from scratch in C++. Supports reflections, refractions, global illumination, and BVH acceleration.</p>
+            <div class="parchment-tags">
+              <span class="tag">C++</span>
+              <span class="tag">OpenGL</span>
+              <span class="tag">BVH</span>
             </div>
-
-            <div class="project-preview-frame">
-              <div class="preview-backdrop grad-alchemy">
-                <i class="fa-solid fa-cubes-stacked preview-large-icon"></i>
-              </div>
-              <div class="project-meta-strip">
-                <span>FPS: 120 FLUID</span>
-                <span>EFFICIENCY: S-TIER</span>
-              </div>
-            </div>
-
-            <div class="project-card-details">
-              <h3 class="project-title">C++ High-Performance Raytracer &amp; Physics Sandbox</h3>
-              <p class="project-desc">
-                A custom C++ multithreaded rendering and physics engine utilizing vector math, BVH spatial trees, specular reflections, and raw memory optimization.
-              </p>
-
-              <div class="project-tags">
-                <span class="tag">C++20</span>
-                <span class="tag">Multithreading</span>
-                <span class="tag">Linear Algebra</span>
-                <span class="tag">Memory Management</span>
-              </div>
-
-              <div class="project-actions">
-                <button class="btn-inspect-parchment" data-project-id="p1">
-                  <i class="fa-solid fa-scroll"></i> Open Blueprint Scroll
-                </button>
-              </div>
-            </div>
+            <div class="parchment-result">Result: <span class="result-win">WIN ⚡</span></div>
+            <div class="parchment-read-more">Read the Blueprint →</div>
           </article>
 
-          <!-- Match 2: Python AI Automator -->
-          <article class="project-parchment-card holo-tilt zap-target" data-project-id="p2">
-            <div class="project-header-row">
-              <span class="project-dex-num">MATCH #02</span>
-              <span class="badge-house transfig-badge"><i class="fa-brands fa-python"></i> PYTHON AI</span>
+          <article class="project-parchment-card holo-tilt" data-project-id="p2" role="button" tabindex="0" aria-label="Open Python AI Agent project details">
+            <div class="parchment-corner parchment-corner-tl"></div>
+            <div class="parchment-corner parchment-corner-tr"></div>
+            <div class="parchment-corner parchment-corner-bl"></div>
+            <div class="parchment-corner parchment-corner-br"></div>
+            <div class="parchment-match-number">Match #002</div>
+            <div class="parchment-icon">🤖</div>
+            <h3 class="parchment-title">Python AI Agent</h3>
+            <p class="parchment-desc">Autonomous LLM-powered agent with tool-calling, memory, and self-correction. Processes documents, answers complex queries, executes tasks.</p>
+            <div class="parchment-tags">
+              <span class="tag">Python</span>
+              <span class="tag">LLM</span>
+              <span class="tag">FastAPI</span>
             </div>
-
-            <div class="project-preview-frame">
-              <div class="preview-backdrop grad-transfig">
-                <i class="fa-solid fa-brain preview-large-icon"></i>
-              </div>
-              <div class="project-meta-strip">
-                <span>ACCURACY: 98.4%</span>
-                <span>AUTOMATION: 100%</span>
-              </div>
-            </div>
-
-            <div class="project-card-details">
-              <h3 class="project-title">Python Autonomous Intelligence &amp; Workflow Agent</h3>
-              <p class="project-desc">
-                An intelligent automation pipeline that ingests unorganized web data, performs natural language classification, summarizes insights, and dispatches automated alerts.
-              </p>
-
-              <div class="project-tags">
-                <span class="tag">Python</span>
-                <span class="tag">FastAPI</span>
-                <span class="tag">BeautifulSoup</span>
-                <span class="tag">AsyncIO</span>
-                <span class="tag">NLP</span>
-              </div>
-
-              <div class="project-actions">
-                <button class="btn-inspect-parchment" data-project-id="p2">
-                  <i class="fa-solid fa-scroll"></i> Open Blueprint Scroll
-                </button>
-              </div>
-            </div>
+            <div class="parchment-result">Result: <span class="result-win">WIN ⚡</span></div>
+            <div class="parchment-read-more">Read the Blueprint →</div>
           </article>
 
-          <!-- Match 3: Cinematic Video Editing -->
-          <article class="project-parchment-card holo-tilt zap-target" data-project-id="p3">
-            <div class="project-header-row">
-              <span class="project-dex-num">MATCH #03</span>
-              <span class="badge-house creative-badge"><i class="fa-solid fa-clapperboard"></i> CINEMATIC &amp; VFX</span>
+          <article class="project-parchment-card holo-tilt" data-project-id="p3" role="button" tabindex="0" aria-label="Open Video Showreel project details">
+            <div class="parchment-corner parchment-corner-tl"></div>
+            <div class="parchment-corner parchment-corner-tr"></div>
+            <div class="parchment-corner parchment-corner-bl"></div>
+            <div class="parchment-corner parchment-corner-br"></div>
+            <div class="parchment-match-number">Match #003</div>
+            <div class="parchment-icon">🎥</div>
+            <h3 class="parchment-title">Cinematic Showreel</h3>
+            <p class="parchment-desc">Award-worthy cinematic edits using Premiere Pro, After Effects, and DaVinci Resolve. Motion graphics, VFX compositing, and color grading.</p>
+            <div class="parchment-tags">
+              <span class="tag">Premiere Pro</span>
+              <span class="tag">After Effects</span>
+              <span class="tag">DaVinci</span>
             </div>
-
-            <div class="project-preview-frame">
-              <div class="preview-backdrop grad-creative">
-                <i class="fa-solid fa-video preview-large-icon"></i>
-              </div>
-              <div class="project-meta-strip">
-                <span>RESOLUTION: 4K UHD</span>
-                <span>COLOR: Rec.709</span>
-              </div>
-            </div>
-
-            <div class="project-card-details">
-              <h3 class="project-title">Cinematic Motion Showcase &amp; VFX Showreel</h3>
-              <p class="project-desc">
-                A showcase of commercial edits, rapid-cut kinetic typography, seamless sound design, and custom VFX transitions created for high-impact social and commercial media.
-              </p>
-
-              <div class="project-tags">
-                <span class="tag">Premiere Pro</span>
-                <span class="tag">After Effects</span>
-                <span class="tag">Sound Design</span>
-                <span class="tag">Color Grading</span>
-              </div>
-
-              <div class="project-actions">
-                <button class="btn-inspect-parchment" data-project-id="p3">
-                  <i class="fa-solid fa-scroll"></i> Open Blueprint Scroll
-                </button>
-              </div>
-            </div>
+            <div class="parchment-result">Result: <span class="result-win">WIN ⚡</span></div>
+            <div class="parchment-read-more">Read the Blueprint →</div>
           </article>
 
-          <!-- Match 4: Interactive 3D Web Engine & Graphics Sandbox -->
-          <article class="project-parchment-card holo-tilt zap-target" data-project-id="p4">
-            <div class="project-header-row">
-              <span class="project-dex-num">MATCH #04</span>
-              <span class="badge-house gold-badge"><i class="fa-solid fa-globe"></i> 3D WEB ENGINE</span>
+          <article class="project-parchment-card holo-tilt" data-project-id="p4" role="button" tabindex="0" aria-label="Open 3D Web Engine project details">
+            <div class="parchment-corner parchment-corner-tl"></div>
+            <div class="parchment-corner parchment-corner-tr"></div>
+            <div class="parchment-corner parchment-corner-bl"></div>
+            <div class="parchment-corner parchment-corner-br"></div>
+            <div class="parchment-match-number">Match #004</div>
+            <div class="parchment-icon">🌐</div>
+            <h3 class="parchment-title">3D Web Engine</h3>
+            <p class="parchment-desc">Interactive 3D scene engine using Three.js and WebGL. Real-time particle systems, shader programming, and GPU-accelerated animations.</p>
+            <div class="parchment-tags">
+              <span class="tag">Three.js</span>
+              <span class="tag">WebGL</span>
+              <span class="tag">GLSL</span>
             </div>
-
-            <div class="project-preview-frame">
-              <div class="preview-backdrop grad-charms">
-                <i class="fa-solid fa-compass-drafting preview-large-icon"></i>
-              </div>
-              <div class="project-meta-strip">
-                <span>LATENCY: &lt;16MS</span>
-                <span>TECH: CANVAS 2D/WEBGL</span>
-              </div>
-            </div>
-
-            <div class="project-card-details">
-              <h3 class="project-title">Interactive 3D Web Engine &amp; Procedural Audio Sandbox</h3>
-              <p class="project-desc">
-                A GPU-accelerated web graphics and particle dynamics engine featuring real-time perspective projections, Web Audio API sound synthesizers, and silky 60fps animations.
-              </p>
-
-              <div class="project-tags">
-                <span class="tag">Canvas 2D</span>
-                <span class="tag">WebGL</span>
-                <span class="tag">Web Audio API</span>
-                <span class="tag">JavaScript ES6+</span>
-              </div>
-
-              <div class="project-actions">
-                <button class="btn-inspect-parchment" data-project-id="p4">
-                  <i class="fa-solid fa-scroll"></i> Open Blueprint Scroll
-                </button>
-              </div>
-            </div>
+            <div class="parchment-result">Result: <span class="result-win">WIN ⚡</span></div>
+            <div class="parchment-read-more">Read the Blueprint →</div>
           </article>
 
         </div>
-
       </div>
     </section>
 
-    <!-- ========================================================
-         HOOP 4: POLYGLOT TOWER (LANGUAGES)
-         ======================================================== -->
-    <section id="languages" class="hoop-section languages-section" data-hoop-num="4">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">𓁿 TOWER OF TONGUES • HUMAN &amp; MACHINE DIALECTS 𓁿</div>
-          <span class="hoop-milestone-tag">HOOP IV • POLYGLOT TOWER</span>
-        </div>
+    <!-- ===== HOOP 4 — LANGUAGES ===== -->
+    <div class="hoop-gate" data-hoop-num="4" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP IV</div>
       </div>
-
-      <div class="container">
-        
-        <div class="section-badge-header">
-          <span class="section-tag-gold"><i class="fa-solid fa-language"></i> TOWER OF TONGUES</span>
-          <h2 class="section-title">Languages <span class="accent-gold">I Command</span></h2>
-          <p class="section-subtitle">Bridging human conversations across cultures and machine instructions in binary.</p>
+    </div>
+    <section id="languages" class="flight-section" aria-labelledby="languages-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">🗣️ Spells & Tongues</div>
+          <h2 id="languages-heading" class="section-title">Languages Known</h2>
+          <p class="section-sub">Spoken words and enchanted code — both cast with precision.</p>
         </div>
-
-        <div class="languages-dual-grid">
-          
-          <!-- Natural / Spoken Languages -->
-          <div class="lang-parchment-card holo-tilt">
-            <div class="lang-card-header">
-              <i class="fa-solid fa-earth-americas"></i>
-              <h3>Spoken &amp; Cultural Tongues</h3>
-            </div>
-
-            <div class="lang-items-list">
-              <!-- English -->
+        <div class="languages-wrapper">
+          <div class="lang-category">
+            <h3 class="lang-cat-title">🌍 Spoken Tongues</h3>
+            <div class="lang-items">
               <div class="lang-item">
-                <div class="lang-info-row">
-                  <div class="lang-flag-name">
-                    <span class="flag-circle">🇬🇧</span>
-                    <span class="lang-name">English</span>
-                  </div>
-                  <span class="lang-badge lvl-master">Fluent / Professional</span>
-                </div>
-                <p class="lang-subtext">Primary working language for technical architecture, international collaboration, and creative direction.</p>
-                <div class="lang-bar"><div class="lang-fill" style="width: 95%;"></div></div>
+                <div class="lang-name">English</div>
+                <div class="lang-bar"><div class="lang-fill" style="--lang-w:95%"></div></div>
+                <div class="lang-level">Fluent</div>
               </div>
-
-              <!-- Hindi -->
               <div class="lang-item">
-                <div class="lang-info-row">
-                  <div class="lang-flag-name">
-                    <span class="flag-circle">🇮🇳</span>
-                    <span class="lang-name">Hindi</span>
-                  </div>
-                  <span class="lang-badge lvl-native">Native Fluency</span>
-                </div>
-                <p class="lang-subtext">Complete native linguistic mastery in spoken, written, and expressive nuances.</p>
-                <div class="lang-bar"><div class="lang-fill" style="width: 100%;"></div></div>
+                <div class="lang-name">Hindi</div>
+                <div class="lang-bar"><div class="lang-fill" style="--lang-w:100%"></div></div>
+                <div class="lang-level">Native</div>
               </div>
-
-              <!-- Punjabi -->
               <div class="lang-item">
-                <div class="lang-info-row">
-                  <div class="lang-flag-name">
-                    <span class="flag-circle">🇮🇳</span>
-                    <span class="lang-name">Punjabi</span>
-                  </div>
-                  <span class="lang-badge lvl-native">Native Cultural</span>
-                </div>
-                <p class="lang-subtext">Native conversational fluency, cultural connection, and spoken depth.</p>
-                <div class="lang-bar"><div class="lang-fill" style="width: 90%;"></div></div>
+                <div class="lang-name">Punjabi</div>
+                <div class="lang-bar"><div class="lang-fill" style="--lang-w:80%"></div></div>
+                <div class="lang-level">Proficient</div>
               </div>
             </div>
           </div>
-
-          <!-- Programming & Computing Languages -->
-          <div class="lang-parchment-card holo-tilt">
-            <div class="lang-card-header">
-              <i class="fa-solid fa-terminal"></i>
-              <h3>Programming &amp; Core Systems</h3>
-            </div>
-
-            <div class="lang-items-list">
-              <!-- C++ -->
+          <div class="lang-category">
+            <h3 class="lang-cat-title">⚙️ Code Spells</h3>
+            <div class="lang-items">
               <div class="lang-item">
-                <div class="lang-info-row">
-                  <div class="lang-flag-name">
-                    <span class="flag-circle code-icon"><i class="fa-solid fa-code"></i></span>
-                    <span class="lang-name">C++</span>
-                  </div>
-                  <span class="lang-badge lvl-master">High Performance</span>
-                </div>
-                <p class="lang-subtext">OOP, STL, pointers, memory optimization, data structures, and algorithmic complexity.</p>
-                <div class="lang-bar"><div class="lang-fill fill-alchemy" style="width: 92%;"></div></div>
+                <div class="lang-name">C++</div>
+                <div class="lang-bar code-bar"><div class="lang-fill" style="--lang-w:91%"></div></div>
+                <div class="lang-level">Expert</div>
               </div>
-
-              <!-- Python -->
               <div class="lang-item">
-                <div class="lang-info-row">
-                  <div class="lang-flag-name">
-                    <span class="flag-circle code-icon"><i class="fa-brands fa-python"></i></span>
-                    <span class="lang-name">Python</span>
-                  </div>
-                  <span class="lang-badge lvl-master">AI &amp; Automation</span>
-                </div>
-                <p class="lang-subtext">Automation, fast prototyping, APIs, ML toolchains, and file/data manipulation.</p>
-                <div class="lang-bar"><div class="lang-fill fill-transfig" style="width: 94%;"></div></div>
+                <div class="lang-name">Python</div>
+                <div class="lang-bar code-bar"><div class="lang-fill" style="--lang-w:88%"></div></div>
+                <div class="lang-level">Expert</div>
               </div>
-
-              <!-- HTML5 / CSS3 / JavaScript -->
               <div class="lang-item">
-                <div class="lang-info-row">
-                  <div class="lang-flag-name">
-                    <span class="flag-circle code-icon"><i class="fa-brands fa-js"></i></span>
-                    <span class="lang-name">JavaScript, HTML5 &amp; CSS3</span>
-                  </div>
-                  <span class="lang-badge lvl-master">Interactive 3D Web</span>
-                </div>
-                <p class="lang-subtext">Modern responsive layouts, Canvas 2D animations, Web Audio API, and DOM control.</p>
-                <div class="lang-bar"><div class="lang-fill fill-charms" style="width: 90%;"></div></div>
+                <div class="lang-name">JavaScript</div>
+                <div class="lang-bar code-bar"><div class="lang-fill" style="--lang-w:84%"></div></div>
+                <div class="lang-level">Advanced</div>
+              </div>
+              <div class="lang-item">
+                <div class="lang-name">GLSL / WebGL</div>
+                <div class="lang-bar code-bar"><div class="lang-fill" style="--lang-w:72%"></div></div>
+                <div class="lang-level">Intermediate</div>
               </div>
             </div>
           </div>
-
         </div>
-
       </div>
     </section>
 
-    <!-- ========================================================
-         HOOP 5: THE TROPHY ROOM (ACHIEVEMENTS & BADGES)
-         ======================================================== -->
-    <section id="achievements" class="hoop-section achievements-section" data-hoop-num="5">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">👑 HOGWARTS TROPHY ROOM • HONORS &amp; MEDALS 👑</div>
-          <span class="hoop-milestone-tag">HOOP V • THE TROPHY ROOM</span>
-        </div>
+    <!-- ===== HOOP 5 — TROPHIES (ACHIEVEMENTS) ===== -->
+    <div class="hoop-gate" data-hoop-num="5" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP V</div>
       </div>
-
-      <div class="container">
-        
-        <div class="section-badge-header">
-          <span class="section-tag-gold"><i class="fa-solid fa-trophy"></i> HALL OF FAME</span>
-          <h2 class="section-title">Hogwarts Badges &amp; <span class="accent-gold">Achievements</span></h2>
-          <p class="section-subtitle">Earned through relentless dedication, technical innovation, and algorithmic mastery.</p>
+    </div>
+    <section id="achievements" class="flight-section" aria-labelledby="achievements-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">🏆 Trophy Room</div>
+          <h2 id="achievements-heading" class="section-title">House Achievements</h2>
+          <p class="section-sub">Badges earned on and off the pitch.</p>
         </div>
-
         <div class="badges-grid">
-          
-          <!-- Badge 1: Golden Seeker Trophy -->
-          <div class="badge-card holo-tilt zap-target">
-            <div class="badge-medal-wrapper">
-              <div class="badge-gem gem-champion">
-                <i class="fa-solid fa-trophy"></i>
-              </div>
-            </div>
-            <h3 class="badge-title">First Team Golden Seeker</h3>
-            <span class="badge-region">Quidditch League Honors</span>
-            <p class="badge-desc">Awarded for pinpoint reflexes, decisive decision-making, and rapid problem-solving under competitive pressure.</p>
+
+          <div class="badge-card holo-tilt" role="article" aria-label="Quidditch Cup Champion badge">
+            <div class="badge-icon">🏆</div>
+            <div class="badge-name">Quidditch Cup</div>
+            <div class="badge-desc">Led team projects from concept to shipped product, delivering championship-quality results.</div>
+            <div class="badge-shine"></div>
           </div>
 
-          <!-- Badge 2: C++ Systems -->
-          <div class="badge-card holo-tilt zap-target">
-            <div class="badge-medal-wrapper">
-              <div class="badge-gem gem-alchemy">
-                <i class="fa-solid fa-bolt"></i>
-              </div>
-            </div>
-            <h3 class="badge-title">High-Speed C++ Sorcerer</h3>
-            <span class="badge-region">Systems &amp; Performance</span>
-            <p class="badge-desc">Architected complex algorithmic engines with multi-threading, low-level pointers, and memory safety.</p>
+          <div class="badge-card holo-tilt" role="article" aria-label="Golden Snitch Seeker badge">
+            <div class="badge-icon">✨</div>
+            <div class="badge-name">Snitch Seeker</div>
+            <div class="badge-desc">Consistently finds elegant solutions to complex algorithmic challenges — first to the finish.</div>
+            <div class="badge-shine"></div>
           </div>
 
-          <!-- Badge 3: Python Drake -->
-          <div class="badge-card holo-tilt zap-target">
-            <div class="badge-medal-wrapper">
-              <div class="badge-gem gem-python">
-                <i class="fa-brands fa-python"></i>
-              </div>
-            </div>
-            <h3 class="badge-title">Python Automation Drake</h3>
-            <span class="badge-region">AI &amp; Automation</span>
-            <p class="badge-desc">Built intelligent automation bots and data scrapers handling complex asynchronous execution.</p>
+          <div class="badge-card holo-tilt" role="article" aria-label="Nimbus Developer badge">
+            <div class="badge-icon">🧹</div>
+            <div class="badge-name">Nimbus Dev</div>
+            <div class="badge-desc">Mastered high-performance systems development. Code that flies faster than a Nimbus 2000.</div>
+            <div class="badge-shine"></div>
           </div>
 
-          <!-- Badge 4: Master Video Editor -->
-          <div class="badge-card holo-tilt zap-target">
-            <div class="badge-medal-wrapper">
-              <div class="badge-gem gem-creative">
-                <i class="fa-solid fa-film"></i>
-              </div>
-            </div>
-            <h3 class="badge-title">Master Video Visualist</h3>
-            <span class="badge-region">Cinematic &amp; VFX</span>
-            <p class="badge-desc">Delivered high-tier video edits, motion graphics, and audio mixes with hundreds of thousands of views.</p>
+          <div class="badge-card holo-tilt" role="article" aria-label="Order of the Pixel badge">
+            <div class="badge-icon">🎬</div>
+            <div class="badge-name">Order of Pixel</div>
+            <div class="badge-desc">Cinematic storyteller. Award-worthy video productions with professional-grade color and motion.</div>
+            <div class="badge-shine"></div>
           </div>
 
-          <!-- Badge 5: Hackathon Champion -->
-          <div class="badge-card holo-tilt zap-target">
-            <div class="badge-medal-wrapper">
-              <div class="badge-gem gem-champion">
-                <i class="fa-solid fa-medal"></i>
-              </div>
-            </div>
-            <h3 class="badge-title">Rapid Prototyping Champion</h3>
-            <span class="badge-region">Hackathons &amp; Sprints</span>
-            <p class="badge-desc">Developed functional products under extreme time constraints with robust code architecture.</p>
+          <div class="badge-card holo-tilt" role="article" aria-label="Alchemist of AI badge">
+            <div class="badge-icon">🧪</div>
+            <div class="badge-name">AI Alchemist</div>
+            <div class="badge-desc">Brewed Python AI agents from scratch. Transmuted raw data into intelligent automation.</div>
+            <div class="badge-shine"></div>
           </div>
 
-          <!-- Badge 6: Technical Leadership -->
-          <div class="badge-card holo-tilt zap-target">
-            <div class="badge-medal-wrapper">
-              <div class="badge-gem gem-global">
-                <i class="fa-solid fa-award"></i>
-              </div>
-            </div>
-            <h3 class="badge-title">Technical Leadership Honor</h3>
-            <span class="badge-region">Engineering &amp; Mentorship</span>
-            <p class="badge-desc">Demonstrated architectural vision, collaborative agility, and clean code stewardship across multidisciplinary teams.</p>
+          <div class="badge-card holo-tilt" role="article" aria-label="Dark Arts Debugger badge">
+            <div class="badge-icon">🐛</div>
+            <div class="badge-name">Dark Arts Debugger</div>
+            <div class="badge-desc">Expelled the most elusive bugs from the darkest corners of legacy codebases. Feared by seg-faults.</div>
+            <div class="badge-shine"></div>
           </div>
 
         </div>
-
       </div>
     </section>
 
-    <!-- ========================================================
-         HOOP 6: THE QUIDDITCH SQUAD (ALLIES & TEAMMATES)
-         ======================================================== -->
-    <section id="squad" class="hoop-section squad-section" data-hoop-num="6">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">⚡ GRYFFINDOR FIRST TEAM • FLIGHT ROSTER ⚡</div>
-          <span class="hoop-milestone-tag">HOOP VI • THE SQUAD</span>
-        </div>
+    <!-- ===== HOOP 6 — SQUAD ===== -->
+    <div class="hoop-gate" data-hoop-num="6" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP VI</div>
       </div>
-
-      <div class="container">
-        
-        <div class="section-badge-header">
-          <span class="section-tag-gold"><i class="fa-solid fa-users"></i> FIRST SQUAD LINEUP</span>
-          <h2 class="section-title">The Quidditch <span class="accent-gold">First Team</span></h2>
-          <p class="section-subtitle">
-            Every Quidditch match needs an unbeatable squad! Click below to summon new players onto the pitch.
-          </p>
+    </div>
+    <section id="squad" class="flight-section" aria-labelledby="squad-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">🧙 Gryffindor Squad</div>
+          <h2 id="squad-heading" class="section-title">My Team</h2>
+          <p class="section-sub">Every great Seeker needs a squad. Meet the teammates behind the magic.</p>
         </div>
-
-        <div class="squad-controls-box">
-          <button id="summon-player-btn" class="btn btn-catch-big">
-            <span class="ball-spin-icon">🦁</span>
-            <span class="btn-text">⚡ SUMMON NEW SQUAD PLAYER TO ROSTER!</span>
-          </button>
-          
-          <button id="reset-squad-btn" class="btn btn-outline-small" title="Reset Squad to Starters">
-            <i class="fa-solid fa-arrows-rotate"></i> Reset Team
-          </button>
+        <div id="squad-roster" class="squad-roster" role="list" aria-label="Team roster">
+          <!-- Rendered by JS -->
         </div>
-
-        <!-- Dynamic Quidditch Squad Grid -->
-        <div id="squad-roster-grid" class="squad-grid">
-          <!-- Dynamically populated via JS -->
+        <div class="squad-controls">
+          <button id="btn-summon" class="btn-primary" aria-label="Summon a new squad member">Accio Teammate!</button>
+          <button id="btn-reset-squad" class="btn-secondary" aria-label="Reset squad to original">Reset Squad</button>
         </div>
-
       </div>
     </section>
 
-    <!-- ========================================================
-         HOOP 7: THE OWL POST (ESTABLISH CONTACT)
-         ======================================================== -->
-    <section id="contact" class="hoop-section contact-section" data-hoop-num="7">
-      <!-- 3D Golden Goal Hoop Portal -->
-      <div class="quidditch-hoop-gate">
-        <div class="golden-goal-hoop">
-          <div class="hoop-ring-glow"></div>
-          <div class="hoop-runes">✉ THE OWL POST • SEND A LETTER TO HARVENDER ✉</div>
-          <span class="hoop-milestone-tag">HOOP VII • THE OWL POST</span>
-        </div>
+    <!-- ===== HOOP 7 — OWL POST (CONTACT) ===== -->
+    <div class="hoop-gate" data-hoop-num="7" aria-hidden="true">
+      <div class="hoop-ring">
+        <div class="hoop-inner-label">HOOP VII</div>
       </div>
-
-      <div class="container">
-        
-        <div class="section-badge-header">
-          <span class="section-tag-gold"><i class="fa-solid fa-feather-pointed"></i> HOGWARTS POSTAL SERVICE</span>
-          <h2 class="section-title">Dispatch an <span class="accent-gold">Owl Post</span></h2>
-          <p class="section-subtitle">Send a parchment message to Seeker Harvender Singh Rawat. Lightning delivery guaranteed!</p>
+    </div>
+    <section id="contact" class="flight-section" aria-labelledby="contact-heading">
+      <div class="section-inner">
+        <div class="section-header">
+          <div class="section-eyebrow">🦉 Owl Post</div>
+          <h2 id="contact-heading" class="section-title">Send a Message</h2>
+          <p class="section-sub">My owl is fast. Your message will arrive within a day.</p>
         </div>
-
-        <div class="contact-parchment-wrapper holo-tilt">
-          
-          <div class="contact-details-side">
-            <div class="owl-post-seal">
-              <i class="fa-solid fa-envelope-open-text"></i>
+        <div class="contact-layout">
+          <form id="owl-post-form" class="owl-form" novalidate aria-label="Contact form">
+            <div class="form-group">
+              <label for="contact-name" class="form-label">Your Name</label>
+              <input type="text" id="contact-name" name="name" class="form-input" placeholder="Harry Potter" required autocomplete="name" />
             </div>
-
-            <h3 class="contact-name">Harvender Singh Rawat</h3>
-            <p class="contact-bio">
-              Ready to collaborate on high-impact software development, cinematic video editing masterpieces, or cutting-edge technical projects. Let's create magic together!
-            </p>
-
-            <div class="contact-channels">
-              <a href="mailto:harvendersinghrawat@gmail.com" class="post-channel zap-target">
-                <div class="channel-icon"><i class="fa-solid fa-envelope"></i></div>
-                <div class="channel-info">
-                  <span class="channel-title">OWL POST (EMAIL)</span>
-                  <span class="channel-value">harvendersinghrawat@gmail.com</span>
-                </div>
-              </a>
-
-              <a href="https://github.com" target="_blank" rel="noopener" class="post-channel zap-target">
-                <div class="channel-icon"><i class="fa-brands fa-github"></i></div>
-                <div class="channel-info">
-                  <span class="channel-title">RUNIC REPOSITORY</span>
-                  <span class="channel-value">github.com/harvender-rawat</span>
-                </div>
-              </a>
-
-              <a href="https://linkedin.com" target="_blank" rel="noopener" class="post-channel zap-target">
-                <div class="channel-icon"><i class="fa-brands fa-linkedin-in"></i></div>
-                <div class="channel-info">
-                  <span class="channel-title">WIZARDING NETWORK</span>
-                  <span class="channel-value">linkedin.com/in/harvendersinghrawat</span>
-                </div>
-              </a>
-
-              <div class="post-channel">
-                <div class="channel-icon"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="channel-info">
-                  <span class="channel-title">LOCATION BASE</span>
-                  <span class="channel-value">India • Open to Global Roles</span>
-                </div>
-              </div>
+            <div class="form-group">
+              <label for="contact-email" class="form-label">Your Owl Address (Email)</label>
+              <input type="email" id="contact-email" name="email" class="form-input" placeholder="harry@hogwarts.edu" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+              <label for="contact-subject" class="form-label">Subject</label>
+              <input type="text" id="contact-subject" name="subject" class="form-input" placeholder="Collaboration · Opportunity · Quidditch" />
+            </div>
+            <div class="form-group">
+              <label for="contact-message" class="form-label">Message Scroll</label>
+              <textarea id="contact-message" name="message" class="form-input form-textarea" placeholder="Wingardium Leviosa — lift your ideas here..." required rows="5"></textarea>
+            </div>
+            <button type="submit" class="btn-primary btn-send-owl">
+              <span class="btn-owl-icon">🦉</span>
+              <span class="btn-owl-text">Send Owl</span>
+            </button>
+          </form>
+          <div class="contact-channels">
+            <h3 class="channels-title">Other Channels</h3>
+            <a href="mailto:harvendersinghrawat@gmail.com" class="channel-card">
+              <span class="channel-icon">✉️</span>
+              <span class="channel-label">harvendersinghrawat@gmail.com</span>
+            </a>
+            <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="channel-card">
+              <span class="channel-icon">⚙️</span>
+              <span class="channel-label">github.com/harvender-rawat</span>
+            </a>
+            <a href="https://linkedin.com/in/harvendersinghrawat" target="_blank" rel="noopener" class="channel-card">
+              <span class="channel-icon">🔗</span>
+              <span class="channel-label">linkedin.com/in/harvendersinghrawat</span>
+            </a>
+            <div class="channel-card channel-location">
+              <span class="channel-icon">📍</span>
+              <span class="channel-label">India · Open to Global Roles</span>
             </div>
           </div>
-
-          <!-- Interactive Parchment Contact Form -->
-          <div class="contact-form-side">
-            <form id="quidditch-contact-form" class="parchment-form">
-              <div class="form-title-bar">
-                <i class="fa-solid fa-feather"></i> INSCRIBE PARCHMENT LETTER
-              </div>
-
-              <div class="form-group">
-                <label for="wizard-sender-name">YOUR WIZARD / SEEKER NAME</label>
-                <div class="input-wrap">
-                  <i class="fa-solid fa-user-ninja"></i>
-                  <input type="text" id="wizard-sender-name" name="name" required placeholder="e.g. Harry Potter / Oliver Wood">
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="wizard-sender-email">YOUR RETURN OWL FREQUENCY (EMAIL)</label>
-                <div class="input-wrap">
-                  <i class="fa-solid fa-at"></i>
-                  <input type="email" id="wizard-sender-email" name="email" required placeholder="your.owl@hogwarts.ac.uk">
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="wizard-sender-topic">DISPATCH TOPIC</label>
-                <div class="input-wrap">
-                  <i class="fa-solid fa-tag"></i>
-                  <select id="wizard-sender-topic" name="topic">
-                    <option value="project">Project Collaboration (C++ / Python)</option>
-                    <option value="video">Cinematic Video &amp; VFX Project</option>
-                    <option value="web">Interactive 3D Web Application</option>
-                    <option value="hiring">Full-Time / Freelance Opportunity</option>
-                    <option value="friendly">Quidditch Match Challenge (Hello!)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="wizard-sender-msg">PARCHMENT LETTER MESSAGE</label>
-                <div class="input-wrap">
-                  <textarea id="wizard-sender-msg" name="message" rows="4" required placeholder="Inscribe your mission details, spell specs, or greetings..."></textarea>
-                </div>
-              </div>
-
-              <button type="submit" id="submit-letter-btn" class="btn btn-send-owl">
-                <i class="fa-solid fa-feather-pointed"></i> DISPATCH VIA HOGWARTS OWL
-              </button>
-            </form>
-          </div>
-
         </div>
-
       </div>
     </section>
 
-  </main>
+  </main><!-- end .flight-tunnel-viewport -->
 
-  <!-- PARCHMENT MODAL (BLUEPRINT & MATCH INSPECTOR) -->
-  <div id="parchment-modal" class="parchment-modal" aria-hidden="true">
-    <div class="modal-backdrop"></div>
-    <div class="modal-dialog">
-      <div class="modal-topbar">
-        <div class="modal-seal-cluster">
-          <span class="gold-wax-seal"><i class="fa-solid fa-shield-halved"></i></span>
-          <span class="status-pip red-pip"></span>
-          <span class="status-pip gold-pip"></span>
-        </div>
-        <div class="modal-title" id="parchment-modal-title">HOGWARTS TOURNAMENT ARCHIVE</div>
-        <button id="modal-close-btn" class="modal-close-btn" aria-label="Close modal">&times;</button>
-      </div>
-
-      <div class="modal-parchment-body">
-        <div class="parchment-texture"></div>
-        <div class="modal-content-inner" id="parchment-modal-body">
-          <!-- Dynamic Content Injected via JS -->
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button id="modal-cast-btn" class="btn btn-cast-mini">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> CAST LUMOS ON ARCHIVE
-        </button>
-        <span class="modal-footnote">OFFICIAL HOGWARTS QUIDDITCH REGISTRY</span>
+  <!-- ========== PARCHMENT MODAL ========== -->
+  <div id="parchment-modal" class="parchment-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="parchment-modal-box">
+      <button id="modal-close" class="modal-close-btn" aria-label="Close blueprint modal">✕</button>
+      <div class="modal-content">
+        <div class="modal-eyebrow" id="modal-eyebrow"></div>
+        <h2 id="modal-title" class="modal-title"></h2>
+        <div class="modal-tags" id="modal-tags"></div>
+        <p id="modal-desc" class="modal-desc"></p>
+        <div class="modal-highlights" id="modal-highlights"></div>
+        <div class="modal-links" id="modal-links"></div>
       </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="main-footer">
-    <div class="container footer-content">
-      <div class="footer-left">
-        <div class="golden-snitch-mini">
-          <div class="mini-ball"></div>
-          <div class="mini-w-left"></div>
-          <div class="mini-w-right"></div>
-        </div>
-        <div>
-          <p class="footer-title">HARVENDER SINGH RAWAT (ROCKY) • QUIDDITCH PORTFOLIO</p>
-          <p class="footer-sub">Crafted with Vanilla HTML5, 3D CSS Canvas, Web Audio API &amp; Quidditch Broom Engine</p>
-        </div>
-      </div>
-      <div class="footer-right">
-        <p class="footer-quote">"Always aim for the Golden Snitch. Powered by High-Performance Code &amp; Visual Art."</p>
-        <p class="footer-cr">&copy; 2026 Harvender Singh Rawat. All Rights Reserved.</p>
-      </div>
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-crest">⚡</div>
+      <p class="footer-text">Harvender Singh Rawat &copy; 2024 — Gryffindor House</p>
+      <p class="footer-motto">"It does not do to dwell on dreams and forget to live."</p>
+      <p class="footer-sub">Crafted with ✨ magic, C++, and way too much caffeine.</p>
     </div>
   </footer>
 

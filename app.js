@@ -1,998 +1,926 @@
-/**
- * HARVENDER SINGH RAWAT | QUIDDITCH THEME MASTER PORTFOLIO
- * Core JavaScript: 3D Flight Tunnel Engine, Flying Broomstick Seeker,
- * Procedural Web Audio Synthesizer, Interactive Golden Snitch, and Hogwarts Atmosphere.
- */
+/* ============================================================
+   HARVENDER SINGH RAWAT — QUIDDITCH PORTFOLIO
+   app.js — Vanilla JS Quidditch Engine
+   ============================================================ */
 
-(function () {
-  'use strict';
+'use strict';
 
-  // =========================================================================
-  // 1. WEB AUDIO SYNTHESIZER (QUIDDITCH SOUND FX)
-  // =========================================================================
-  class QuidditchAudio {
-    constructor() {
-      this.ctx = null;
-      this.enabled = true;
-      this.lastWhooshTime = 0;
-    }
+/* ═══════════════════════════════════════════════
+   1. QUIDDITCH AUDIO ENGINE (Web Audio API)
+   ═══════════════════════════════════════════════ */
+class QuidditchAudio {
+  constructor() {
+    this.ctx = null;
+    this.enabled = true;
+    this._init();
+  }
 
-    init() {
-      if (!this.ctx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        this.ctx = new AudioContext();
-      }
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume();
-      }
-    }
-
-    toggle() {
-      this.enabled = !this.enabled;
-      return this.enabled;
-    }
-
-    // Procedural aerodynamic broom flight whoosh (modulated by scroll)
-    playBroomWhoosh(intensity = 1.0) {
-      if (!this.enabled) return;
-      const now = Date.now();
-      if (now - this.lastWhooshTime < 250) return; // throttle
-      this.lastWhooshTime = now;
-
-      this.init();
-      const ctx = this.ctx;
-      const t = ctx.currentTime;
-
-      // Bandpass noise burst
-      const bufferSize = ctx.sampleRate * 0.3;
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
-
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(450 * intensity, t);
-      filter.frequency.exponentialRampToValueAtTime(180, t + 0.3);
-      filter.Q.setValueAtTime(2.5, t);
-
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0.18 * Math.min(intensity, 1.5), t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
-
-      noise.connect(filter);
-      filter.connect(gain);
-      gain.connect(ctx.destination);
-      noise.start(t);
-    }
-
-    // Golden Snitch Catch Fanfare (Triumphant magical arpeggio)
-    playSnitchCatch() {
-      if (!this.enabled) return;
-      this.init();
-      const ctx = this.ctx;
-      const t = ctx.currentTime;
-
-      // Sparkling chime chord: E5, G#5, B5, E6
-      const notes = [659.25, 830.61, 987.77, 1318.51, 1661.22];
-      notes.forEach((freq, idx) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, t + idx * 0.08);
-
-        gain.gain.setValueAtTime(0.25, t + idx * 0.08);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + idx * 0.08 + 0.6);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(t + idx * 0.08);
-        osc.stop(t + idx * 0.08 + 0.65);
-      });
-    }
-
-    // Wand Spell Cast (Frequency sweep + glitter)
-    playSpellCast() {
-      if (!this.enabled) return;
-      this.init();
-      const ctx = this.ctx;
-      const t = ctx.currentTime;
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(520, t);
-      osc.frequency.exponentialRampToValueAtTime(1400, t + 0.2);
-
-      gain.gain.setValueAtTime(0.2, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.3);
-    }
-
-    // Lumos Light Maxima Chime
-    playLumos() {
-      if (!this.enabled) return;
-      this.init();
-      const ctx = this.ctx;
-      const t = ctx.currentTime;
-
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, t);
-      osc.frequency.exponentialRampToValueAtTime(1760, t + 0.4);
-
-      gain.gain.setValueAtTime(0.3, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(t);
-      osc.stop(t + 0.55);
-    }
-
-    // Parchment / Owl Post Dispatch sound
-    playOwlPost() {
-      if (!this.enabled) return;
-      this.init();
-      const ctx = this.ctx;
-      const t = ctx.currentTime;
-
-      // Soft wing flap & chime
-      [0, 0.12].forEach((offset) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, t + offset);
-        gain.gain.setValueAtTime(0.12, t + offset);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.15);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(t + offset);
-        osc.stop(t + offset + 0.16);
-      });
+  _init() {
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      this.enabled = false;
     }
   }
 
-  const audio = new QuidditchAudio();
-
-  // =========================================================================
-  // 2. CANVAS ENGINE: HOGWARTS NIGHT SKY, STADIUM & MAGICAL PARTICLES
-  // =========================================================================
-  class QuidditchPitchCanvas {
-    constructor(canvasId) {
-      this.canvas = document.getElementById(canvasId);
-      if (!this.canvas) return;
-      this.ctx = this.canvas.getContext('2d');
-      this.stars = [];
-      this.magicDust = [];
-      this.sparkSpirals = [];
-      this.width = 0;
-      this.height = 0;
-      this.mouseX = -100;
-      this.mouseY = -100;
-      this.isScrollingFast = false;
-
-      this.resize();
-      this.initStars();
-      this.bindEvents();
-      this.animate();
-    }
-
-    resize() {
-      this.width = this.canvas.width = window.innerWidth;
-      this.height = this.canvas.height = window.innerHeight;
-    }
-
-    initStars() {
-      this.stars = [];
-      const starCount = Math.floor((this.width * this.height) / 7000);
-      for (let i = 0; i < starCount; i++) {
-        this.stars.push({
-          x: Math.random() * this.width,
-          y: Math.random() * this.height,
-          radius: Math.random() * 1.6 + 0.4,
-          alpha: Math.random() * 0.8 + 0.2,
-          speed: Math.random() * 0.02 + 0.005,
-          color: Math.random() > 0.4 ? '#ffd700' : '#ffffff'
-        });
-      }
-    }
-
-    addSpark(x, y, count = 4) {
-      for (let i = 0; i < count; i++) {
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 3 + 1;
-        this.magicDust.push({
-          x,
-          y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          radius: Math.random() * 2.5 + 1,
-          alpha: 1,
-          decay: Math.random() * 0.03 + 0.015,
-          color: Math.random() > 0.5 ? '#ffd700' : '#eeba30'
-        });
-      }
-    }
-
-    bindEvents() {
-      window.addEventListener('resize', () => {
-        this.resize();
-        this.initStars();
-      });
-
-      window.addEventListener('mousemove', (e) => {
-        this.mouseX = e.clientX;
-        this.mouseY = e.clientY;
-        if (Math.random() > 0.6) {
-          this.addSpark(this.mouseX, this.mouseY, 1);
-        }
-      });
-    }
-
-    animate() {
-      const ctx = this.ctx;
-      ctx.clearRect(0, 0, this.width, this.height);
-
-      // Draw distant stars
-      for (let s of this.stars) {
-        s.alpha += s.speed;
-        const currentAlpha = Math.abs(Math.sin(s.alpha));
-        ctx.fillStyle = s.color;
-        ctx.globalAlpha = currentAlpha * 0.7;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      // Draw floating golden magical dust
-      if (Math.random() < 0.2 && this.magicDust.length < 100) {
-        this.magicDust.push({
-          x: Math.random() * this.width,
-          y: this.height + 10,
-          vx: (Math.random() - 0.5) * 0.8,
-          vy: -(Math.random() * 1.5 + 0.5),
-          radius: Math.random() * 2 + 1,
-          alpha: Math.random() * 0.6 + 0.4,
-          decay: Math.random() * 0.005 + 0.002,
-          color: '#ffd700'
-        });
-      }
-
-      for (let i = this.magicDust.length - 1; i >= 0; i--) {
-        const p = this.magicDust[i];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= p.decay;
-
-        if (p.alpha <= 0) {
-          this.magicDust.splice(i, 1);
-          continue;
-        }
-
-        ctx.globalAlpha = p.alpha;
-        ctx.fillStyle = p.color;
-        ctx.shadowColor = '#ffd700';
-        ctx.shadowBlur = 6;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.shadowBlur = 0;
-      ctx.globalAlpha = 1;
-
-      requestAnimationFrame(() => this.animate());
+  _resume() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
     }
   }
 
-  // =========================================================================
-  // 3. THE FLYING BROOM CHARACTER & 3D SCROLL DIVE CONTROLLER
-  // =========================================================================
-  class FlyingBroomFlightController {
-    constructor() {
-      this.broomEl = document.getElementById('flying-broom-character');
-      this.speedValEl = document.getElementById('broom-speed-val');
-      this.speechEl = document.getElementById('seeker-speech');
-      this.speechTextEl = document.getElementById('seeker-speech-text');
-      this.altitudeFillEl = document.getElementById('altitude-fill');
-      this.hoopSections = document.querySelectorAll('.hoop-section');
-      this.hoopDots = document.querySelectorAll('.hoop-dot');
-
-      this.currentSpeed = 85;
-      this.targetSpeed = 85;
-      this.lastScrollY = window.scrollY;
-      this.scrollVelocity = 0;
-      this.scrollTimer = null;
-      this.activeHoopNum = 1;
-
-      this.hoopCallouts = {
-        1: 'Welcome to the Pitch! Hold tight to your broom! ⚡',
-        2: 'Entering the Seeker\'s Spellbook: C++, Python & VFX! ✨',
-        3: 'Tournament Match Blueprints: Raytracer, AI Agent, Motion Reel! 🏆',
-        4: 'Soaring through the Tower of Polyglot Charms! 📜',
-        5: 'The Hogwarts Trophy Room! Golden honors await! 👑',
-        6: 'Gryffindor First Team Roster assembled on the pitch! 🦁',
-        7: 'The Owl Post! Dispatch an enchanted parchment letter! ✉️'
-      };
-
-      this.init();
-    }
-
-    init() {
-      if (!this.broomEl) return;
-      this.bindEvents();
-      this.updateFlightTelemetry();
-    }
-
-    bindEvents() {
-      // Mouse Parallax & Dynamic Broom Banking
-      window.addEventListener('mousemove', (e) => {
-        const normX = (e.clientX / window.innerWidth) * 2 - 1; // -1 to 1
-        const normY = (e.clientY / window.innerHeight) * 2 - 1;
-
-        const tiltX = -normY * 12;
-        const tiltY = normX * 18;
-        const transX = normX * 15;
-
-        if (!this.broomEl.classList.contains('dive-mode')) {
-          this.broomEl.style.transform = `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateX(${transX}px)`;
-        }
-      });
-
-      // Scroll Event: 3D Depth Zoom, Dive acceleration & Hoop tracking
-      window.addEventListener('scroll', () => {
-        const currentY = window.scrollY;
-        const delta = Math.abs(currentY - this.lastScrollY);
-        this.scrollVelocity = delta;
-        this.lastScrollY = currentY;
-
-        // Accelerate broom into dive mode
-        this.targetSpeed = Math.min(85 + delta * 2.5, 175);
-        this.broomEl.classList.add('dive-mode');
-
-        // Play aerodynamic whoosh sound
-        if (delta > 20) {
-          audio.playBroomWhoosh(delta / 25);
-        }
-
-        clearTimeout(this.scrollTimer);
-        this.scrollTimer = setTimeout(() => {
-          this.targetSpeed = 85;
-          this.broomEl.classList.remove('dive-mode');
-        }, 220);
-
-        this.updateActiveHoop();
-        this.updateAltitudeHUD();
-      }, { passive: true });
-
-      // Click on broom to boost speed
-      this.broomEl.addEventListener('click', () => {
-        this.triggerBroomBoost();
-      });
-
-      // Hero action buttons
-      const diveBtn = document.getElementById('hero-dive-btn');
-      if (diveBtn) {
-        diveBtn.addEventListener('click', () => {
-          const targetSection = document.getElementById('skills');
-          if (targetSection) {
-            targetSection.scrollIntoView({ behavior: 'smooth' });
-            this.triggerBroomBoost();
-          }
-        });
-      }
-
-      const cardBoostBtn = document.getElementById('card-broom-boost-btn');
-      if (cardBoostBtn) {
-        cardBoostBtn.addEventListener('click', () => {
-          this.triggerBroomBoost();
-        });
-      }
-    }
-
-    triggerBroomBoost() {
-      audio.playBroomWhoosh(2.2);
-      this.targetSpeed = 195;
-      this.broomEl.classList.add('dive-mode');
-      this.showSpeech('⚡ FIREBOLT TURBO BOOST ENGAGED! 195 MPH!');
-
-      // Screen flash effect
-      const flash = document.getElementById('spell-flash');
-      if (flash) {
-        flash.classList.add('active');
-        setTimeout(() => flash.classList.remove('active'), 250);
-      }
-
-      setTimeout(() => {
-        this.targetSpeed = 85;
-        this.broomEl.classList.remove('dive-mode');
-      }, 1000);
-    }
-
-    updateFlightTelemetry() {
-      // Smooth lerp speed
-      this.currentSpeed += (this.targetSpeed - this.currentSpeed) * 0.12;
-      if (this.speedValEl) {
-        this.speedValEl.textContent = Math.round(this.currentSpeed);
-      }
-
-      requestAnimationFrame(() => this.updateFlightTelemetry());
-    }
-
-    updateActiveHoop() {
-      const scrollPos = window.scrollY + window.innerHeight * 0.4;
-
-      this.hoopSections.forEach((section) => {
-        const top = section.offsetTop;
-        const height = section.offsetHeight;
-        const hoopNum = parseInt(section.getAttribute('data-hoop-num') || '1', 10);
-
-        if (scrollPos >= top && scrollPos < top + height) {
-          if (this.activeHoopNum !== hoopNum) {
-            this.activeHoopNum = hoopNum;
-            this.onHoopEnter(hoopNum);
-          }
-        }
-      });
-    }
-
-    onHoopEnter(hoopNum) {
-      // Update speech text
-      if (this.hoopCallouts[hoopNum]) {
-        this.showSpeech(this.hoopCallouts[hoopNum]);
-      }
-
-      // Update route minimap dots
-      this.hoopDots.forEach((dot) => {
-        const dotHoop = parseInt(dot.getAttribute('data-hoop') || '0', 10);
-        dot.classList.toggle('active', dotHoop === hoopNum);
-      });
-
-      // Update main navigation active state
-      const navLinks = document.querySelectorAll('.nav-links .nav-link');
-      const activeSection = document.querySelector(`.hoop-section[data-hoop-num="${hoopNum}"]`);
-      if (activeSection) {
-        const activeId = activeSection.id;
-        navLinks.forEach((link) => {
-          const href = link.getAttribute('href');
-          link.classList.toggle('active', href === `#${activeId}`);
-        });
-      }
-    }
-
-    showSpeech(text) {
-      if (!this.speechTextEl) return;
-      this.speechTextEl.textContent = text;
-      if (this.speechEl) {
-        this.speechEl.style.opacity = '1';
-        this.speechEl.style.transform = 'translateY(-6px)';
-        clearTimeout(this._speechTimeout);
-        this._speechTimeout = setTimeout(() => {
-          this.speechEl.style.transform = 'translateY(0)';
-        }, 1500);
-      }
-    }
-
-    updateAltitudeHUD() {
-      if (!this.altitudeFillEl) return;
-      const totalDoc = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = totalDoc > 0 ? (window.scrollY / totalDoc) * 100 : 0;
-      this.altitudeFillEl.style.height = `${Math.min(Math.max(progress, 5), 100)}%`;
-    }
+  _osc(freq, type, gain, duration, startTime) {
+    if (!this.ctx || !this.enabled) return;
+    this._resume();
+    const t = startTime || this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const vol = this.ctx.createGain();
+    osc.connect(vol);
+    vol.connect(this.ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t);
+    vol.gain.setValueAtTime(0, t);
+    vol.gain.linearRampToValueAtTime(gain, t + 0.02);
+    vol.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+    osc.start(t);
+    osc.stop(t + duration + 0.05);
   }
 
-  // =========================================================================
-  // 4. INTERACTIVE GOLDEN SNITCH (CHASE & CATCH GAME)
-  // =========================================================================
-  class GoldenSnitchGame {
-    constructor() {
-      this.snitchEl = document.getElementById('golden-snitch');
-      this.scoreEl = document.getElementById('gryffindor-score');
-      this.toastEl = document.getElementById('quidditch-toast');
-      this.score = 150;
-      this.posX = window.innerWidth * 0.6;
-      this.posY = 220;
-      this.targetX = this.posX;
-      this.targetY = this.posY;
-      this.time = 0;
-      this.isCaught = false;
-
-      this.init();
+  swoosh() {
+    if (!this.ctx || !this.enabled) return;
+    this._resume();
+    const t = this.ctx.currentTime;
+    const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.4, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
     }
-
-    init() {
-      if (!this.snitchEl) return;
-      this.bindEvents();
-      this.flyLoop();
-    }
-
-    bindEvents() {
-      // Click Snitch to catch
-      this.snitchEl.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.catchSnitch();
-      });
-
-      // Chase button in hero
-      const heroChaseBtn = document.getElementById('hero-catch-snitch-btn');
-      if (heroChaseBtn) {
-        heroChaseBtn.addEventListener('click', () => {
-          this.catchSnitch();
-        });
-      }
-
-      // Snitch playfully flees when mouse gets very close
-      window.addEventListener('mousemove', (e) => {
-        if (this.isCaught) return;
-        const dx = e.clientX - this.posX;
-        const dy = e.clientY - this.posY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist < 80) {
-          // Dash away
-          this.targetX -= (dx / dist) * 120;
-          this.targetY -= (dy / dist) * 120;
-          this.clampBounds();
-        }
-      });
-    }
-
-    flyLoop() {
-      if (!this.isCaught) {
-        this.time += 0.035;
-        // Natural figure-eight Lissajous flutter
-        this.targetX += Math.cos(this.time * 0.8) * 4;
-        this.targetY += Math.sin(this.time * 1.6) * 3;
-
-        // Smooth glide toward target
-        this.posX += (this.targetX - this.posX) * 0.08;
-        this.posY += (this.targetY - this.posY) * 0.08;
-
-        this.clampBounds();
-        this.snitchEl.style.transform = `translate3d(${this.posX}px, ${this.posY}px, 0)`;
-      }
-
-      requestAnimationFrame(() => this.flyLoop());
-    }
-
-    clampBounds() {
-      const pad = 60;
-      const maxX = window.innerWidth - pad;
-      const maxY = window.innerHeight - pad;
-
-      if (this.targetX < pad) this.targetX = pad + 40;
-      if (this.targetX > maxX) this.targetX = maxX - 40;
-      if (this.targetY < 80) this.targetY = 120;
-      if (this.targetY > maxY) this.targetY = maxY - 40;
-    }
-
-    catchSnitch() {
-      if (this.isCaught) return;
-      this.isCaught = true;
-
-      // Play triumphant fanfare
-      audio.playSnitchCatch();
-
-      // Update score
-      this.score += 150;
-      if (this.scoreEl) {
-        this.scoreEl.textContent = this.score;
-        this.scoreEl.style.color = '#ffd700';
-        this.scoreEl.style.transform = 'scale(1.4)';
-        setTimeout(() => {
-          this.scoreEl.style.transform = 'scale(1)';
-        }, 400);
-      }
-
-      // Show popup on snitch
-      const popup = document.getElementById('snitch-popup');
-      if (popup) {
-        popup.classList.add('pop');
-      }
-
-      // Show toast
-      this.showToast('🏆 GOLDEN SNITCH CAUGHT! 150 POINTS TO GRYFFINDOR!');
-
-      // Seeker cheer
-      const seekerVoice = document.getElementById('seeker-speech-text');
-      if (seekerVoice) {
-        seekerVoice.textContent = '⚡ What a catch! 150 points for Gryffindor!';
-      }
-
-      // Respawn after victory lap
-      setTimeout(() => {
-        if (popup) popup.classList.remove('pop');
-        this.targetX = Math.random() * (window.innerWidth - 200) + 100;
-        this.targetY = Math.random() * (window.innerHeight - 300) + 120;
-        this.isCaught = false;
-      }, 1600);
-    }
-
-    showToast(msg) {
-      if (!this.toastEl) return;
-      this.toastEl.innerHTML = `<i class="fa-solid fa-trophy"></i> <span>${msg}</span>`;
-      this.toastEl.classList.add('show');
-      setTimeout(() => {
-        this.toastEl.classList.remove('show');
-      }, 3500);
-    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1200, t);
+    filter.frequency.exponentialRampToValueAtTime(300, t + 0.4);
+    filter.Q.value = 2;
+    const vol = this.ctx.createGain();
+    vol.gain.setValueAtTime(0.15, t);
+    vol.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    src.connect(filter);
+    filter.connect(vol);
+    vol.connect(this.ctx.destination);
+    src.start(t);
   }
 
-  // =========================================================================
-  // 5. QUIDDITCH SQUAD ROSTER (INTERACTIVE PLAYER SUMMONS)
-  // =========================================================================
-  class QuidditchSquadRoster {
-    constructor() {
-      this.gridEl = document.getElementById('squad-roster-grid');
-      this.badgeCountEl = document.getElementById('squad-count-badge');
-      this.summonBtn = document.getElementById('summon-player-btn');
-      this.resetBtn = document.getElementById('reset-squad-btn');
-
-      this.initialPlayers = [
-        { name: 'Harvender S. Rawat', role: 'Seeker (Captain)', broom: 'Nimbus 2000 Pro', img: 'assets/images/quidditch_seeker_avatar.jpg', crest: '⚡' },
-        { name: 'Oliver Wood', role: 'Keeper', broom: 'Cleansweep Seven', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', crest: '🛡️' },
-        { name: 'Angelina Johnson', role: 'Chaser', broom: 'Nimbus 2001', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80', crest: '🔥' },
-        { name: 'Fred Weasley', role: 'Beater', broom: 'Cleansweep Five', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', crest: '💥' },
-        { name: 'George Weasley', role: 'Beater', broom: 'Cleansweep Five', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', crest: '💥' },
-        { name: 'Alicia Spinnet', role: 'Chaser', broom: 'Comet 260', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80', crest: '🎯' },
-        { name: 'Katie Bell', role: 'Chaser', broom: 'Silver Arrow', img: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80', crest: '⚡' }
-      ];
-
-      this.summonPool = [
-        { name: 'Harry Potter', role: 'Seeker Reserve', broom: 'Firebolt Supreme', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&auto=format&fit=crop&q=80', crest: '⚡' },
-        { name: 'Ginny Weasley', role: 'Chaser Specialist', broom: 'Cleansweep Eleven', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80', crest: '🦁' },
-        { name: 'Hermione Granger', role: 'Tactical Arithmancer', broom: 'Enchanted Comet', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', crest: '📚' },
-        { name: 'Ron Weasley', role: 'Keeper Reserve', broom: 'Cleansweep Eleven', img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80', crest: '👑' }
-      ];
-
-      this.currentSquad = [...this.initialPlayers];
-      this.init();
-    }
-
-    init() {
-      this.render();
-      if (this.summonBtn) {
-        this.summonBtn.addEventListener('click', () => this.summonPlayer());
-      }
-      if (this.resetBtn) {
-        this.resetBtn.addEventListener('click', () => {
-          this.currentSquad = [...this.initialPlayers];
-          this.render();
-          audio.playSpellCast();
-        });
-      }
-    }
-
-    render() {
-      if (!this.gridEl) return;
-      this.gridEl.innerHTML = '';
-
-      this.currentSquad.forEach((player) => {
-        const card = document.createElement('div');
-        card.className = 'squad-player-card holo-tilt';
-        card.innerHTML = `
-          <div class="player-avatar-circle">
-            <img src="${player.img}" alt="${player.name}" loading="lazy">
-          </div>
-          <h4 class="player-name">${player.name}</h4>
-          <span class="player-role">${player.crest} ${player.role}</span>
-          <span class="player-broom"><i class="fa-solid fa-broom"></i> ${player.broom}</span>
-        `;
-        this.gridEl.appendChild(card);
-      });
-
-      if (this.badgeCountEl) {
-        this.badgeCountEl.textContent = this.currentSquad.length;
-      }
-    }
-
-    summonPlayer() {
-      if (this.summonPool.length === 0) {
-        this.currentSquad.push({
-          name: `Hogwarts Prodigy #${this.currentSquad.length + 1}`,
-          role: 'Flying Chaser',
-          broom: 'Nimbus 2000 Pro',
-          img: 'assets/images/quidditch_seeker_avatar.jpg',
-          crest: '✨'
-        });
-      } else {
-        const next = this.summonPool.shift();
-        this.currentSquad.push(next);
-      }
-
-      audio.playSpellCast();
-      this.render();
-
-      // Trigger screen spell flash
-      const flash = document.getElementById('spell-flash');
-      if (flash) {
-        flash.classList.add('active');
-        setTimeout(() => flash.classList.remove('active'), 200);
-      }
-    }
-  }
-
-  // =========================================================================
-  // 6. PARCHMENT MODAL INSPECTOR (MATCHES & PROJECTS ARCHIVE)
-  // =========================================================================
-  class ParchmentModalInspector {
-    constructor() {
-      this.modalEl = document.getElementById('parchment-modal');
-      this.titleEl = document.getElementById('parchment-modal-title');
-      this.bodyEl = document.getElementById('parchment-modal-body');
-      this.closeBtn = document.getElementById('modal-close-btn');
-      this.castBtn = document.getElementById('modal-cast-btn');
-
-      this.projectsData = {
-        p1: {
-          title: 'C++ High-Performance Raytracer & Physics Sandbox',
-          type: 'C++ Core Systems & Memory Architecture',
-          tags: ['C++20', 'BVH Trees', 'Linear Algebra', 'Multithreading'],
-          desc: 'A custom, low-level multi-threaded rendering and physical simulation engine engineered in modern C++20. Features bounding volume hierarchy (BVH) spatial acceleration, specular/diffuse Monte Carlo path tracing, custom memory pools, and SIMD mathematical optimization. Built for peak frame rates and computational purity.'
-        },
-        p2: {
-          title: 'Python Autonomous Intelligence & Workflow Agent',
-          type: 'Intelligent AI Automation & Scraping',
-          tags: ['Python 3.x', 'FastAPI', 'AsyncIO', 'NLP', 'BeautifulSoup'],
-          desc: 'An autonomous pipeline capable of ingesting high volumes of unstructured web data, conducting semantic classification and contextual summarization, and triggering automated REST webhooks. Utilizes asynchronous task queues and resilient error recovery patterns.'
-        },
-        p3: {
-          title: 'Cinematic Motion Showcase & VFX Showreel',
-          type: 'Visual Storytelling & Sound Design',
-          tags: ['Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Sound Design'],
-          desc: 'A master collection of high-energy commercial edits, kinetic typography, dynamic speed ramps, and seamless Foley sound design. Crafted with surgical frame timing to maximize audience engagement and emotional resonance across digital media.'
-        },
-        p4: {
-          title: 'Interactive 3D Web Engine & Procedural Audio Sandbox',
-          type: 'Graphics Programming & Web Engineering',
-          tags: ['Canvas 2D', 'WebGL', 'Web Audio API', 'JavaScript ES6+'],
-          desc: 'A GPU-accelerated web graphics, particle dynamics, and audio synthesis interactive sandbox. Features real-time 3D perspective projections, dynamic lighting physics, and silky 60fps animations.'
-        }
-      };
-
-      this.init();
-    }
-
-    init() {
-      if (!this.modalEl) return;
-
-      // Bind blueprint buttons
-      document.querySelectorAll('.btn-inspect-parchment').forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const pId = btn.getAttribute('data-project-id');
-          this.open(pId);
-        });
-      });
-
-      // Bind close buttons
-      if (this.closeBtn) {
-        this.closeBtn.addEventListener('click', () => this.close());
-      }
-      this.modalEl.addEventListener('click', (e) => {
-        if (e.target === this.modalEl || e.target.classList.contains('modal-backdrop')) {
-          this.close();
-        }
-      });
-
-      // Modal Cast Lumos
-      if (this.castBtn) {
-        this.castBtn.addEventListener('click', () => {
-          audio.playSpellCast();
-          this.bodyEl.style.boxShadow = 'inset 0 0 30px rgba(255, 215, 0, 0.4)';
-          setTimeout(() => {
-            this.bodyEl.style.boxShadow = 'none';
-          }, 800);
-        });
-      }
-    }
-
-    open(projectId) {
-      const data = this.projectsData[projectId];
-      if (!data) return;
-
-      audio.playSpellCast();
-      this.titleEl.textContent = `HOGWARTS REGISTRY • ${data.type.toUpperCase()}`;
-      this.bodyEl.innerHTML = `
-        <h3>${data.title}</h3>
-        <p><strong>Discipline:</strong> ${data.type}</p>
-        <p>${data.desc}</p>
-        <div class="project-tags" style="margin-top: 16px;">
-          ${data.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-        </div>
-      `;
-
-      this.modalEl.classList.add('active');
-      this.modalEl.setAttribute('aria-hidden', 'false');
-    }
-
-    close() {
-      this.modalEl.classList.remove('active');
-      this.modalEl.setAttribute('aria-hidden', 'true');
-    }
-  }
-
-  // =========================================================================
-  // 7. LUMOS MAXIMA & AUDIO HUD CONTROLS
-  // =========================================================================
-  function setupHudControls() {
-    // SFX Toggle
-    const sfxBtn = document.getElementById('sfx-toggle-btn');
-    if (sfxBtn) {
-      sfxBtn.addEventListener('click', () => {
-        const state = audio.toggle();
-        const icon = sfxBtn.querySelector('i');
-        const label = sfxBtn.querySelector('.hud-label');
-        if (state) {
-          icon.className = 'fa-solid fa-volume-high';
-          label.textContent = 'SFX: ON';
-          audio.playSpellCast();
-        } else {
-          icon.className = 'fa-solid fa-volume-xmark';
-          label.textContent = 'SFX: OFF';
-        }
-      });
-    }
-
-    // Lumos Spell Button
-    const lumosBtn = document.getElementById('lumos-spell-btn');
-    if (lumosBtn) {
-      lumosBtn.addEventListener('click', () => {
-        document.body.classList.toggle('lumos-active');
-        audio.playLumos();
-
-        const flash = document.getElementById('spell-flash');
-        if (flash) {
-          flash.classList.add('active');
-          setTimeout(() => flash.classList.remove('active'), 350);
-        }
-
-        const isLumos = document.body.classList.contains('lumos-active');
-        lumosBtn.querySelector('.hud-label').textContent = isLumos ? 'NOX' : 'LUMOS';
-      });
-    }
-
-    // Spell Cast on cards
-    document.querySelectorAll('.btn-cast-spell').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        audio.playSpellCast();
-        const card = btn.closest('.spell-card');
-        if (card) {
-          card.style.transform = 'scale(1.04) translateY(-10px)';
-          setTimeout(() => card.style.transform = '', 350);
-        }
-      });
+  snitchCatch() {
+    if (!this.ctx || !this.enabled) return;
+    this._resume();
+    const t = this.ctx.currentTime;
+    const freqs = [523, 659, 784, 1047, 1319, 1568];
+    freqs.forEach((f, i) => {
+      this._osc(f, 'sine', 0.3, 0.3, t + i * 0.08);
     });
   }
 
-  // =========================================================================
-  // 8. OWL POST CONTACT FORM (INTERACTIVE DISPATCH)
-  // =========================================================================
-  function setupOwlPostForm() {
-    const form = document.getElementById('quidditch-contact-form');
-    if (!form) return;
+  spellCast() {
+    if (!this.ctx || !this.enabled) return;
+    this._resume();
+    const t = this.ctx.currentTime;
+    this._osc(220, 'sawtooth', 0.08, 0.5, t);
+    this._osc(440, 'sine', 0.12, 0.3, t + 0.1);
+    this._osc(880, 'sine', 0.08, 0.2, t + 0.2);
+  }
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      audio.playOwlPost();
+  lumos() {
+    if (!this.ctx || !this.enabled) return;
+    this._resume();
+    const t = this.ctx.currentTime;
+    this._osc(880, 'sine', 0.1, 0.4, t);
+    this._osc(1760, 'sine', 0.05, 0.3, t + 0.1);
+  }
 
-      const btn = document.getElementById('submit-letter-btn');
-      const origText = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-feather"></i> DISPATCHING OWL...';
-      btn.disabled = true;
-
-      setTimeout(() => {
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> OWL DISPATCHED!';
-        form.reset();
-
-        const toast = document.getElementById('quidditch-toast');
-        if (toast) {
-          toast.innerHTML = '<i class="fa-solid fa-envelope-circle-check"></i> <span>Owl dispatched to Harvender! Expect a swift reply!</span>';
-          toast.classList.add('show');
-          setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-
-        setTimeout(() => {
-          btn.innerHTML = origText;
-          btn.disabled = false;
-        }, 2500);
-      }, 900);
+  owlPost() {
+    if (!this.ctx || !this.enabled) return;
+    this._resume();
+    const t = this.ctx.currentTime;
+    const pattern = [[400, 0], [500, 0.15], [400, 0.3], [600, 0.5], [400, 0.65]];
+    pattern.forEach(([f, delay]) => {
+      this._osc(f, 'sine', 0.12, 0.12, t + delay);
     });
   }
 
-  // =========================================================================
-  // 9. TYPING ANIMATION (HERO VOCATION)
-  // =========================================================================
-  function setupTypingAnimation() {
-    const typingEl = document.getElementById('typing-text');
-    if (!typingEl) return;
+  toggle() {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  }
+}
 
-    const phrases = [
-      'C++ & Python Sorcerer • High-Performance Code',
-      'Cinematic Motion Video Editor & VFX Visualist',
-      'Interactive 3D Web & Graphics Architect',
-      'Gryffindor Quidditch Seeker • Always Chasing the Snitch'
+/* ═══════════════════════════════════════════════
+   2. HOGWARTS PITCH CANVAS (Stars + Particles)
+   ═══════════════════════════════════════════════ */
+class QuidditchPitchCanvas {
+  constructor(canvasId) {
+    this.canvas = document.getElementById(canvasId);
+    if (!this.canvas) return;
+    this.ctx = this.canvas.getContext('2d');
+    this.stars = [];
+    this.particles = [];
+    this.mouseX = window.innerWidth / 2;
+    this.mouseY = window.innerHeight / 2;
+    this._resize();
+    this._initStars();
+    this._bindEvents();
+    this._loop();
+  }
+
+  _resize() {
+    if (!this.canvas) return;
+    this.canvas.width  = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  }
+
+  _initStars() {
+    this.stars = [];
+    const count = Math.floor((this.canvas.width * this.canvas.height) / 6000);
+    for (let i = 0; i < count; i++) {
+      this.stars.push({
+        x:    Math.random() * this.canvas.width,
+        y:    Math.random() * this.canvas.height,
+        r:    Math.random() * 1.5 + 0.3,
+        a:    Math.random(),
+        da:   (Math.random() - 0.5) * 0.008,
+        gold: Math.random() < 0.08,
+      });
+    }
+  }
+
+  _bindEvents() {
+    window.addEventListener('resize', () => {
+      this._resize();
+      this._initStars();
+    });
+    window.addEventListener('mousemove', (e) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
+      if (Math.random() < 0.25) {
+        this._spawnSpark(e.clientX, e.clientY);
+      }
+    });
+  }
+
+  _spawnSpark(x, y) {
+    const count = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < count; i++) {
+      this.particles.push({
+        x, y,
+        vx: (Math.random() - 0.5) * 2.5,
+        vy: (Math.random() - 0.5) * 2.5 - 1,
+        alpha: 0.8,
+        r: Math.random() * 2 + 1,
+        gold: Math.random() < 0.6,
+      });
+    }
+  }
+
+  _drawBackground() {
+    const grad = this.ctx.createRadialGradient(
+      this.canvas.width * 0.5, this.canvas.height * 0.3, 0,
+      this.canvas.width * 0.5, this.canvas.height * 0.5, this.canvas.width * 0.9
+    );
+    grad.addColorStop(0, '#0a0f1f');
+    grad.addColorStop(0.5, '#070914');
+    grad.addColorStop(1, '#050810');
+    this.ctx.fillStyle = grad;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  _drawStars() {
+    this.stars.forEach(s => {
+      s.a += s.da;
+      if (s.a < 0.1 || s.a > 1) s.da *= -1;
+      s.a = Math.max(0.1, Math.min(1, s.a));
+      this.ctx.beginPath();
+      this.ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = s.gold
+        ? `rgba(238,186,48,${s.a * 0.9})`
+        : `rgba(255,255,255,${s.a})`;
+      this.ctx.fill();
+    });
+  }
+
+  _drawGoldenDust() {
+    const time = Date.now() * 0.001;
+    const count = 5;
+    for (let i = 0; i < count; i++) {
+      const angle = (time * 0.3 + (i * Math.PI * 2) / count);
+      const radius = 60 + Math.sin(time + i) * 20;
+      const px = this.mouseX + Math.cos(angle) * radius;
+      const py = this.mouseY + Math.sin(angle) * radius;
+      const grad = this.ctx.createRadialGradient(px, py, 0, px, py, 6);
+      grad.addColorStop(0, 'rgba(238,186,48,0.6)');
+      grad.addColorStop(1, 'rgba(238,186,48,0)');
+      this.ctx.beginPath();
+      this.ctx.arc(px, py, 6, 0, Math.PI * 2);
+      this.ctx.fillStyle = grad;
+      this.ctx.fill();
+    }
+  }
+
+  _drawParticles() {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= 0.025;
+      p.vy -= 0.05;
+      if (p.alpha <= 0) { this.particles.splice(i, 1); continue; }
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = p.gold
+        ? `rgba(238,186,48,${p.alpha})`
+        : `rgba(255,255,255,${p.alpha})`;
+      this.ctx.fill();
+    }
+  }
+
+  _loop() {
+    this._drawBackground();
+    this._drawStars();
+    this._drawGoldenDust();
+    this._drawParticles();
+    requestAnimationFrame(() => this._loop());
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   3. FLYING BROOM FLIGHT CONTROLLER
+   ═══════════════════════════════════════════════ */
+class FlyingBroomFlightController {
+  constructor(audio) {
+    this.el = document.getElementById('flying-broom-character');
+    this.speechEl = document.getElementById('broom-speech-text');
+    this.speedFill = document.getElementById('hud-speed-fill');
+    this.speedVal  = document.getElementById('hud-speed-val');
+    this.audio = audio;
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.scrollY = 0;
+    this.targetX = 0;
+    this.targetY = 0;
+    this.currentX = 0;
+    this.currentY = 0;
+    this.speed = 0;
+    this.isDiving = false;
+
+    this.hoopCallouts = {
+      hero:         "Seeking glory on the Quidditch pitch! 🏆",
+      skills:       "Accio Spellbook! Mastering the arcane arts... ✨",
+      projects:     "Match records sealed in dragon-hide parchment! ⚡",
+      languages:    "Speaking in tongues — Parseltongue included! 🐍",
+      achievements: "Trophy room, straight ahead! 🏆",
+      squad:        "Calling all teammates — Accio squad! 🧙",
+      contact:      "Owl dispatched. Awaiting your reply... 🦉",
+    };
+
+    if (this.el) {
+      this._bindEvents();
+      this._loop();
+    }
+  }
+
+  _bindEvents() {
+    document.addEventListener('mousemove', (e) => {
+      const rect = { w: window.innerWidth, h: window.innerHeight };
+      this.targetX = (e.clientX / rect.w - 0.5) * 20;
+      this.targetY = (e.clientY / rect.h - 0.5) * -12;
+    });
+
+    window.addEventListener('scroll', () => {
+      const sy = window.scrollY;
+      const delta = Math.abs(sy - this.scrollY);
+      this.speed = Math.min(100, delta * 2);
+      this.scrollY = sy;
+
+      if (delta > 30 && !this.isDiving) {
+        this.isDiving = true;
+        this.el.classList.add('dive-mode');
+        this.audio.swoosh();
+        clearTimeout(this._diveTimer);
+        this._diveTimer = setTimeout(() => {
+          this.isDiving = false;
+          this.el.classList.remove('dive-mode');
+        }, 800);
+      }
+    });
+  }
+
+  setSectionCallout(sectionId) {
+    if (!this.speechEl) return;
+    const msg = this.hoopCallouts[sectionId];
+    if (msg) {
+      this.speechEl.textContent = msg;
+    }
+  }
+
+  _updateHUD() {
+    if (this.speedFill) {
+      this.speedFill.style.width = this.speed + '%';
+    }
+    if (this.speedVal) {
+      const mph = Math.round(this.speed * 1.5);
+      this.speedVal.textContent = mph + ' mph';
+    }
+    this.speed = Math.max(0, this.speed - 2);
+  }
+
+  _loop() {
+    this.currentX += (this.targetX - this.currentX) * 0.08;
+    this.currentY += (this.targetY - this.currentY) * 0.08;
+    if (this.el && !this.isDiving) {
+      this.el.style.transform = `translate(${this.currentX * 0.5}px, ${this.currentY * 0.5}px) rotate(${this.currentX * 0.3}deg)`;
+    }
+    this._updateHUD();
+    requestAnimationFrame(() => this._loop());
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   4. GOLDEN SNITCH GAME
+   ═══════════════════════════════════════════════ */
+class GoldenSnitchGame {
+  constructor(audio) {
+    this.el = document.getElementById('golden-snitch');
+    this.gryffScore = document.getElementById('gryffindor-score');
+    this.promixityFill = document.getElementById('snitch-prox-fill');
+    this.audio = audio;
+    this.score = 0;
+    this.posX = 20;
+    this.posY = 20;
+    this.velX = 0.3;
+    this.velY = 0.2;
+    this.mouseX = 0;
+    this.mouseY = 0;
+    this.caught = false;
+    this.t = 0;
+
+    if (!this.el) return;
+    this._bindEvents();
+    this._loop();
+  }
+
+  _bindEvents() {
+    document.addEventListener('mousemove', (e) => {
+      this.mouseX = (e.clientX / window.innerWidth) * 100;
+      this.mouseY = (e.clientY / window.innerHeight) * 100;
+    });
+
+    this.el.addEventListener('click', () => this._catch());
+    this.el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') this._catch();
+    });
+  }
+
+  _catch() {
+    if (this.caught) return;
+    this.caught = true;
+    this.score += 150;
+    if (this.gryffScore) this.gryffScore.textContent = this.score;
+    this.audio.snitchCatch();
+    showToast('⚡ SNITCH CAUGHT! +150 for Gryffindor!');
+    flashSpell();
+
+    this.el.style.transform = 'scale(2.5)';
+    this.el.style.opacity = '0';
+    this.el.style.transition = 'transform 0.5s, opacity 0.5s';
+
+    setTimeout(() => {
+      this.caught = false;
+      this.posX = Math.random() * 80 + 5;
+      this.posY = Math.random() * 60 + 5;
+      this.el.style.transform = '';
+      this.el.style.opacity = '1';
+      this.el.style.transition = '';
+      showToast('The Snitch has escaped! 👀');
+    }, 2500);
+  }
+
+  _flee() {
+    const dx = this.mouseX - this.posX;
+    const dy = this.mouseY - this.posY;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 15) {
+      const angle = Math.atan2(dy, dx);
+      this.posX -= Math.cos(angle) * 1.5;
+      this.posY -= Math.sin(angle) * 1.5;
+    }
+    if (this.promixityFill) {
+      const prox = Math.max(0, 100 - dist * 3);
+      this.promixityFill.style.width = prox + '%';
+    }
+  }
+
+  _loop() {
+    if (!this.caught) {
+      this.t += 0.015;
+      this.posX = 50 + Math.sin(this.t * 1.3) * 35 + Math.sin(this.t * 2.7) * 10;
+      this.posY = 30 + Math.cos(this.t * 1.1) * 25 + Math.cos(this.t * 3.3) * 8;
+      this.posX = Math.max(5, Math.min(90, this.posX));
+      this.posY = Math.max(10, Math.min(85, this.posY));
+      this._flee();
+      if (this.el) {
+        this.el.style.left = this.posX + 'vw';
+        this.el.style.top  = this.posY + 'vh';
+        this.el.style.position = 'fixed';
+      }
+    }
+    requestAnimationFrame(() => this._loop());
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   5. QUIDDITCH SQUAD ROSTER
+   ═══════════════════════════════════════════════ */
+class QuidditchSquadRoster {
+  constructor() {
+    this.container = document.getElementById('squad-roster');
+    this.btnSummon = document.getElementById('btn-summon');
+    this.btnReset  = document.getElementById('btn-reset-squad');
+
+    this.initialRoster = [
+      { name: 'Harry Potter',   position: 'Seeker',  avatar: '⚡' },
+      { name: 'Ron Weasley',    position: 'Keeper',  avatar: '🧡' },
+      { name: 'Hermione',       position: 'Chaser',  avatar: '📚' },
+      { name: 'Fred Weasley',   position: 'Beater',  avatar: '😄' },
+      { name: 'George Weasley', position: 'Beater',  avatar: '😄' },
+      { name: 'Ginny Weasley',  position: 'Chaser',  avatar: '🔥' },
+      { name: 'Oliver Wood',    position: 'Captain', avatar: '🏆' },
     ];
 
-    let phraseIdx = 0;
-    let charIdx = 0;
-    let isDeleting = false;
+    this.bench = [
+      { name: 'Neville Longbottom', position: 'Reserve Chaser', avatar: '🌱' },
+      { name: 'Luna Lovegood',      position: 'Reserve Seeker', avatar: '🌙' },
+      { name: 'Dean Thomas',        position: 'Reserve Chaser', avatar: '⚽' },
+      { name: 'Seamus Finnigan',    position: 'Reserve Beater', avatar: '💥' },
+      { name: 'Lee Jordan',         position: 'Commentator',    avatar: '🎙️' },
+    ];
 
-    function typeLoop() {
-      const current = phrases[phraseIdx];
-      if (isDeleting) {
-        typingEl.textContent = current.substring(0, charIdx - 1);
-        charIdx--;
-      } else {
-        typingEl.textContent = current.substring(0, charIdx + 1);
-        charIdx++;
-      }
+    this.currentRoster = [...this.initialRoster];
+    this.currentBench  = [...this.bench];
 
-      let speed = isDeleting ? 30 : 60;
-
-      if (!isDeleting && charIdx === current.length) {
-        speed = 2200; // Pause at full phrase
-        isDeleting = true;
-      } else if (isDeleting && charIdx === 0) {
-        isDeleting = false;
-        phraseIdx = (phraseIdx + 1) % phrases.length;
-        speed = 400;
-      }
-
-      setTimeout(typeLoop, speed);
+    if (this.container) {
+      this._render();
+      this._bindEvents();
     }
-
-    typeLoop();
   }
 
-  // =========================================================================
-  // 10. MOBILE MENU TOGGLE
-  // =========================================================================
-  function setupMobileMenu() {
-    const toggle = document.getElementById('mobile-menu-toggle');
-    const links = document.querySelector('.nav-links');
-    if (toggle && links) {
-      toggle.addEventListener('click', () => {
-        const isOpen = links.style.display === 'flex';
-        links.style.display = isOpen ? 'none' : 'flex';
-        if (!isOpen) {
-          links.style.flexDirection = 'column';
-          links.style.position = 'absolute';
-          links.style.top = '72px';
-          links.style.left = '0';
-          links.style.width = '100%';
-          links.style.background = 'rgba(7, 9, 20, 0.98)';
-          links.style.padding = '20px';
-          links.style.borderBottom = '1px solid #eeba30';
+  _render() {
+    if (!this.container) return;
+    this.container.innerHTML = this.currentRoster.map(m => `
+      <div class="squad-member-card" role="listitem">
+        <div class="squad-avatar">${m.avatar}</div>
+        <div class="squad-name">${m.name}</div>
+        <div class="squad-position">${m.position}</div>
+      </div>
+    `).join('');
+  }
+
+  _bindEvents() {
+    if (this.btnSummon) {
+      this.btnSummon.addEventListener('click', () => {
+        if (this.currentBench.length === 0) {
+          showToast('No more players on the bench! 🏟️');
+          return;
         }
+        const idx = Math.floor(Math.random() * this.currentBench.length);
+        const player = this.currentBench.splice(idx, 1)[0];
+        this.currentRoster.push(player);
+        this._render();
+        showToast(`${player.avatar} ${player.name} joins the squad!`);
+      });
+    }
+    if (this.btnReset) {
+      this.btnReset.addEventListener('click', () => {
+        this.currentRoster = [...this.initialRoster];
+        this.currentBench  = [...this.bench];
+        this._render();
+        showToast('Squad reset to original lineup! 🔄');
       });
     }
   }
+}
 
-  // =========================================================================
-  // DOM READY INITIALIZER
-  // =========================================================================
-  document.addEventListener('DOMContentLoaded', () => {
-    new QuidditchPitchCanvas('quidditch-canvas');
-    new FlyingBroomFlightController();
-    new GoldenSnitchGame();
-    new QuidditchSquadRoster();
-    new ParchmentModalInspector();
-    setupHudControls();
-    setupOwlPostForm();
-    setupTypingAnimation();
-    setupMobileMenu();
+/* ═══════════════════════════════════════════════
+   6. PARCHMENT MODAL INSPECTOR
+   ═══════════════════════════════════════════════ */
+class ParchmentModalInspector {
+  constructor(audio) {
+    this.modal     = document.getElementById('parchment-modal');
+    this.closeBtn  = document.getElementById('modal-close');
+    this.audio     = audio;
+
+    this.projects = {
+      p1: {
+        eyebrow: '⚡ Match #001 — Systems',
+        title:   'C++ Raytracer Engine',
+        tags:    ['C++', 'OpenGL', 'BVH', 'Physics', 'Rendering'],
+        desc:    'A physics-accurate raytracer built entirely from scratch in modern C++. Implements Whitted-style ray tracing with Monte Carlo global illumination, BVH acceleration structures, and multiple material models (diffuse, metallic, dielectric, emissive).',
+        highlights: [
+          'BVH acceleration cutting render time by 80% over naive approach',
+          'Support for point, area, and directional light sources',
+          'Physically-based material system with Fresnel equations',
+          'Multi-threaded rendering with SIMD optimisations',
+          'OBJ mesh loading and procedural geometry',
+        ],
+        links: [{ label: '⚙️ GitHub', url: 'https://github.com/harvender-rawat', style: 'primary' }],
+      },
+      p2: {
+        eyebrow: '⚡ Match #002 — AI',
+        title:   'Python AI Agent',
+        tags:    ['Python', 'LLM', 'FastAPI', 'Tool Calling', 'Automation'],
+        desc:    'An autonomous LLM-powered agent with tool-calling, persistent memory, and self-correction capabilities. Processes long documents, answers complex multi-hop queries, and executes multi-step tasks with minimal supervision.',
+        highlights: [
+          'Implements ReAct (Reasoning + Acting) loop for autonomous decision making',
+          'Custom tool registry with dynamic tool registration',
+          'Vector-store memory for long-term context retrieval',
+          'Self-correction loop that retries on tool failure',
+          'FastAPI REST interface for integration with external systems',
+        ],
+        links: [{ label: '⚙️ GitHub', url: 'https://github.com/harvender-rawat', style: 'primary' }],
+      },
+      p3: {
+        eyebrow: '⚡ Match #003 — Cinema',
+        title:   'Cinematic Showreel',
+        tags:    ['Premiere Pro', 'After Effects', 'DaVinci Resolve', 'VFX', 'Color Grading'],
+        desc:    'A curated collection of cinematic edits demonstrating professional video production skills. Covers narrative short films, promotional content, and motion graphics packages — all graded and composited at professional broadcast standard.',
+        highlights: [
+          'Award-worthy color grading in DaVinci Resolve with node-based workflows',
+          'Custom After Effects motion graphics templates with expressions',
+          'VFX compositing with green screen keying and 3D camera tracking',
+          'Multi-camera live event editing with sync and audio mastering',
+          'End-to-end delivery pipeline from raw footage to broadcast-ready master',
+        ],
+        links: [],
+      },
+      p4: {
+        eyebrow: '⚡ Match #004 — Web',
+        title:   '3D Interactive Web Engine',
+        tags:    ['Three.js', 'WebGL', 'GLSL', 'JavaScript', 'Particle Systems'],
+        desc:    'A real-time 3D scene engine running entirely in the browser. Features a custom GLSL shader pipeline, GPU-accelerated particle systems, physics-based animation, and an interactive scene editor — all built with vanilla Three.js and WebGL.',
+        highlights: [
+          'Custom GLSL vertex and fragment shaders for procedural effects',
+          'GPU particle system handling 100k+ particles at 60fps',
+          'Post-processing stack: bloom, DOF, chromatic aberration',
+          'Interactive 3D scene editor with orbit controls and object picker',
+          'Deferred rendering pipeline for real-time dynamic shadows',
+        ],
+        links: [{ label: '⚙️ GitHub', url: 'https://github.com/harvender-rawat', style: 'primary' }],
+      },
+    };
+
+    if (this.modal) this._bindEvents();
+  }
+
+  _open(projectId) {
+    const data = this.projects[projectId];
+    if (!data || !this.modal) return;
+    this.audio.spellCast();
+    document.getElementById('modal-eyebrow').textContent = data.eyebrow;
+    document.getElementById('modal-title').textContent   = data.title;
+    document.getElementById('modal-desc').textContent    = data.desc;
+
+    const tagsEl = document.getElementById('modal-tags');
+    tagsEl.innerHTML = data.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+    const hlEl = document.getElementById('modal-highlights');
+    hlEl.innerHTML = `<ul>${data.highlights.map(h => `<li>${h}</li>`).join('')}</ul>`;
+
+    const linksEl = document.getElementById('modal-links');
+    linksEl.innerHTML = data.links.map(l =>
+      `<a href="${l.url}" target="_blank" rel="noopener" class="modal-link modal-link-${l.style}">${l.label}</a>`
+    ).join('');
+
+    this.modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    this.closeBtn.focus();
+  }
+
+  _close() {
+    if (!this.modal) return;
+    this.modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  _bindEvents() {
+    document.querySelectorAll('.project-parchment-card').forEach(card => {
+      card.addEventListener('click', () => this._open(card.dataset.projectId));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          this._open(card.dataset.projectId);
+        }
+      });
+    });
+
+    this.closeBtn.addEventListener('click', () => this._close());
+    this.modal.addEventListener('click', (e) => {
+      if (e.target === this.modal) this._close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !this.modal.hidden) this._close();
+    });
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   7. UTILITY FUNCTIONS
+   ═══════════════════════════════════════════════ */
+function showToast(msg) {
+  const toast = document.getElementById('quidditch-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function flashSpell() {
+  const el = document.getElementById('spell-flash');
+  if (!el) return;
+  el.classList.add('active');
+  setTimeout(() => el.classList.remove('active'), 200);
+}
+
+/* ═══════════════════════════════════════════════
+   8. SCROLL OBSERVER — SECTION IN-VIEW + MINIMAP
+   ═══════════════════════════════════════════════ */
+function setupScrollObserver(broom) {
+  const sections = document.querySelectorAll('.flight-section');
+  const hoopDots = document.querySelectorAll('.hoop-dot');
+  const navLinks = document.querySelectorAll('.nav-link');
+  const header   = document.getElementById('main-header');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        const id = entry.target.id;
+
+        hoopDots.forEach(d => d.classList.toggle('active', d.dataset.target === id));
+        navLinks.forEach(l => {
+          const href = l.getAttribute('href').replace('#', '');
+          l.classList.toggle('active', href === id);
+        });
+
+        if (broom) broom.setSectionCallout(id);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  sections.forEach(s => observer.observe(s));
+
+  window.addEventListener('scroll', () => {
+    if (header) header.classList.toggle('scrolled', window.scrollY > 60);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   9. MINIMAP CLICK NAV
+   ═══════════════════════════════════════════════ */
+function setupMinimapNav() {
+  document.querySelectorAll('.hoop-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = document.getElementById(dot.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   10. HUD CONTROLS (SFX + Lumos)
+   ═══════════════════════════════════════════════ */
+function setupHudControls(audio) {
+  const btnSfx   = document.getElementById('btn-sfx');
+  const btnLumos = document.getElementById('btn-lumos');
+
+  if (btnSfx) {
+    btnSfx.addEventListener('click', () => {
+      const on = audio.toggle();
+      btnSfx.querySelector('.btn-icon').textContent = on ? '🔊' : '🔇';
+      btnSfx.classList.toggle('active', !on);
+      showToast(on ? '🔊 Sound ON' : '🔇 Sound OFF');
+    });
+  }
+
+  if (btnLumos) {
+    btnLumos.addEventListener('click', () => {
+      const isLumos = document.body.classList.toggle('lumos-mode');
+      btnLumos.querySelector('.btn-icon').textContent = isLumos ? '🌙' : '✨';
+      btnLumos.classList.toggle('active', isLumos);
+      audio.lumos();
+      showToast(isLumos ? '✨ Lumos Maxima!' : '🌙 Nox!');
+    });
+  }
+
+  document.querySelectorAll('.spell-card').forEach(card => {
+    card.addEventListener('click', () => {
+      audio.spellCast();
+      flashSpell();
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   11. TYPING ANIMATION
+   ═══════════════════════════════════════════════ */
+function setupTypingAnimation() {
+  const el = document.getElementById('typewriter-text');
+  if (!el) return;
+
+  const phrases = [
+    'C++ Sorcerer',
+    'Python Alchemist',
+    'Cinematic Auteur',
+    '3D Web Architect',
+    'Quidditch Seeker',
+    'AI Conjurer',
+  ];
+
+  let phraseIdx = 0;
+  let charIdx   = 0;
+  let deleting  = false;
+  const speed   = { type: 70, delete: 40, pause: 1800 };
+
+  function tick() {
+    const phrase = phrases[phraseIdx];
+    if (!deleting) {
+      charIdx++;
+      el.textContent = phrase.substring(0, charIdx);
+      if (charIdx === phrase.length) {
+        deleting = true;
+        setTimeout(tick, speed.pause);
+        return;
+      }
+    } else {
+      charIdx--;
+      el.textContent = phrase.substring(0, charIdx);
+      if (charIdx === 0) {
+        deleting = false;
+        phraseIdx = (phraseIdx + 1) % phrases.length;
+      }
+    }
+    setTimeout(tick, deleting ? speed.delete : speed.type);
+  }
+
+  tick();
+}
+
+/* ═══════════════════════════════════════════════
+   12. OWL POST FORM
+   ═══════════════════════════════════════════════ */
+function setupOwlPostForm(audio) {
+  const form = document.getElementById('owl-post-form');
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = form.querySelector('#contact-name').value.trim();
+    const email = form.querySelector('#contact-email').value.trim();
+    const message = form.querySelector('#contact-message').value.trim();
+
+    if (!name || !email || !message) {
+      showToast('⚠️ Please fill in all required fields!');
+      return;
+    }
+
+    const btnText = form.querySelector('.btn-owl-text');
+    const btnIcon = form.querySelector('.btn-owl-icon');
+    btnIcon.textContent = '🕊️';
+    btnText.textContent = 'Sending...';
+    audio.owlPost();
+    flashSpell();
+
+    setTimeout(() => {
+      showToast(`🦉 Owl dispatched to ${email}! Rocky will respond soon.`);
+      btnIcon.textContent = '✅';
+      btnText.textContent = 'Owl Sent!';
+      form.reset();
+      setTimeout(() => {
+        btnIcon.textContent = '🦉';
+        btnText.textContent = 'Send Owl';
+      }, 3000);
+    }, 1600);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   13. MOBILE MENU
+   ═══════════════════════════════════════════════ */
+function setupMobileMenu() {
+  const btn   = document.getElementById('mobile-menu-btn');
+  const links = document.getElementById('nav-links');
+  if (!btn || !links) return;
+
+  btn.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
   });
 
-})();
+  links.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      links.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   14. DIVE BUTTON
+   ═══════════════════════════════════════════════ */
+function setupDiveButton(audio) {
+  const btn = document.getElementById('btn-dive');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    audio.swoosh();
+    const target = document.getElementById('skills');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   15. HOLO TILT 3D EFFECT
+   ═══════════════════════════════════════════════ */
+function setupHoloTilt() {
+  document.querySelectorAll('.holo-tilt').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top  + rect.height / 2;
+      const dx = (e.clientX - cx) / (rect.width  / 2);
+      const dy = (e.clientY - cy) / (rect.height / 2);
+      const tiltX = dy * -8;
+      const tiltY = dx *  8;
+      card.style.transform = `perspective(600px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   16. PROGRESS BAR ANIMATION ON SCROLL
+   ═══════════════════════════════════════════════ */
+function setupProgressBars() {
+  const bars = document.querySelectorAll('.spell-power-fill, .lang-fill, .gauge-fill');
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.transitionDelay = '0.2s';
+      }
+    });
+  }, { threshold: 0.3 });
+  bars.forEach(b => obs.observe(b));
+}
+
+/* ═══════════════════════════════════════════════
+   17. BOOT — DOM READY
+   ═══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Core systems
+  const audio  = new QuidditchAudio();
+  new QuidditchPitchCanvas('quidditch-canvas');
+
+  // Flight controller
+  const broom  = new FlyingBroomFlightController(audio);
+
+  // Snitch game
+  new GoldenSnitchGame(audio);
+
+  // Squad
+  new QuidditchSquadRoster();
+
+  // Project modals
+  new ParchmentModalInspector(audio);
+
+  // UI setup
+  setupScrollObserver(broom);
+  setupMinimapNav();
+  setupHudControls(audio);
+  setupTypingAnimation();
+  setupOwlPostForm(audio);
+  setupMobileMenu();
+  setupDiveButton(audio);
+  setupHoloTilt();
+  setupProgressBars();
+
+  // Initial toast
+  setTimeout(() => showToast('🏆 Welcome to Rocky\'s Quidditch Pitch! Catch the Snitch! ✨'), 1200);
+
+  // Trigger hero animation immediately
+  const heroSection = document.getElementById('hero');
+  if (heroSection) {
+    setTimeout(() => heroSection.classList.add('in-view'), 300);
+  }
+
+  console.log('%c⚡ Quidditch Portfolio — Harvender Singh Rawat ⚡', 'color:#eeba30;font-size:16px;font-weight:bold;');
+  console.log('%cGryffindor House | Seeker of Bugs & Opportunities', 'color:#ae0001;');
+});
