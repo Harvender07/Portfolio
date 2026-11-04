@@ -317,13 +317,12 @@
 
       this.hoopCallouts = {
         1: 'Welcome to the Pitch! Hold tight to your broom! ⚡',
-        2: 'Flying over the Great Pyramids of Giza with AIESEC! 🇪🇬',
-        3: 'Entering the Seeker\'s Spellbook: C++, Python & VFX! ✨',
-        4: 'Tournament Match Blueprints: Raytracer, AI Agent, Motion Reel! 🏆',
-        5: 'Soaring through the Tower of Polyglot Charms! 📜',
-        6: 'The Hogwarts Trophy Room! Golden honors await! 👑',
-        7: 'Gryffindor First Team Roster assembled on the pitch! 🦁',
-        8: 'The Owl Post! Dispatch an enchanted parchment letter! ✉️'
+        2: 'Entering the Seeker\'s Spellbook: C++, Python & VFX! ✨',
+        3: 'Tournament Match Blueprints: Raytracer, AI Agent, Motion Reel! 🏆',
+        4: 'Soaring through the Tower of Polyglot Charms! 📜',
+        5: 'The Hogwarts Trophy Room! Golden honors await! 👑',
+        6: 'Gryffindor First Team Roster assembled on the pitch! 🦁',
+        7: 'The Owl Post! Dispatch an enchanted parchment letter! ✉️'
       };
 
       this.init();
@@ -385,7 +384,7 @@
       const diveBtn = document.getElementById('hero-dive-btn');
       if (diveBtn) {
         diveBtn.addEventListener('click', () => {
-          const targetSection = document.getElementById('egypt');
+          const targetSection = document.getElementById('skills');
           if (targetSection) {
             targetSection.scrollIntoView({ behavior: 'smooth' });
             this.triggerBroomBoost();
@@ -640,7 +639,7 @@
       this.resetBtn = document.getElementById('reset-squad-btn');
 
       this.initialPlayers = [
-        { name: 'Harvender S. Rawat', role: 'Seeker (Captain)', broom: 'Nimbus 2000 Pro', img: 'assets/images/trainer_avatar.jpg', crest: '⚡' },
+        { name: 'Harvender S. Rawat', role: 'Seeker (Captain)', broom: 'Nimbus 2000 Pro', img: 'assets/images/quidditch_seeker_avatar.jpg', crest: '⚡' },
         { name: 'Oliver Wood', role: 'Keeper', broom: 'Cleansweep Seven', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', crest: '🛡️' },
         { name: 'Angelina Johnson', role: 'Chaser', broom: 'Nimbus 2001', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80', crest: '🔥' },
         { name: 'Fred Weasley', role: 'Beater', broom: 'Cleansweep Five', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', crest: '💥' },
@@ -703,7 +702,7 @@
           name: `Hogwarts Prodigy #${this.currentSquad.length + 1}`,
           role: 'Flying Chaser',
           broom: 'Nimbus 2000 Pro',
-          img: 'assets/images/trainer_avatar.jpg',
+          img: 'assets/images/quidditch_seeker_avatar.jpg',
           crest: '✨'
         });
       } else {
@@ -754,10 +753,10 @@
           desc: 'A master collection of high-energy commercial edits, kinetic typography, dynamic speed ramps, and seamless Foley sound design. Crafted with surgical frame timing to maximize audience engagement and emotional resonance across digital media.'
         },
         p4: {
-          title: 'AIESEC Egypt Cross-Cultural Media & Outreach',
-          type: 'International Leadership & Visual Archival',
-          tags: ['AIESEC Global', 'Cultural Diplomacy', 'Cairo & Giza', 'Content Strategy'],
-          desc: 'An international documentary and media initiative chronicling youth empowerment workshops and intercultural dialogues in Cairo and Giza. Brought together delegates from over 15 nations to build educational frameworks and cross-cultural solidarity.'
+          title: 'Interactive 3D Web Engine & Procedural Audio Sandbox',
+          type: 'Graphics Programming & Web Engineering',
+          tags: ['Canvas 2D', 'WebGL', 'Web Audio API', 'JavaScript ES6+'],
+          desc: 'A GPU-accelerated web graphics, particle dynamics, and audio synthesis interactive sandbox. Features real-time 3D perspective projections, dynamic lighting physics, and silky 60fps animations.'
         }
       };
 
@@ -922,7 +921,7 @@
     const phrases = [
       'C++ & Python Sorcerer • High-Performance Code',
       'Cinematic Motion Video Editor & VFX Visualist',
-      'AIESEC Egypt Global Volunteer & Leader',
+      'Interactive 3D Web & Graphics Architect',
       'Gryffindor Quidditch Seeker • Always Chasing the Snitch'
     ];
 

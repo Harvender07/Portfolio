@@ -30,8 +30,7 @@
   --magic-cyan: #00f2fe;
   --magic-purple: #9d4edd;
   --magic-fire: #ff5400;
-  --egypt-sand: #d4a373;
-  --egypt-gold: #e76f51;
+  --magic-amber: #d4a373;
 
   /* Parchment Colors */
   --parchment-light: #fbf5e5;
@@ -982,9 +981,6 @@ body.lumos-active .quidditch-theme {
   color: var(--golden-snitch);
   background: rgba(238, 186, 48, 0.12);
 }
-.nav-link.special-link {
-  color: var(--egypt-gold);
-}
 .nav-link.nav-btn {
   background: linear-gradient(135deg, var(--gryffindor-red), var(--gryffindor-bright));
   border: 1px solid var(--border-gold);
@@ -1539,146 +1535,7 @@ body.lumos-active .quidditch-theme {
   box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
 }
 
-/* --- SECTION 2: EGYPT EXPEDITION (AIESEC) --- */
-.egypt-parchment-card {
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 40px;
-  background: linear-gradient(135deg, rgba(20, 16, 30, 0.95), rgba(10, 8, 18, 0.98));
-  border: 2px solid var(--egypt-gold);
-  border-radius: var(--radius-lg);
-  padding: 36px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(231, 111, 81, 0.2);
-}
-
-.egypt-image-wrapper {
-  position: relative;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  border: 1px solid var(--border-gold);
-  height: 100%;
-  min-height: 320px;
-}
-.egypt-banner-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.image-overlay-glow {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, transparent 40%, rgba(10, 8, 18, 0.85) 100%);
-}
-.egypt-badge-stamp {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(14, 10, 24, 0.9);
-  border: 1px solid var(--egypt-gold);
-  border-radius: var(--radius-sm);
-  padding: 10px 16px;
-}
-.stamp-icon {
-  color: var(--golden-snitch);
-  font-size: 1.1rem;
-  margin-bottom: 4px;
-}
-.stamp-text {
-  font-family: var(--font-magic-title);
-  font-size: 0.72rem;
-  font-weight: 800;
-  color: var(--golden-snitch);
-}
-.stamp-loc {
-  font-family: var(--font-code);
-  font-size: 0.65rem;
-  color: #cbd5e1;
-}
-
-.egypt-header-tag {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-.pill-pyramid, .pill-date {
-  font-family: var(--font-code);
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
-}
-.pill-pyramid {
-  background: rgba(231, 111, 81, 0.2);
-  border: 1px solid var(--egypt-gold);
-  color: var(--egypt-gold);
-}
-.pill-date {
-  background: rgba(255, 255, 255, 0.08);
-  color: #cbd5e1;
-}
-
-.egypt-headline {
-  font-family: var(--font-magic-title);
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #fff;
-  margin-bottom: 16px;
-}
-.egypt-narrative {
-  color: #cbd5e1;
-  font-size: 1rem;
-  margin-bottom: 24px;
-  line-height: 1.7;
-}
-
-.egypt-highlights-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-.egypt-highlight-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-.highlight-icon {
-  width: 36px;
-  height: 36px;
-  background: rgba(231, 111, 81, 0.15);
-  border: 1px solid var(--egypt-gold);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--golden-snitch);
-  font-size: 0.9rem;
-  flex-shrink: 0;
-}
-.egypt-highlight-item strong {
-  display: block;
-  font-family: var(--font-magic-sub);
-  color: #fff;
-  font-size: 0.92rem;
-  margin-bottom: 2px;
-}
-.egypt-highlight-item p {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-.egypt-footer-quote {
-  border-left: 2px solid var(--golden-snitch);
-  padding-left: 14px;
-  font-style: italic;
-  color: #fde047;
-  font-size: 0.88rem;
-}
-
-/* --- SECTION 3: SKILLS (SPELLBOOK) --- */
+/* --- SECTION 2: SKILLS (SPELLBOOK) --- */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
@@ -1886,7 +1743,7 @@ body.lumos-active .quidditch-theme {
 .grad-alchemy { background: linear-gradient(135deg, #0e1a40, #14213d); }
 .grad-transfig { background: linear-gradient(135deg, #240046, #3c096c); }
 .grad-creative { background: linear-gradient(135deg, #4f000b, #720026); }
-.grad-egypt { background: linear-gradient(135deg, #7f4f24, #936639); }
+.grad-charms { background: linear-gradient(135deg, #14213d, #003049); }
 
 .preview-large-icon {
   font-size: 3.5rem;
@@ -2041,7 +1898,7 @@ body.lumos-active .quidditch-theme {
 }
 .lvl-master { background: rgba(238, 186, 48, 0.2); color: var(--golden-snitch); border: 1px solid var(--border-gold); }
 .lvl-native { background: rgba(52, 211, 153, 0.2); color: #34d399; }
-.lvl-aiesec { background: rgba(231, 111, 81, 0.25); color: var(--egypt-gold); border: 1px solid var(--egypt-gold); }
+.lvl-punjabi { background: rgba(238, 186, 48, 0.2); color: var(--golden-snitch); }
 
 .lang-subtext {
   font-size: 0.8rem;
@@ -2099,7 +1956,7 @@ body.lumos-active .quidditch-theme {
   border: 2px solid var(--golden-snitch);
   box-shadow: 0 0 16px rgba(255, 215, 0, 0.5);
 }
-.gem-pyramid { background: radial-gradient(circle, #e76f51, #7f4f24); }
+.gem-trophy { background: radial-gradient(circle, #ffd700, #b8860b); }
 .gem-alchemy { background: radial-gradient(circle, #00f2fe, #0e1a40); }
 .gem-python { background: radial-gradient(circle, #c77dff, #3c096c); }
 .gem-creative { background: radial-gradient(circle, #ff5400, #720026); }
@@ -2580,7 +2437,6 @@ body.lumos-active .quidditch-theme {
     max-width: 500px;
     margin: 0 auto;
   }
-  .egypt-parchment-card,
   .languages-dual-grid,
   .contact-parchment-wrapper {
     grid-template-columns: 1fr;
