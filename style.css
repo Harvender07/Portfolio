@@ -82,16 +82,153 @@ body.lumos-active {
   --border-subtle:   rgba(92, 58, 33, 0.15);
 }
 
-/* ——— CUSTOM CURSOR (GOLDEN SNITCH) ——— */
-*, *::before, *::after {
-  box-sizing: border-box;
-  cursor: url('assets/images/quidditch_ball_cursor.svg') 4 4, auto !important;
+/* ——— LIVE MOVING ANIMATED CURSOR (GOLDEN SNITCH) ——— */
+@media (hover: hover) and (pointer: fine) {
+  *, *::before, *::after, html, body, a, button, input, textarea, select {
+    cursor: none !important;
+  }
 }
 
-a, button, [role="button"], input, textarea, select, .nav-link, .editorial-card,
-.project-feature-card, .house-btn, .vault-badge-card, .btn-gold-primary,
-.btn-gold-outline, .btn-action-icon, .btn-passport-cta, .channel-link-card {
-  cursor: url('assets/images/quidditch_ball_cursor_pointer.svg') 4 4, pointer !important;
+.live-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  margin-left: -20px;
+  pointer-events: none;
+  z-index: 999999;
+  transform: translate3d(-100px, -100px, 0);
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+.live-cursor.visible {
+  opacity: 1;
+}
+
+/* Snitch Body */
+.cursor-snitch {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.snitch-core {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffde0 0%, #ffd700 45%, #b8860b 80%, #593e04 100%);
+  border: 1px solid #fff5a0;
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.95), inset 0 0 4px rgba(255, 255, 255, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.snitch-spark {
+  font-size: 8px;
+  color: #740001;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 0 2px rgba(255, 215, 0, 0.8);
+}
+
+/* Fluttering Wings */
+.snitch-wing {
+  position: absolute;
+  top: 50%;
+  width: 24px;
+  height: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 215, 0, 0.65) 50%, rgba(255, 255, 255, 0.15) 100%);
+  border: 0.8px solid rgba(255, 215, 0, 0.85);
+  border-radius: 50% 50% 15% 15%;
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+  z-index: 1;
+  transform-origin: center bottom;
+}
+.wing-l {
+  right: 50%;
+  transform: translateY(-50%) rotate(-25deg);
+  animation: cursor-wing-l 0.1s ease-in-out infinite alternate;
+}
+.wing-r {
+  left: 50%;
+  transform: translateY(-50%) rotate(25deg);
+  animation: cursor-wing-r 0.1s ease-in-out infinite alternate;
+}
+
+@keyframes cursor-wing-l {
+  0%   { transform: translateY(-50%) rotate(-45deg) scaleY(0.7); }
+  100% { transform: translateY(-50%) rotate(30deg) scaleY(1.2); }
+}
+@keyframes cursor-wing-r {
+  0%   { transform: translateY(-50%) rotate(45deg) scaleY(0.7); }
+  100% { transform: translateY(-50%) rotate(-30deg) scaleY(1.2); }
+}
+
+/* Live Expanding Targeting Ring on Hover */
+.cursor-target-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px dashed rgba(255, 215, 0, 0.45);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+  animation: ring-rotate 4s linear infinite;
+}
+@keyframes ring-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Active Hover State (Over links, buttons, cards) */
+.live-cursor.cursor-hover .cursor-target-ring {
+  opacity: 1;
+  transform: scale(1.35);
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 14px var(--gold-glow);
+}
+.live-cursor.cursor-hover .cursor-snitch {
+  transform: scale(1.35);
+}
+.live-cursor.cursor-hover .snitch-core {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(212, 175, 55, 0.85);
+}
+
+/* Click Burst State */
+.live-cursor.cursor-click .cursor-snitch {
+  transform: scale(0.75);
+}
+
+/* Trailing smooth ring / dot */
+.cursor-trail {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold-bright);
+  box-shadow: 0 0 8px var(--gold-bright);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .live-cursor {
+    display: none !important;
+  }
 }
 
 /* ——— RESET & BASE STYLES ——— */

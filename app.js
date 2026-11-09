@@ -362,7 +362,120 @@ const HOUSE_DATA = {
 };
 
 /* ═══════════════════════════════════════════════
-   5. MAIN APP CONTROLLER
+   5. LIVE MOVING ANIMATED SNITCH CURSOR ENGINE
+   ═══════════════════════════════════════════════ */
+class LiveMovingCursorEngine {
+  constructor(cursorId) {
+    this.el = document.getElementById(cursorId);
+    if (!this.el) return;
+
+    // Check if device supports fine hover pointer
+    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!hasFinePointer) {
+      this.el.style.display = 'none';
+      return;
+    }
+
+    this.snitch = this.el.querySelector('.cursor-snitch');
+    this.trailDot = this.el.querySelector('.cursor-trail');
+
+    this.targetX = window.innerWidth / 2;
+    this.targetY = window.innerHeight / 2;
+    this.currentX = this.targetX;
+    this.currentY = this.targetY;
+    this.trailX = this.targetX;
+    this.trailY = this.targetY;
+    this.tilt = 0;
+    this.isVisible = false;
+
+    this._bindEvents();
+    this._startLoop();
+  }
+
+  _bindEvents() {
+    window.addEventListener('mousemove', (e) => {
+      this.targetX = e.clientX;
+      this.targetY = e.clientY;
+
+      if (!this.isVisible) {
+        this.isVisible = true;
+        this.el.classList.add('visible');
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseenter', () => {
+      this.isVisible = true;
+      this.el.classList.add('visible');
+    });
+
+    document.addEventListener('mouseleave', () => {
+      this.isVisible = false;
+      this.el.classList.remove('visible');
+    });
+
+    // Click burst feedback
+    window.addEventListener('mousedown', () => {
+      this.el.classList.add('cursor-click');
+    });
+    window.addEventListener('mouseup', () => {
+      this.el.classList.remove('cursor-click');
+    });
+
+    // Interactive Hover State Delegation
+    const interactiveSelector = 'a, button, [role="button"], input, textarea, select, .editorial-card, .project-feature-card, .house-btn, .vault-badge-card, .channel-link-card, .btn-action-icon, .btn-passport-cta';
+
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        this.el.classList.add('cursor-hover');
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        this.el.classList.remove('cursor-hover');
+      }
+    });
+  }
+
+  _startLoop() {
+    const update = () => {
+      // Smooth linear interpolation (lerp)
+      const dx = this.targetX - this.currentX;
+      const dy = this.targetY - this.currentY;
+
+      this.currentX += dx * 0.22;
+      this.currentY += dy * 0.22;
+
+      // Trailing dot follows slightly behind
+      this.trailX += (this.currentX - this.trailX) * 0.35;
+      this.trailY += (this.currentY - this.trailY) * 0.35;
+
+      // Calculate banking tilt based on horizontal velocity
+      const targetTilt = Math.max(-25, Math.min(25, dx * 0.65));
+      this.tilt += (targetTilt - this.tilt) * 0.15;
+
+      // Apply transform
+      this.el.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0)`;
+
+      if (this.snitch) {
+        this.snitch.style.transform = `rotate(${this.tilt}deg)`;
+      }
+
+      if (this.trailDot) {
+        const offsetTrailX = this.trailX - this.currentX;
+        const offsetTrailY = this.trailY - this.currentY;
+        this.trailDot.style.transform = `translate3d(${offsetTrailX}px, ${offsetTrailY}px, 0)`;
+      }
+
+      requestAnimationFrame(update);
+    };
+
+    requestAnimationFrame(update);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   6. MAIN APP CONTROLLER
    ═══════════════════════════════════════════════ */
 class WizardingPortfolioApp {
   constructor() {
@@ -679,10 +792,11 @@ class WizardingPortfolioApp {
 }
 
 /* ═══════════════════════════════════════════════
-   6. DOM READY INITIALIZATION
+   7. DOM READY INITIALIZATION
    ═══════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   new MagicCanvasEngine('magic-canvas');
+  new LiveMovingCursorEngine('live-cursor');
   window.wizardingPortfolio = new WizardingPortfolioApp();
   console.log('%c⚡ Harvender Singh Rawat — Official Wizarding World Portfolio ⚡', 'color:#ffd700; font-weight:bold; font-size:15px;');
   console.log('%c"Draco Dormiens Nunquam Titillandus"', 'color:#d4af37; font-style:italic;');

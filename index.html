@@ -13,6 +13,21 @@
 <body class="house-gryffindor">
 
   <!-- ══════════════════════════════════
+       LIVE MOVING ANIMATED SNITCH CURSOR
+       ══════════════════════════════════ -->
+  <div id="live-cursor" class="live-cursor" aria-hidden="true">
+    <div class="cursor-snitch">
+      <div class="snitch-core">
+        <span class="snitch-spark">✦</span>
+      </div>
+      <div class="snitch-wing wing-l"></div>
+      <div class="snitch-wing wing-r"></div>
+    </div>
+    <div class="cursor-target-ring"></div>
+    <div class="cursor-trail"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
        BACKGROUND CANVAS & ATMOSPHERE
        ══════════════════════════════════ -->
   <canvas id="magic-canvas" aria-hidden="true"></canvas>
@@ -447,10 +462,6 @@
               <div class="lp-row">
                 <div class="lp-info"><span class="lp-name">Hindi</span><span class="lp-prof">Native (Mother Tongue)</span></div>
                 <div class="lp-bar"><div class="lp-fill" style="width: 100%;"></div></div>
-              </div>
-              <div class="lp-row">
-                <div class="lp-info"><span class="lp-name">Punjabi</span><span class="lp-prof">Proficient</span></div>
-                <div class="lp-bar"><div class="lp-fill" style="width: 85%;"></div></div>
               </div>
             </div>
           </div>
