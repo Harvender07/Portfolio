@@ -3,199 +3,683 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harvender Singh Rawat — Grimoire Portfolio</title>
-  <meta name="description" content="Harvender Singh Rawat (Rocky) — Interactive 3D Magical Book Portfolio. C++ Systems, Python AI, Cinematic Video, Interactive 3D Web." />
+  <title>Harvender Singh Rawat — Official Wizarding Portfolio</title>
+  <meta name="description" content="Harvender Singh Rawat (Rocky) — Gryffindor Seeker, C++ Systems Engineer, Python AI Specialist, and Cinematic Storyteller. Inspired by HarryPotter.com." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="house-gryffindor">
 
   <!-- ══════════════════════════════════
-       SCENE — DARK LIBRARY DESK
+       BACKGROUND CANVAS & ATMOSPHERE
        ══════════════════════════════════ -->
-  <div id="scene">
+  <canvas id="magic-canvas" aria-hidden="true"></canvas>
+  <div id="spell-flash" aria-hidden="true"></div>
+  <div id="toast" role="status" aria-live="polite"></div>
 
-    <!-- AMBIENT PARTICLES (GOLDEN DUST / MOTES) -->
-    <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+  <!-- ══════════════════════════════════
+       GLOBAL TOPBAR (HARRYPOTTER.COM STYLE)
+       ══════════════════════════════════ -->
+  <header id="main-header" role="banner">
+    <nav class="nav-container" aria-label="Main Navigation">
 
-    <!-- SPELL FLASH OVERLAY -->
-    <div id="spell-flash" aria-hidden="true"></div>
+      <!-- Brand Crest & Title -->
+      <a href="#hero" class="nav-brand" aria-label="Harvender Singh Rawat Home">
+        <span class="brand-crest" aria-hidden="true">⚡</span>
+        <div class="brand-titles">
+          <span class="brand-sub">WIZARDING WORLD</span>
+          <span class="brand-main">HARRY POTTER</span>
+        </div>
+      </a>
 
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" role="status" aria-live="polite"></div>
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#hero" class="nav-link active">Discover</a></li>
+        <li><a href="#passport" class="nav-link">Passport</a></li>
+        <li><a href="#masteries" class="nav-link">Masteries</a></li>
+        <li><a href="#matches" class="nav-link">Matches</a></li>
+        <li><a href="#sorting" class="nav-link">Sorting</a></li>
+        <li><a href="#languages" class="nav-link">Spells</a></li>
+        <li><a href="#vault" class="nav-link">Vault</a></li>
+        <li><a href="#owl-post" class="nav-link nav-owl">Owl Post 🦉</a></li>
+      </ul>
 
-    <!-- CANDLE AT DESK -->
-    <div id="desk-candle" aria-hidden="true" title="Flickering Candle">
-      <div class="candle-halo"></div>
-      <div class="candle-glow"></div>
-      <div class="candle-flame"></div>
-      <div class="candle-wick"></div>
-      <div class="candle-wax"></div>
-      <div class="candle-holder"></div>
-    </div>
-
-    <!-- GOLDEN SNITCH COMPANION -->
-    <div id="snitch-companion" role="button" tabindex="0" aria-label="Catch the Golden Snitch! (+150 Points)" title="Click to catch the Golden Snitch!">
-      <div class="snitch-sphere">
-        <div class="snitch-rune">⚡</div>
+      <!-- Action Controls -->
+      <div class="nav-actions">
+        <button id="btn-sound" class="btn-action-icon" aria-label="Toggle Sound Effects" title="Toggle Sound">
+          <span id="sound-icon">🔊</span>
+        </button>
+        <button id="btn-lumos" class="btn-action-icon" aria-label="Toggle Lumos / Nox Light" title="Lumos / Nox">
+          <span id="lumos-icon">✨</span>
+        </button>
+        <a href="#passport" class="btn-passport-cta" aria-label="View Wizarding Passport">
+          <span class="passport-icon">🦁</span>
+          <span class="passport-text">Passport</span>
+        </a>
+        <button id="mobile-toggle" class="mobile-toggle-btn" aria-label="Toggle Mobile Menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
-      <div class="snitch-wing snitch-wing-l"></div>
-      <div class="snitch-wing snitch-wing-r"></div>
-      <div class="snitch-aura"></div>
-      <div class="snitch-score-popup" id="snitch-score-popup">+150</div>
-    </div>
 
-    <!-- ════════════════════════════
-         CLOSED BOOK STATE
-         ════════════════════════════ -->
-    <div id="state-closed" class="scene-state">
-      <div class="desk-lamp-glow" aria-hidden="true"></div>
+    </nav>
+  </header>
 
-      <div id="book-closed" role="button" tabindex="0" aria-label="Click to open portfolio grimoire">
-        <div class="book-3d">
-          <div class="b3d-spine">
-            <span class="spine-ribbon-tag">GRYFFINDOR</span>
-          </div>
-          <div class="b3d-pages"></div>
-          <div class="b3d-top"></div>
-          <div class="b3d-cover">
-            <!-- Corner brass brackets -->
-            <div class="brass-corner brass-tl"></div>
-            <div class="brass-corner brass-tr"></div>
-            <div class="brass-corner brass-bl"></div>
-            <div class="brass-corner brass-br"></div>
+  <!-- ══════════════════════════════════
+       MAIN CONTENT CONTAINER
+       ══════════════════════════════════ -->
+  <main id="main-content">
 
-            <div class="bc-top-ornament">✦ ⚡ ✦</div>
-            <div class="bc-crest" aria-hidden="true">
-              <div class="bc-crest-shield">
-                <span>G</span>
+    <!-- ── 1. CINEMATIC HERO SECTION ── -->
+    <section id="hero" class="hero-section" aria-labelledby="hero-title">
+      <div class="section-shell">
+        <div class="hero-grid">
+
+          <!-- Left: Headline & Bio -->
+          <div class="hero-content">
+            <div class="gold-eyebrow">
+              <span class="eyebrow-star">✦</span>
+              OFFICIAL WIZARDING PORTFOLIO
+              <span class="eyebrow-star">✦</span>
+            </div>
+
+            <h1 id="hero-title" class="hero-heading">
+              Harvender<br />
+              <span class="gold-gradient-text">Singh Rawat</span>
+            </h1>
+
+            <div class="hero-role-row">
+              <span class="role-static">Gryffindor Seeker & Sorcerer of</span>
+              <span class="role-dynamic" id="role-typewriter">C++ Systems</span>
+              <span class="cursor-blink">|</span>
+            </div>
+
+            <p class="hero-summary">
+              Welcome to the official Wizarding portfolio of Harvender (Rocky). Blending the relentless focus of a Quidditch Seeker with high-performance C++ systems, autonomous Python intelligence, cinematic visual storytelling, and interactive 3D web worlds.
+            </p>
+
+            <div class="hero-meta-strip">
+              <div class="meta-item">
+                <span class="meta-label">HOUSE</span>
+                <span class="meta-val">Gryffindor 🦁</span>
+              </div>
+              <div class="meta-sep" aria-hidden="true">|</div>
+              <div class="meta-item">
+                <span class="meta-label">POSITION</span>
+                <span class="meta-val">Seeker ⚡</span>
+              </div>
+              <div class="meta-sep" aria-hidden="true">|</div>
+              <div class="meta-item">
+                <span class="meta-label">BASE</span>
+                <span class="meta-val">India · Worldwide Remote</span>
               </div>
             </div>
-            <div class="bc-title">PORTFOLIO</div>
-            <div class="bc-subtitle">THE SEEKER'S GRIMOIRE</div>
-            <div class="bc-rule" aria-hidden="true"></div>
-            <div class="bc-author">Harvender Singh Rawat</div>
-            <div class="bc-role">Systems · AI · Cinema · 3D Web</div>
-            <div class="bc-year">MMXXIV · HOGWARTS EDITION</div>
-            <div class="bc-bottom-ornament">✦ ✦ ✦</div>
+
+            <div class="hero-btn-row">
+              <a href="#masteries" class="btn-gold-primary">Explore Masteries →</a>
+              <a href="#owl-post" class="btn-gold-outline">Dispatch Owl 🦉</a>
+              <a href="#sorting" class="btn-sorting-pill">Try Sorting Hat 🧙</a>
+            </div>
+          </div>
+
+          <!-- Right: Official Harry Potter Fan Club Passport -->
+          <div class="hero-passport-wrap" id="passport">
+            <div class="hp-passport-card holo-tilt" role="region" aria-label="Wizarding Passport Card">
+              <div class="passport-banner">
+                <span class="pb-left">WIZARDING WORLD</span>
+                <span class="pb-right">PASSPORT NO. 07-GRYFF</span>
+              </div>
+
+              <div class="passport-body">
+                <div class="passport-avatar-frame">
+                  <img src="assets/images/quidditch_seeker_avatar.jpg" alt="Harvender Singh Rawat — Gryffindor Seeker" />
+                  <div class="passport-badge">SEEKER</div>
+                </div>
+
+                <div class="passport-details">
+                  <div class="pd-crest-mark">🦁</div>
+                  <h2 class="pd-name">Harvender Singh Rawat</h2>
+                  <div class="pd-alias">"Rocky" · Class of 2024</div>
+
+                  <div class="pd-attribute-grid">
+                    <div class="pd-attr">
+                      <span class="attr-title">HOGWARTS HOUSE</span>
+                      <span class="attr-val house-highlight">Gryffindor</span>
+                    </div>
+                    <div class="pd-attr">
+                      <span class="attr-title">PATRONUS</span>
+                      <span class="attr-val">Stag</span>
+                    </div>
+                    <div class="pd-attr">
+                      <span class="attr-title">WAND ATTRIBUTES</span>
+                      <span class="attr-val">Rowan · 12½" · Phoenix Feather</span>
+                    </div>
+                    <div class="pd-attr">
+                      <span class="attr-title">HOUSE POINTS</span>
+                      <span class="attr-val gold-highlight" id="passport-points">450 PTS</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="passport-footer">
+                <span class="pf-stamp">VERIFIED BY MINISTRY OF MAGIC</span>
+                <span class="pf-crest">✦ ⚡ ✦</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. FEATURED MASTERIES (EDITORIAL CARDS) ── -->
+    <section id="masteries" class="section-block" aria-labelledby="masteries-title">
+      <div class="section-shell">
+
+        <div class="section-header-center">
+          <div class="gold-eyebrow">YEAR VII CURRICULUM</div>
+          <h2 id="masteries-title" class="section-heading">Mastered Disciplines</h2>
+          <p class="section-subheading">Core competencies honed through relentless practice and production battle.</p>
+        </div>
+
+        <div class="masteries-grid">
+
+          <!-- Card 1: C++ Systems -->
+          <article class="editorial-card holo-tilt" data-spell="cpp" tabindex="0">
+            <div class="card-glow"></div>
+            <div class="card-icon">⚙️</div>
+            <div class="card-incantation">Compilicus Maxima</div>
+            <h3 class="card-title">C++ Systems & Engines</h3>
+            <p class="card-desc">High-performance systems programming, custom raytracing renderers, physics simulations, OpenGL pipelines, and zero-overhead memory management.</p>
+            <div class="card-power-meter">
+              <div class="meter-label"><span>MASTERY POWER</span><span>91%</span></div>
+              <div class="meter-track"><div class="meter-fill" style="width: 91%;"></div></div>
+            </div>
+            <div class="card-tags">
+              <span class="tag">C++17</span>
+              <span class="tag">OpenGL</span>
+              <span class="tag">BVH Trees</span>
+              <span class="tag">SIMD</span>
+            </div>
+          </article>
+
+          <!-- Card 2: Python AI -->
+          <article class="editorial-card holo-tilt" data-spell="python" tabindex="0">
+            <div class="card-glow"></div>
+            <div class="card-icon">🐍</div>
+            <div class="card-incantation">Pythonis Automata</div>
+            <h3 class="card-title">Python AI & Automation</h3>
+            <p class="card-desc">Autonomous LLM agent architectures, ReAct reasoning loops, dynamic tool calling, persistent vector memory, FastAPI microservices, and automated workflows.</p>
+            <div class="card-power-meter">
+              <div class="meter-label"><span>MASTERY POWER</span><span>88%</span></div>
+              <div class="meter-track"><div class="meter-fill" style="width: 88%;"></div></div>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Python</span>
+              <span class="tag">LLM Agents</span>
+              <span class="tag">FastAPI</span>
+              <span class="tag">Vector DB</span>
+            </div>
+          </article>
+
+          <!-- Card 3: Cinematic Video -->
+          <article class="editorial-card holo-tilt" data-spell="video" tabindex="0">
+            <div class="card-glow"></div>
+            <div class="card-icon">🎬</div>
+            <div class="card-incantation">Cinematicus Revelio</div>
+            <h3 class="card-title">Cinematic Video & VFX</h3>
+            <p class="card-desc">Narrative storytelling, broadcast-caliber motion graphics, node-based DaVinci Resolve color grading, multi-track audio engineering, and visual effects compositing.</p>
+            <div class="card-power-meter">
+              <div class="meter-label"><span>MASTERY POWER</span><span>94%</span></div>
+              <div class="meter-track"><div class="meter-fill" style="width: 94%;"></div></div>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Premiere Pro</span>
+              <span class="tag">After Effects</span>
+              <span class="tag">DaVinci Resolve</span>
+              <span class="tag">VFX</span>
+            </div>
+          </article>
+
+          <!-- Card 4: 3D Web -->
+          <article class="editorial-card holo-tilt" data-spell="web" tabindex="0">
+            <div class="card-glow"></div>
+            <div class="card-icon">🌐</div>
+            <div class="card-incantation">Aura WebGL</div>
+            <h3 class="card-title">Interactive 3D Web</h3>
+            <p class="card-desc">Real-time Three.js universes, custom GLSL vertex and fragment shaders, 100k GPU particle simulations, Canvas animations, and modern responsive architectures.</p>
+            <div class="card-power-meter">
+              <div class="meter-label"><span>MASTERY POWER</span><span>85%</span></div>
+              <div class="meter-track"><div class="meter-fill" style="width: 85%;"></div></div>
+            </div>
+            <div class="card-tags">
+              <span class="tag">Three.js</span>
+              <span class="tag">WebGL</span>
+              <span class="tag">GLSL</span>
+              <span class="tag">Vanilla JS</span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. CHAMPIONSHIP MATCHES (PROJECTS) ── -->
+    <section id="matches" class="section-block" aria-labelledby="matches-title">
+      <div class="section-shell">
+
+        <div class="section-header-center">
+          <div class="gold-eyebrow">CHAMPIONSHIP RECORDS</div>
+          <h2 id="matches-title" class="section-heading">Featured Projects</h2>
+          <p class="section-subheading">Major matches fought and won across graphics systems, AI architectures, and cinema.</p>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- Project 1: Raytracer -->
+          <article class="project-feature-card" data-project="p1">
+            <div class="pfc-header">
+              <span class="pfc-match-num">MATCH #001 · SYSTEMS</span>
+              <span class="pfc-badge-win">VICTORY ⚡</span>
+            </div>
+            <div class="pfc-content">
+              <div class="pfc-icon">🔭</div>
+              <h3 class="pfc-title">C++ Raytracer Engine</h3>
+              <p class="pfc-desc">Physics-accurate raytracer built from scratch in C++. Supports Monte Carlo global illumination, BVH tree spatial acceleration, reflections, refractions, and OBJ geometry parsing.</p>
+              <div class="pfc-highlights">
+                <div class="ph-item"><span>⚡</span> BVH structures reducing render times by ~85%</div>
+                <div class="ph-item"><span>⚡</span> Dielectric glass, metallic conductor & diffuse materials</div>
+                <div class="ph-item"><span>⚡</span> Multi-threaded tile renderer with SIMD optimization</div>
+              </div>
+              <div class="pfc-footer">
+                <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="btn-card-action">
+                  <span>⚙️</span> View Source on GitHub
+                </a>
+                <button class="btn-card-inspect" data-inspect="p1">Inspect Blueprint →</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 2: AI Agent -->
+          <article class="project-feature-card" data-project="p2">
+            <div class="pfc-header">
+              <span class="pfc-match-num">MATCH #002 · ARTIFICIAL INTELLIGENCE</span>
+              <span class="pfc-badge-win">VICTORY ⚡</span>
+            </div>
+            <div class="pfc-content">
+              <div class="pfc-icon">🤖</div>
+              <h3 class="pfc-title">Python Autonomous AI Agent</h3>
+              <p class="pfc-desc">Autonomous multi-step reasoning agent with ReAct cognitive loops, dynamic tool calling, persistent vector memory, and self-healing error verification.</p>
+              <div class="pfc-highlights">
+                <div class="ph-item"><span>⚡</span> Dynamic tool registry with schema verification</div>
+                <div class="ph-item"><span>⚡</span> Vector memory retrieval for persistent cross-session context</div>
+                <div class="ph-item"><span>⚡</span> Production-grade FastAPI endpoints for enterprise integration</div>
+              </div>
+              <div class="pfc-footer">
+                <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="btn-card-action">
+                  <span>⚙️</span> View Source on GitHub
+                </a>
+                <button class="btn-card-inspect" data-inspect="p2">Inspect Blueprint →</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 3: Showreel -->
+          <article class="project-feature-card" data-project="p3">
+            <div class="pfc-header">
+              <span class="pfc-match-num">MATCH #003 · CINEMA & VFX</span>
+              <span class="pfc-badge-win">VICTORY ⚡</span>
+            </div>
+            <div class="pfc-content">
+              <div class="pfc-icon">🎬</div>
+              <h3 class="pfc-title">Cinematic Showreel & Motion VFX</h3>
+              <p class="pfc-desc">A curated compilation of narrative video productions, broadcast motion graphics, 3D camera tracking, and node-based DaVinci Resolve color grading.</p>
+              <div class="pfc-highlights">
+                <div class="ph-item"><span>⚡</span> Hollywood-gamut node grading workflows in DaVinci</div>
+                <div class="ph-item"><span>⚡</span> Procedural motion design & visual effect compositing</div>
+                <div class="ph-item"><span>⚡</span> Multi-track sonic mastering with dynamic EQ spatialization</div>
+              </div>
+              <div class="pfc-footer">
+                <a href="#owl-post" class="btn-card-action">
+                  <span>🦉</span> Inquire for Showreel Reel
+                </a>
+                <button class="btn-card-inspect" data-inspect="p3">Inspect Blueprint →</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Project 4: 3D Web -->
+          <article class="project-feature-card" data-project="p4">
+            <div class="pfc-header">
+              <span class="pfc-match-num">MATCH #004 · 3D WEB GRAPHICS</span>
+              <span class="pfc-badge-win">VICTORY ⚡</span>
+            </div>
+            <div class="pfc-content">
+              <div class="pfc-icon">🌐</div>
+              <h3 class="pfc-title">Interactive 3D Web Universe</h3>
+              <p class="pfc-desc">WebGL real-time scene engine featuring 100,000+ GPU particles, custom GLSL lighting shaders, post-processing bloom, and responsive spatial camera rigging.</p>
+              <div class="pfc-highlights">
+                <div class="ph-item"><span>⚡</span> Custom GLSL vertex & fragment procedural shaders</div>
+                <div class="ph-item"><span>⚡</span> 100,000 GPU particles rendering at fluid 60 FPS</div>
+                <div class="ph-item"><span>⚡</span> Fully responsive multi-touch & pointer orbital physics</div>
+              </div>
+              <div class="pfc-footer">
+                <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="btn-card-action">
+                  <span>⚙️</span> View Source on GitHub
+                </a>
+                <button class="btn-card-inspect" data-inspect="p4">Inspect Blueprint →</button>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4. INTERACTIVE SORTING CEREMONY (HARRYPOTTER.COM FEATURE) ── -->
+    <section id="sorting" class="section-block section-dark-alt" aria-labelledby="sorting-title">
+      <div class="section-shell">
+
+        <div class="sorting-ceremony-box">
+          <div class="sorting-hat-icon">🧙‍♂️</div>
+          <div class="gold-eyebrow">THE GREAT HALL CEREMONY</div>
+          <h2 id="sorting-title" class="section-heading">Hogwarts House Alignment</h2>
+          <p class="sorting-lead">
+            Every wizard has their true house. Select your allegiance below to align the portfolio's magical aura, banners, and house theme.
+          </p>
+
+          <div class="house-selector-row">
+            <button class="house-btn active-house" data-house="gryffindor" title="Select Gryffindor">
+              <span class="hb-crest">🦁</span>
+              <span class="hb-name">Gryffindor</span>
+              <span class="hb-motto">Bravery & Chivalry</span>
+            </button>
+            <button class="house-btn" data-house="slytherin" title="Select Slytherin">
+              <span class="hb-crest">🐍</span>
+              <span class="hb-name">Slytherin</span>
+              <span class="hb-motto">Ambition & Cunning</span>
+            </button>
+            <button class="house-btn" data-house="ravenclaw" title="Select Ravenclaw">
+              <span class="hb-crest">🦅</span>
+              <span class="hb-name">Ravenclaw</span>
+              <span class="hb-motto">Wisdom & Wit</span>
+            </button>
+            <button class="house-btn" data-house="hufflepuff" title="Select Hufflepuff">
+              <span class="hb-crest">🦡</span>
+              <span class="hb-name">Hufflepuff</span>
+              <span class="hb-motto">Loyalty & Patience</span>
+            </button>
+          </div>
+
+          <div class="sorting-dialogue" id="sorting-dialogue">
+            "Ah, yes! Daring, nerve, and chivalry set Gryffindors apart! Welcome to the lion's den!"
           </div>
         </div>
-        <!-- Realistic 3D floor shadow -->
-        <div class="book-shadow" aria-hidden="true"></div>
-      </div>
 
-      <!-- Open prompt with pulsing feather -->
-      <p class="open-hint" aria-hidden="true">
-        <span class="hint-feather">🪶</span>
-        Click the Grimoire to Open
-      </p>
+      </div>
+    </section>
+
+    <!-- ── 5. LANGUAGES & SPELLS DASHBOARD ── -->
+    <section id="languages" class="section-block" aria-labelledby="languages-title">
+      <div class="section-shell">
+
+        <div class="section-header-center">
+          <div class="gold-eyebrow">SPOKEN & COMPUTATIONAL RUNES</div>
+          <h2 id="languages-title" class="section-heading">Languages & Tongues</h2>
+          <p class="section-subheading">From natural human languages to high-performance computational code runes.</p>
+        </div>
+
+        <div class="languages-dual-panel">
+
+          <!-- Spoken Languages -->
+          <div class="lang-panel">
+            <div class="lp-header">
+              <span class="lp-icon">🌍</span>
+              <h3 class="lp-title">Spoken Tongues</h3>
+            </div>
+            <div class="lp-list">
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">English</span><span class="lp-prof">Fluent (Professional)</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 95%;"></div></div>
+              </div>
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">Hindi</span><span class="lp-prof">Native (Mother Tongue)</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 100%;"></div></div>
+              </div>
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">Punjabi</span><span class="lp-prof">Proficient</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 85%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Code Runes -->
+          <div class="lang-panel">
+            <div class="lp-header">
+              <span class="lp-icon">⚙️</span>
+              <h3 class="lp-title">Code Spells & Frameworks</h3>
+            </div>
+            <div class="lp-list">
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">C / C++</span><span class="lp-prof">Expert · Systems & Graphics</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 91%;"></div></div>
+              </div>
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">Python</span><span class="lp-prof">Expert · AI, ML & Backend</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 88%;"></div></div>
+              </div>
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">JavaScript & Three.js</span><span class="lp-prof">Advanced · 3D Web & Interactive</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 84%;"></div></div>
+              </div>
+              <div class="lp-row">
+                <div class="lp-info"><span class="lp-name">GLSL & Shaders</span><span class="lp-prof">Skilled · GPU Compute & Materials</span></div>
+                <div class="lp-bar"><div class="lp-fill" style="width: 78%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── 6. GRINGOTTS VAULT & TROPHIES ── -->
+    <section id="vault" class="section-block section-dark-alt" aria-labelledby="vault-title">
+      <div class="section-shell">
+
+        <div class="section-header-center">
+          <div class="gold-eyebrow">GRINGOTTS VAULT NO. 777</div>
+          <h2 id="vault-title" class="section-heading">Trophy Room & Honors</h2>
+          <p class="section-subheading">Badges of distinction earned across competitive engineering and creative storytelling.</p>
+        </div>
+
+        <div class="vault-badges-grid">
+
+          <div class="vault-badge-card holo-tilt">
+            <div class="vbc-icon">🏆</div>
+            <h3 class="vbc-title">Quidditch Cup Champion</h3>
+            <p class="vbc-desc">Led engineering projects from conception to shipped production, delivering championship-level reliability.</p>
+            <div class="vbc-shine"></div>
+          </div>
+
+          <div class="vault-badge-card holo-tilt">
+            <div class="vbc-icon">✨</div>
+            <h3 class="vbc-title">Golden Snitch Seeker</h3>
+            <p class="vbc-desc">Uncanny eye for spotting complex algorithmic bottlenecks and microscopic race conditions before they strike.</p>
+            <div class="vbc-shine"></div>
+          </div>
+
+          <div class="vault-badge-card holo-tilt">
+            <div class="vbc-icon">🧹</div>
+            <h3 class="vbc-title">Nimbus Systems Honor</h3>
+            <p class="vbc-desc">Engineered high-throughput computing pipelines and real-time graphics engines in modern C++.</p>
+            <div class="vbc-shine"></div>
+          </div>
+
+          <div class="vault-badge-card holo-tilt">
+            <div class="vbc-icon">🎬</div>
+            <h3 class="vbc-title">Order of the Pixel</h3>
+            <p class="vbc-desc">Mastered cinematic storytelling, visual pacing, motion VFX compositing, and professional Hollywood color grading.</p>
+            <div class="vbc-shine"></div>
+          </div>
+
+          <div class="vault-badge-card holo-tilt">
+            <div class="vbc-icon">🧪</div>
+            <h3 class="vbc-title">AI Alchemist Guild</h3>
+            <p class="vbc-desc">Brewed autonomous LLM agents that synthesize complex multi-hop unstructured data into actionable intelligence.</p>
+            <div class="vbc-shine"></div>
+          </div>
+
+          <div class="vault-badge-card holo-tilt">
+            <div class="vbc-icon">🐛</div>
+            <h3 class="vbc-title">Dark Arts Debugger</h3>
+            <p class="vbc-desc">Exorcised memory leaks, segmentation faults, and async synchronization deadlocks with surgical precision.</p>
+            <div class="vbc-shine"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── 7. THE OWL POST (CONTACT & DISPATCH) ── -->
+    <section id="owl-post" class="section-block" aria-labelledby="owl-post-title">
+      <div class="section-shell">
+
+        <div class="section-header-center">
+          <div class="gold-eyebrow">MINISTRY OF MAGIC TRANSMISSIONS</div>
+          <h2 id="owl-post-title" class="section-heading">The Owl Post</h2>
+          <p class="section-subheading">Whether discussing a high-performance C++ opportunity, an AI partnership, or a creative project — send an owl.</p>
+        </div>
+
+        <div class="owl-post-layout">
+
+          <!-- Left: Hogwarts Parchment Form -->
+          <div class="hogwarts-letter-box">
+            <div class="letter-stamp-mark">HOGWARTS POSTAL SERVICE</div>
+            <form id="owl-form" class="letter-form" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="sender-name">YOUR NAME</label>
+                  <input type="text" id="sender-name" required placeholder="e.g. Albus Dumbledore" />
+                </div>
+                <div class="form-group">
+                  <label for="sender-email">YOUR OWL ADDRESS (EMAIL)</label>
+                  <input type="email" id="sender-email" required placeholder="e.g. albus@hogwarts.edu" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="letter-subject">SUBJECT / PURSUIT</label>
+                <input type="text" id="letter-subject" required placeholder="e.g. Opportunity · Collaboration · Project Inscription" />
+              </div>
+
+              <div class="form-group">
+                <label for="letter-message">PARCHMENT MESSAGE</label>
+                <textarea id="letter-message" required rows="5" placeholder="Inscribe your proposition, role details, or collaboration ideas..."></textarea>
+              </div>
+
+              <button type="submit" class="btn-dispatch-owl" id="btn-dispatch">
+                <span class="owl-btn-icon">🦉</span>
+                <span id="dispatch-btn-text">Dispatch Owl Post</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Right: Channels & Direct Transmission -->
+          <div class="owl-channels-box">
+            <h3 class="channels-heading">Direct Transmissions</h3>
+
+            <a href="mailto:harvendersinghrawat@gmail.com" class="channel-link-card">
+              <span class="clc-icon">✉️</span>
+              <div class="clc-details">
+                <span class="clc-label">Direct Owl Mail</span>
+                <span class="clc-value">harvendersinghrawat@gmail.com</span>
+              </div>
+            </a>
+
+            <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="channel-link-card">
+              <span class="clc-icon">⚙️</span>
+              <div class="clc-details">
+                <span class="clc-label">Code Repository</span>
+                <span class="clc-value">github.com/harvender-rawat</span>
+              </div>
+            </a>
+
+            <a href="https://linkedin.com/in/harvendersinghrawat" target="_blank" rel="noopener" class="channel-link-card">
+              <span class="clc-icon">🔗</span>
+              <div class="clc-details">
+                <span class="clc-label">Professional Network</span>
+                <span class="clc-value">linkedin.com/in/harvendersinghrawat</span>
+              </div>
+            </a>
+
+            <div class="channel-link-card static-card">
+              <span class="clc-icon">📍</span>
+              <div class="clc-details">
+                <span class="clc-label">Operational Base</span>
+                <span class="clc-value">India · Open to Global Relocation & Remote</span>
+              </div>
+            </div>
+
+            <div class="quote-box">
+              <p class="quote-motto">"It does not do to dwell on dreams and forget to live."</p>
+              <div class="quote-sign">— Albus Dumbledore</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════
+       PROJECT INSPECTOR MODAL
+       ══════════════════════════════════ -->
+  <div id="project-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-card">
+      <button id="modal-close" class="modal-close-btn" aria-label="Close Blueprint Modal">✕</button>
+      <div class="modal-eyebrow" id="modal-eyebrow">PROJECT BLUEPRINT</div>
+      <h2 id="modal-title" class="modal-title"></h2>
+      <div class="modal-tags" id="modal-tags"></div>
+      <p id="modal-desc" class="modal-desc"></p>
+      <div class="modal-section-title">Architectural Highlights</div>
+      <div class="modal-highlights" id="modal-highlights"></div>
+      <div class="modal-footer-links" id="modal-links"></div>
     </div>
+  </div>
 
-    <!-- ════════════════════════════
-         OPEN BOOK STATE
-         ════════════════════════════ -->
-    <div id="state-open" class="scene-state" hidden>
+  <!-- ══════════════════════════════════
+       OFFICIAL WIZARDING WORLD FOOTER
+       ══════════════════════════════════ -->
+  <footer id="main-footer" role="contentinfo">
+    <div class="footer-shell">
 
-      <!-- Top bar with controls -->
-      <div class="book-topbar" role="toolbar" aria-label="Book controls">
-        <div class="topbar-left">
-          <button id="btn-close-book" class="btn-topbar" aria-label="Close book">
-            <span>✕</span> Close
-          </button>
-          <button id="btn-sound-toggle" class="btn-topbar" aria-label="Toggle Sound Effects" title="Toggle Sound">
-            <span id="sound-icon">🔊</span> Sound
-          </button>
-        </div>
-
-        <div class="book-title-bar">Harvender Singh Rawat — Grimoire</div>
-
-        <div class="topbar-right">
-          <button id="btn-toc-toggle" class="btn-topbar" aria-label="Table of Contents" title="Index of Chapters">
-            <span>📜</span> Index
-          </button>
-          <div class="book-page-counter" id="page-counter" aria-live="polite" aria-label="Page number">Pages 1–2 of 12</div>
-        </div>
+      <div class="footer-houses-row">
+        <span class="fh-item"><span class="fh-crest">🦁</span> Gryffindor</span>
+        <span class="fh-item"><span class="fh-crest">🐍</span> Slytherin</span>
+        <span class="fh-item"><span class="fh-crest">🦅</span> Ravenclaw</span>
+        <span class="fh-item"><span class="fh-crest">🦡</span> Hufflepuff</span>
       </div>
 
-      <!-- The 3D Open Book Container (with 3D Parallax Tilt) -->
-      <div id="book-container-3d" class="book-container-3d">
-
-        <div id="book-spread" class="book-spread" role="main" aria-label="Portfolio book spread">
-
-          <!-- Cast shadow beneath the book -->
-          <div class="spread-desk-shadow" aria-hidden="true"></div>
-
-          <!-- Left page -->
-          <div class="book-page book-page-left" id="page-left" aria-label="Left page">
-            <!-- Injected dynamically -->
-          </div>
-
-          <!-- Dynamic Left Shadow overlay during page turns -->
-          <div class="page-shadow-overlay left-shadow" id="left-shadow-overlay" aria-hidden="true"></div>
-
-          <!-- Center spine / gutter with stitched leather & crease -->
-          <div class="book-gutter" aria-hidden="true">
-            <div class="gutter-shadow-l"></div>
-            <div class="gutter-line"></div>
-            <div class="gutter-shadow-r"></div>
-            <!-- Silk Bookmark Ribbon -->
-            <div class="book-ribbon" id="book-ribbon" title="Click for Chapter Navigation">
-              <div class="ribbon-tail"></div>
-            </div>
-          </div>
-
-          <!-- Right page -->
-          <div class="book-page book-page-right" id="page-right" aria-label="Right page">
-            <!-- Injected dynamically -->
-          </div>
-
-          <!-- Dynamic Right Shadow overlay during page turns -->
-          <div class="page-shadow-overlay right-shadow" id="right-shadow-overlay" aria-hidden="true"></div>
-
-          <!-- 3D Organic Curved Page Flipper (Multi-Segment Arc Simulation) -->
-          <div class="page-flipper" id="page-flipper" aria-hidden="true">
-            <div class="pf-segment-wrap" id="pf-segment-wrap">
-              <div class="pf-face pf-front" id="pf-front"></div>
-              <div class="pf-face pf-back"  id="pf-back"></div>
-              <div class="pf-curl-shadow" id="pf-curl-shadow"></div>
-              <div class="pf-specular-highlight" id="pf-specular-highlight"></div>
-            </div>
-          </div>
-
-          <!-- Interactive Corner Dog-Ear Curl (Bottom Right) -->
-          <div class="corner-curl corner-curl-br" id="corner-curl-br" title="Click or Drag to turn page forward">
-            <div class="curl-triangle"></div>
-            <div class="curl-shadow"></div>
-          </div>
-
-          <!-- Interactive Corner Dog-Ear Curl (Bottom Left) -->
-          <div class="corner-curl corner-curl-bl" id="corner-curl-bl" title="Click or Drag to turn page backward">
-            <div class="curl-triangle"></div>
-            <div class="curl-shadow"></div>
-          </div>
-
-        </div><!-- end #book-spread -->
-
-      </div><!-- end #book-container-3d -->
-
-      <!-- Bottom navigation bar -->
-      <div class="book-navbar" role="navigation" aria-label="Page navigation">
-        <button class="book-nav-btn" id="btn-prev" aria-label="Previous page">
-          ◀ Previous
-        </button>
-        <div class="nav-hint">
-          <span class="nav-hint-icon">✦</span> Scroll Wheel · Arrow Keys · Drag Corner <span class="nav-hint-icon">✦</span>
-        </div>
-        <button class="book-nav-btn" id="btn-next" aria-label="Next page">
-          Next ▶
-        </button>
+      <div class="footer-crest-brand">
+        <span class="fc-crest">⚡</span>
+        <div class="fc-brand">HOGWARTS SCHOOL OF WITCHCRAFT & WIZARDRY</div>
+        <div class="fc-motto">"Draco Dormiens Nunquam Titillandus"</div>
       </div>
 
-    </div><!-- end #state-open -->
+      <div class="footer-credit">
+        <p>Harvender Singh Rawat © 2026 · Built with C++, Python, and Web Wizardry.</p>
+        <p class="footer-disclaimer">Inspired by the design aesthetic of HarryPotter.com (Wizarding World). All Harry Potter intellectual property belongs to Warner Bros. & J.K. Rowling.</p>
+      </div>
 
-  </div><!-- end #scene -->
+    </div>
+  </footer>
 
   <script src="app.js"></script>
 </body>

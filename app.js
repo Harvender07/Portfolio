@@ -1,14 +1,15 @@
 /* ============================================================
-   HARVENDER SINGH RAWAT — 3D MAGICAL BOOK PORTFOLIO
-   app.js — 3D Physics Engine, Organic Page Flips & Audio
+   HARVENDER SINGH RAWAT — OFFICIAL WIZARDING PORTFOLIO
+   app.js — Inspired by HarryPotter.com (Wizarding World)
+   Interactive Sorting Hat, Web Audio Engine & Editorial UX
    ============================================================ */
 
 'use strict';
 
 /* ═══════════════════════════════════════════════
-   1. REALISTIC AUDIO SYNTHESIZER (Web Audio API)
+   1. WIZARDING AUDIO SYNTHESIZER (Web Audio API)
    ═══════════════════════════════════════════════ */
-class BookAudio {
+class WizardAudio {
   constructor() {
     this.ctx = null;
     this.enabled = true;
@@ -31,196 +32,148 @@ class BookAudio {
     return this.enabled;
   }
 
-  /* Multi-stage organic parchment page turn */
-  playPageTurn() {
+  /* Wand flick & swoosh */
+  playWandSwoosh() {
     if (!this.enabled) return;
     this._init();
     if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
-    const sampleRate = this.ctx.sampleRate;
-    const dur = 0.42;
-
-    // 1. Friction burst: Initial parchment lift & slide rustle
-    const buf = this.ctx.createBuffer(1, sampleRate * dur, sampleRate);
+    const dur = 0.35;
+    const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
     const data = buf.getChannelData(0);
+
     for (let i = 0; i < data.length; i++) {
-      const progress = i / data.length;
-      const envelope = Math.sin(progress * Math.PI);
-      data[i] = (Math.random() * 2 - 1) * Math.pow(envelope, 1.6);
+      const env = Math.sin((i / data.length) * Math.PI);
+      data[i] = (Math.random() * 2 - 1) * Math.pow(env, 2);
     }
+
     const src = this.ctx.createBufferSource();
     src.buffer = buf;
 
-    // Resonant bandpass filter sweeps through air resistance
     const filter = this.ctx.createBiquadFilter();
     filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(800, t);
-    filter.frequency.exponentialRampToValueAtTime(3200, t + 0.16);
-    filter.frequency.exponentialRampToValueAtTime(600, t + dur);
-    filter.Q.setValueAtTime(2.4, t);
+    filter.frequency.setValueAtTime(1200, t);
+    filter.frequency.exponentialRampToValueAtTime(3200, t + 0.12);
+    filter.frequency.exponentialRampToValueAtTime(500, t + dur);
+    filter.Q.value = 3.0;
 
     const gain = this.ctx.createGain();
-    gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.28, t + 0.06);
+    gain.gain.setValueAtTime(0.01, t);
+    gain.gain.linearRampToValueAtTime(0.25, t + 0.05);
     gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
 
     src.connect(filter);
     filter.connect(gain);
     gain.connect(this.ctx.destination);
     src.start(t);
-
-    // 2. Heavy 180gsm parchment drop / settle double-slap
-    const slapOsc = this.ctx.createOscillator();
-    const slapGain = this.ctx.createGain();
-    slapOsc.type = 'triangle';
-    slapOsc.frequency.setValueAtTime(160, t + 0.18);
-    slapOsc.frequency.exponentialRampToValueAtTime(40, t + 0.38);
-
-    slapGain.gain.setValueAtTime(0, t + 0.18);
-    slapGain.gain.linearRampToValueAtTime(0.18, t + 0.22);
-    slapGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-
-    slapOsc.connect(slapGain);
-    slapGain.connect(this.ctx.destination);
-    slapOsc.start(t + 0.18);
-    slapOsc.stop(t + 0.42);
   }
 
-  /* Book opening creak and flutter */
-  playBookOpen() {
-    if (!this.enabled) return;
-    this._init();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    // Low resonant leather creak
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(110, t);
-    osc.frequency.exponentialRampToValueAtTime(45, t + 0.45);
-    gain.gain.setValueAtTime(0.15, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
-
-    const filter = this.ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(400, t);
-
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(t);
-    osc.stop(t + 0.52);
-
-    setTimeout(() => this.playPageTurn(), 140);
-  }
-
-  /* Book closing heavy thud */
-  playBookClose() {
-    if (!this.enabled) return;
-    this._init();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(140, t);
-    osc.frequency.exponentialRampToValueAtTime(32, t + 0.38);
-    gain.gain.setValueAtTime(0.4, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(t);
-    osc.stop(t + 0.45);
-  }
-
-  /* Golden Snitch catch fanfare */
-  playSnitchCatch() {
-    if (!this.enabled) return;
-    this._init();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    const freqs = [523.25, 659.25, 783.99, 1046.5, 1318.5]; // C5, E5, G5, C6, E6
-    freqs.forEach((freq, i) => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, t + i * 0.07);
-      gain.gain.setValueAtTime(0.2, t + i * 0.07);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.07 + 0.45);
-      osc.connect(gain);
-      gain.connect(this.ctx.destination);
-      osc.start(t + i * 0.07);
-      osc.stop(t + i * 0.07 + 0.5);
-    });
-  }
-
-  /* Feather quill scratch when typing in scroll */
-  playQuillScratch() {
-    if (!this.enabled) return;
-    this._init();
-    if (!this.ctx) return;
-
-    const t = this.ctx.currentTime;
-    const dur = 0.06;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(1800 + Math.random() * 800, t);
-    osc.frequency.exponentialRampToValueAtTime(800 + Math.random() * 400, t + dur);
-
-    gain.gain.setValueAtTime(0.04, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-    osc.start(t);
-    osc.stop(t + dur + 0.01);
-  }
-
-  /* Spell incantation chime */
+  /* Spell cast chime */
   playSpellChime() {
     if (!this.enabled) return;
     this._init();
     if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
+    const notes = [659.25, 783.99, 987.77, 1318.5]; // E5, G5, B5, E6
+    notes.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + i * 0.06);
+      gain.gain.setValueAtTime(0.18, t + i * 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.06 + 0.4);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + i * 0.06);
+      osc.stop(t + i * 0.06 + 0.45);
+    });
+  }
+
+  /* Lumos / Nox activation */
+  playLumos() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, t);
-    osc.frequency.exponentialRampToValueAtTime(1760, t + 0.25);
-    gain.gain.setValueAtTime(0.18, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, t);
+    osc.frequency.exponentialRampToValueAtTime(880, t + 0.3);
+    gain.gain.setValueAtTime(0.15, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
     osc.connect(gain);
     gain.connect(this.ctx.destination);
     osc.start(t);
-    osc.stop(t + 0.42);
+    osc.stop(t + 0.5);
+  }
+
+  /* Sorting hat fanfare */
+  playSortingFanfare() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    const chord = [392, 523.25, 659.25, 783.99]; // G4, C5, E5, G5
+    chord.forEach((freq, i) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + i * 0.08);
+      gain.gain.setValueAtTime(0.2, t + i * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.08 + 0.6);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + i * 0.08);
+      osc.stop(t + i * 0.08 + 0.65);
+    });
+  }
+
+  /* Owl post flight call */
+  playOwlPost() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    // Two gentle hoot frequencies
+    const hoots = [[440, 0], [493.88, 0.16], [440, 0.38]];
+    hoots.forEach(([freq, delay]) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t + delay);
+      gain.gain.setValueAtTime(0.15, t + delay);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + delay + 0.22);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t + delay);
+      osc.stop(t + delay + 0.25);
+    });
   }
 }
 
 /* ═══════════════════════════════════════════════
-   2. AMBIENT PARTICLES (GOLDEN DUST CANVAS)
+   2. STARRY NIGHT & EMBER CANVAS
    ═══════════════════════════════════════════════ */
-class AmbientDustEngine {
+class MagicCanvasEngine {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) return;
     this.ctx = this.canvas.getContext('2d');
-    this.particles = [];
-    this.numParticles = 45;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.stars = [];
+    this.motes = [];
+    this.mouseX = window.innerWidth / 2;
+    this.mouseY = window.innerHeight / 2;
 
     this._resize();
-    this._initParticles();
+    this._initObjects();
     this._bindEvents();
-    this._animate();
+    this._render();
   }
 
   _resize() {
@@ -228,17 +181,32 @@ class AmbientDustEngine {
     this.height = this.canvas.height = window.innerHeight;
   }
 
-  _initParticles() {
-    this.particles = [];
-    for (let i = 0; i < this.numParticles; i++) {
-      this.particles.push({
+  _initObjects() {
+    this.stars = [];
+    this.motes = [];
+
+    // Background twinkling stars
+    const starCount = Math.floor((this.width * this.height) / 8000);
+    for (let i = 0; i < starCount; i++) {
+      this.stars.push({
         x: Math.random() * this.width,
         y: Math.random() * this.height,
-        radius: Math.random() * 1.8 + 0.4,
-        alpha: Math.random() * 0.7 + 0.2,
-        speedX: (Math.random() - 0.5) * 0.35,
-        speedY: -Math.random() * 0.45 - 0.1, // Drifting gently upwards
-        gold: Math.random() > 0.3
+        r: Math.random() * 1.4 + 0.3,
+        alpha: Math.random() * 0.8 + 0.2,
+        da: (Math.random() - 0.5) * 0.015,
+        gold: Math.random() > 0.4
+      });
+    }
+
+    // Floating golden embers
+    for (let i = 0; i < 35; i++) {
+      this.motes.push({
+        x: Math.random() * this.width,
+        y: Math.random() * this.height,
+        r: Math.random() * 2 + 0.6,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: -Math.random() * 0.5 - 0.2,
+        alpha: Math.random() * 0.7 + 0.3
       });
     }
   }
@@ -246,943 +214,447 @@ class AmbientDustEngine {
   _bindEvents() {
     window.addEventListener('resize', () => {
       this._resize();
-      this._initParticles();
+      this._initObjects();
+    });
+    window.addEventListener('mousemove', (e) => {
+      this.mouseX = e.clientX;
+      this.mouseY = e.clientY;
     });
   }
 
-  _animate() {
+  _render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    for (let i = 0; i < this.particles.length; i++) {
-      const p = this.particles[i];
-      p.x += p.speedX;
-      p.y += p.speedY;
-
-      if (p.y < -10) {
-        p.y = this.height + 10;
-        p.x = Math.random() * this.width;
-      }
-      if (p.x < -10) p.x = this.width + 10;
-      if (p.x > this.width + 10) p.x = -10;
+    // Stars
+    for (let i = 0; i < this.stars.length; i++) {
+      const s = this.stars[i];
+      s.alpha += s.da;
+      if (s.alpha <= 0.1 || s.alpha >= 1) s.da *= -1;
 
       this.ctx.beginPath();
-      this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = p.gold
-        ? `rgba(255, 215, 0, ${p.alpha * 0.85})`
-        : `rgba(255, 240, 200, ${p.alpha * 0.6})`;
-      this.ctx.shadowBlur = 6;
-      this.ctx.shadowColor = 'rgba(255, 215, 0, 0.5)';
+      this.ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = s.gold
+        ? `rgba(255, 215, 0, ${s.alpha})`
+        : `rgba(240, 244, 255, ${s.alpha * 0.8})`;
+      this.ctx.fill();
+    }
+
+    // Motes
+    for (let i = 0; i < this.motes.length; i++) {
+      const m = this.motes[i];
+      m.x += m.vx;
+      m.y += m.vy;
+
+      if (m.y < -10) {
+        m.y = this.height + 10;
+        m.x = Math.random() * this.width;
+      }
+      if (m.x < -10) m.x = this.width + 10;
+      if (m.x > this.width + 10) m.x = -10;
+
+      this.ctx.beginPath();
+      this.ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = `rgba(255, 215, 0, ${m.alpha * 0.75})`;
+      this.ctx.shadowBlur = 8;
+      this.ctx.shadowColor = 'rgba(255, 215, 0, 0.6)';
       this.ctx.fill();
       this.ctx.shadowBlur = 0;
     }
 
-    requestAnimationFrame(() => this._animate());
+    requestAnimationFrame(() => this._render());
   }
 }
 
 /* ═══════════════════════════════════════════════
-   3. PORTFOLIO PAGES DATA (6 SPREADS / 12 PAGES)
+   3. PROJECT BLUEPRINT DATABASE & INSPECTOR
    ═══════════════════════════════════════════════ */
-const PORTFOLIO_SPREADS = [
-  /* ——— SPREAD 0: FRONTISPIECE & TABLE OF CONTENTS ——— */
-  {
-    left: `
-      <div class="page-header">
-        <span class="page-chapter">Frontispiece</span>
-        <span class="page-folio">Folio I</span>
-      </div>
-      <div class="frontispiece-hero">
-        <div class="avatar-frame">
-          <img src="assets/images/quidditch_seeker_avatar.jpg" alt="Harvender Singh Rawat — Gryffindor Seeker" />
-        </div>
-        <h1 class="hero-p-name">Harvender Singh Rawat</h1>
-        <div class="hero-p-subtitle">C++ Systems · Python AI · Video · Web</div>
-        <div class="hero-badges-row">
-          <span class="hero-badge-pill">🦁 Gryffindor Seeker</span>
-          <span class="hero-badge-pill">📍 India · Open to Remote</span>
-        </div>
-        <p class="hero-p-bio">
-          Welcome to my grimoire. As a passionate developer and creator, I weave together
-          high-performance C++ systems, autonomous Python intelligence, cinematic video storytelling,
-          and interactive 3D web applications.
-        </p>
-      </div>
-    `,
-    right: `
-      <div class="page-header">
-        <span class="page-chapter">Index</span>
-        <span class="page-folio">Folio II</span>
-      </div>
-      <h2 class="page-title">Table of Contents</h2>
-      <p style="font-size:0.85rem; color:var(--ink-secondary); margin-bottom:1rem;">
-        Click any chapter to turn directly to its folio:
-      </p>
-      <div class="toc-list">
-        <a href="#spread-1" class="toc-item" data-spread="1">
-          <span class="toc-title">I. The Seeker's Journey & Ethos</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio III</span>
-        </a>
-        <a href="#spread-1" class="toc-item" data-spread="1">
-          <span class="toc-title">II. Mastered Spells (Core Skills)</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio IV</span>
-        </a>
-        <a href="#spread-2" class="toc-item" data-spread="2">
-          <span class="toc-title">III. C++ Raytracer & Physics</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio V</span>
-        </a>
-        <a href="#spread-2" class="toc-item" data-spread="2">
-          <span class="toc-title">IV. Python Autonomous AI Agent</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio VI</span>
-        </a>
-        <a href="#spread-3" class="toc-item" data-spread="3">
-          <span class="toc-title">V. Cinematic Showreel & 3D Web</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio VII</span>
-        </a>
-        <a href="#spread-4" class="toc-item" data-spread="4">
-          <span class="toc-title">VI. Tongues, Dialects & Trophies</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio IX</span>
-        </a>
-        <a href="#spread-5" class="toc-item" data-spread="5">
-          <span class="toc-title">VII. Owl Post & Transmissions</span>
-          <span class="toc-dots"></span>
-          <span class="toc-num">Folio XI</span>
-        </a>
-      </div>
-      <div style="margin-top:auto; font-size:0.75rem; color:var(--ink-muted); text-align:center;">
-        ⚡ Tip: Scroll with mouse wheel or drag bottom corner to turn pages.
-      </div>
-    `
+const PROJECT_BLUEPRINTS = {
+  p1: {
+    eyebrow: 'MATCH #001 · SYSTEMS & GRAPHICS',
+    title: 'C++ Raytracer Engine',
+    tags: ['C++17', 'BVH Trees', 'Monte Carlo', 'OpenGL', 'Physics Rendering'],
+    desc: 'A physics-accurate raytracer crafted from scratch in modern C++. Simulates realistic global illumination with Monte Carlo path sampling, spatial acceleration with Bounding Volume Hierarchy (BVH) structures, and physical material models.',
+    highlights: [
+      'Engineered custom BVH spatial partitioning tree, slashing rendering times by ~85%',
+      'Physically-based materials: diffuse Lambertian, microfacet metals, and Snell dielectric glass',
+      'Multi-threaded tile rendering scheduler maximizing CPU cache locality with SIMD optimizations',
+      'Wavefront OBJ mesh loader with smooth vertex normal interpolation and area lights'
+    ],
+    links: [
+      { label: '⚙️ View Repository on GitHub', url: 'https://github.com/harvender-rawat' }
+    ]
   },
-
-  /* ——— SPREAD 1: ABOUT & MASTERED SPELLS (SKILLS) ——— */
-  {
-    left: `
-      <div class="page-header">
-        <span class="page-chapter">Chapter I</span>
-        <span class="page-folio">Folio III</span>
-      </div>
-      <h2 class="page-title">The Seeker's Ethos</h2>
-      <div style="display:flex; flex-direction:column; gap:0.9rem; font-size:0.88rem; line-height:1.6; color:var(--ink-secondary);">
-        <p>
-          In Quidditch, a Seeker’s role demands laser focus, relentless agility, and an instinct for spotting
-          the tiniest golden glimmer in the vast expanse of the pitch. That exact mindset drives my work in software.
-        </p>
-        <div style="background:rgba(212,175,55,0.12); border-left:3px solid var(--gold); padding:0.6rem 0.8rem; border-radius:0 6px 6px 0;">
-          <strong style="color:var(--crimson-dark);">Core Philosophy:</strong>
-          <span style="font-size:0.83rem;">
-            Whether optimizing a low-level graphics pipeline or orchestrating multi-agent LLM reasoning loops,
-            performance and elegance must coexist seamlessly.
-          </span>
-        </div>
-        <p>
-          With a strong academic and practical foundation across systems programming and modern machine learning,
-          I construct applications that are robust under pressure and delightful to experience.
-        </p>
-        <div style="display:flex; gap:0.6rem; margin-top:0.3rem;">
-          <div style="flex:1; background:rgba(255,255,255,0.6); padding:0.5rem; border-radius:6px; border:1px solid var(--parchment-border); text-align:center;">
-            <div style="font-family:var(--font-heading); font-size:1.1rem; color:var(--crimson); font-weight:700;">100%</div>
-            <div style="font-size:0.72rem; color:var(--ink-muted);">Dedication</div>
-          </div>
-          <div style="flex:1; background:rgba(255,255,255,0.6); padding:0.5rem; border-radius:6px; border:1px solid var(--parchment-border); text-align:center;">
-            <div style="font-family:var(--font-heading); font-size:1.1rem; color:var(--crimson); font-weight:700;">4+</div>
-            <div style="font-size:0.72rem; color:var(--ink-muted);">Core Disciplines</div>
-          </div>
-          <div style="flex:1; background:rgba(255,255,255,0.6); padding:0.5rem; border-radius:6px; border:1px solid var(--parchment-border); text-align:center;">
-            <div style="font-family:var(--font-heading); font-size:1.1rem; color:var(--crimson); font-weight:700;">Global</div>
-            <div style="font-size:0.72rem; color:var(--ink-muted);">Remote Ready</div>
-          </div>
-        </div>
-      </div>
-    `,
-    right: `
-      <div class="page-header">
-        <span class="page-chapter">Chapter II</span>
-        <span class="page-folio">Folio IV</span>
-      </div>
-      <h2 class="page-title">Mastered Spells</h2>
-      <div class="spells-grid">
-        <div class="spell-item" data-spell="cpp" title="Click to test spell!">
-          <div class="spell-header">
-            <div class="spell-title-wrap">
-              <span class="spell-icon">⚙️</span>
-              <span class="spell-name">C++ Systems & Engines</span>
-            </div>
-            <span class="spell-power">91 / 100</span>
-          </div>
-          <div class="spell-desc">Modern C++, memory management, physics simulation, OpenGL shaders, BVH tree acceleration.</div>
-          <div class="spell-bar"><div class="spell-bar-fill" style="width:91%;"></div></div>
-        </div>
-
-        <div class="spell-item" data-spell="python" title="Click to test spell!">
-          <div class="spell-header">
-            <div class="spell-title-wrap">
-              <span class="spell-icon">🐍</span>
-              <span class="spell-name">Python AI & Automation</span>
-            </div>
-            <span class="spell-power">88 / 100</span>
-          </div>
-          <div class="spell-desc">LLM agents, ReAct loops, tool execution, FastAPI, autonomous workflow pipelines, ML models.</div>
-          <div class="spell-bar"><div class="spell-bar-fill" style="width:88%;"></div></div>
-        </div>
-
-        <div class="spell-item" data-spell="video" title="Click to test spell!">
-          <div class="spell-header">
-            <div class="spell-title-wrap">
-              <span class="spell-icon">🎬</span>
-              <span class="spell-name">Cinematic Video & VFX</span>
-            </div>
-            <span class="spell-power">94 / 100</span>
-          </div>
-          <div class="spell-desc">Premiere Pro, After Effects, DaVinci Resolve node-based color grading, audio mastering, storytelling.</div>
-          <div class="spell-bar"><div class="spell-bar-fill" style="width:94%;"></div></div>
-        </div>
-
-        <div class="spell-item" data-spell="web" title="Click to test spell!">
-          <div class="spell-header">
-            <div class="spell-title-wrap">
-              <span class="spell-icon">🌐</span>
-              <span class="spell-name">Interactive 3D Web</span>
-            </div>
-            <span class="spell-power">85 / 100</span>
-          </div>
-          <div class="spell-desc">Three.js, WebGL, GLSL custom shaders, 100k GPU particle systems, Canvas API, responsive UI.</div>
-          <div class="spell-bar"><div class="spell-bar-fill" style="width:85%;"></div></div>
-        </div>
-      </div>
-    `
+  p2: {
+    eyebrow: 'MATCH #002 · ARTIFICIAL INTELLIGENCE',
+    title: 'Python Autonomous AI Agent',
+    tags: ['Python 3', 'FastAPI', 'ReAct Loops', 'Vector Memory', 'Tool Calling'],
+    desc: 'An autonomous multi-step reasoning AI agent with cognitive ReAct loops, dynamic schema verification, persistent vector memory, and self-healing error recovery.',
+    highlights: [
+      'Autonomous reasoning loop that plans, calls external APIs, and checks its own outputs',
+      'Dynamic tool registry with JSON Schema type validation and sandbox execution',
+      'Vector memory retrieval layer for persistent long-term context recall across sessions',
+      'Production-ready FastAPI microservice with asynchronous task streaming'
+    ],
+    links: [
+      { label: '⚙️ View Repository on GitHub', url: 'https://github.com/harvender-rawat' }
+    ]
   },
-
-  /* ——— SPREAD 2: MATCH #001 & MATCH #002 ——— */
-  {
-    left: `
-      <div class="page-header">
-        <span class="page-chapter">Match #001</span>
-        <span class="page-folio">Folio V</span>
-      </div>
-      <div class="project-deep-card">
-        <span class="project-badge-top">⚡ Systems & Rendering</span>
-        <h3 class="project-headline">C++ Raytracer Engine</h3>
-        <div class="project-tags-row">
-          <span class="project-tag">C++17</span>
-          <span class="project-tag">BVH Acceleration</span>
-          <span class="project-tag">Monte Carlo</span>
-          <span class="project-tag">OpenGL</span>
-        </div>
-        <p class="project-summary">
-          A physics-accurate raytracer crafted from scratch in C++. Simulates realistic light transportation,
-          depth-of-field, global illumination, and complex material reflections and refractions.
-        </p>
-        <div class="project-highlights-box">
-          <h4>Enchanted Capabilities</h4>
-          <ul>
-            <li>Bounding Volume Hierarchy (BVH) structures speeding rendering by ~85%</li>
-            <li>Diffuse, metallic conductor, and dielectric glass refraction models</li>
-            <li>Multi-threaded tile rendering with SIMD optimization</li>
-            <li>Wavefront OBJ mesh loader with normal interpolation</li>
-          </ul>
-        </div>
-        <div class="project-actions-row">
-          <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="btn-ink-primary">
-            <span>⚙️</span> View Source Blueprint
-          </a>
-        </div>
-      </div>
-    `,
-    right: `
-      <div class="page-header">
-        <span class="page-chapter">Match #002</span>
-        <span class="page-folio">Folio VI</span>
-      </div>
-      <div class="project-deep-card">
-        <span class="project-badge-top">🤖 Artificial Intelligence</span>
-        <h3 class="project-headline">Python Autonomous AI Agent</h3>
-        <div class="project-tags-row">
-          <span class="project-tag">Python 3</span>
-          <span class="project-tag">FastAPI</span>
-          <span class="project-tag">ReAct Loop</span>
-          <span class="project-tag">Vector Memory</span>
-        </div>
-        <p class="project-summary">
-          An autonomous multi-step reasoning agent capable of dynamic tool invocation, self-healing retries,
-          and deep document synthesis using modern LLMs.
-        </p>
-        <div class="project-highlights-box">
-          <h4>Enchanted Capabilities</h4>
-          <ul>
-            <li>Dynamic schema inspection and automated tool calling</li>
-            <li>Persistent vector memory for long-context recall across sessions</li>
-            <li>Self-healing verification loop that remedies errors during execution</li>
-            <li>Clean REST API endpoints for seamless integration into production</li>
-          </ul>
-        </div>
-        <div class="project-actions-row">
-          <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="btn-ink-primary">
-            <span>⚙️</span> View Source Blueprint
-          </a>
-        </div>
-      </div>
-    `
+  p3: {
+    eyebrow: 'MATCH #003 · CINEMA & VFX',
+    title: 'Cinematic Showreel & Motion VFX',
+    tags: ['Premiere Pro', 'After Effects', 'DaVinci Resolve', 'Color Grading', 'Sound Design'],
+    desc: 'An award-caliber portfolio of narrative video productions, broadcast motion graphics, visual effects compositing, and professional Hollywood color grading.',
+    highlights: [
+      'Node-based color science workflows in DaVinci Resolve matching ACES & Hollywood color gamuts',
+      'Procedural 3D motion design, green screen cleanups, and camera tracking in After Effects',
+      'Multi-track sonic mastering, spatial EQ balance, and broadcast compliance delivery',
+      'Directorial rhythm and pacing tailored for narrative engagement and brand impact'
+    ],
+    links: [
+      { label: '🦉 Inquire for Showreel Reel', url: '#owl-post' }
+    ]
   },
-
-  /* ——— SPREAD 3: MATCH #003 & MATCH #004 ——— */
-  {
-    left: `
-      <div class="page-header">
-        <span class="page-chapter">Match #003</span>
-        <span class="page-folio">Folio VII</span>
-      </div>
-      <div class="project-deep-card">
-        <span class="project-badge-top">🎬 Visual Storytelling</span>
-        <h3 class="project-headline">Cinematic Showreel & VFX</h3>
-        <div class="project-tags-row">
-          <span class="project-tag">Premiere Pro</span>
-          <span class="project-tag">After Effects</span>
-          <span class="project-tag">DaVinci Resolve</span>
-          <span class="project-tag">Sound Design</span>
-        </div>
-        <p class="project-summary">
-          A showcase of high-end cinematic edits, rhythmic pacing, and visual effects compositing.
-          Combines expressive color science with compelling narrative arcs.
-        </p>
-        <div class="project-highlights-box">
-          <h4>Enchanted Capabilities</h4>
-          <ul>
-            <li>Node-based color grading in DaVinci Resolve matching Hollywood gamut standards</li>
-            <li>Procedural 3D motion graphics and camera tracking in After Effects</li>
-            <li>Multi-track sonic mastering, dialogue cleaning, and sound spatialization</li>
-            <li>Optimized delivery pipelines across broadcast and digital formats</li>
-          </ul>
-        </div>
-        <div class="project-actions-row">
-          <span style="font-family:var(--font-code); font-size:0.75rem; color:var(--crimson);">
-            ⚡ Available upon inquiry via Owl Post
-          </span>
-        </div>
-      </div>
-    `,
-    right: `
-      <div class="page-header">
-        <span class="page-chapter">Match #004</span>
-        <span class="page-folio">Folio VIII</span>
-      </div>
-      <div class="project-deep-card">
-        <span class="project-badge-top">🌐 3D Web Graphics</span>
-        <h3 class="project-headline">Interactive 3D Web Engine</h3>
-        <div class="project-tags-row">
-          <span class="project-tag">Three.js</span>
-          <span class="project-tag">WebGL</span>
-          <span class="project-tag">GLSL Shaders</span>
-          <span class="project-tag">Particle Systems</span>
-        </div>
-        <p class="project-summary">
-          In-browser real-time 3D universe featuring GPU particle simulations, custom GLSL vertex/fragment
-          shaders, and responsive spatial camera controls.
-        </p>
-        <div class="project-highlights-box">
-          <h4>Enchanted Capabilities</h4>
-          <ul>
-            <li>100,000+ GPU particles rendered fluidly at 60 FPS</li>
-            <li>Custom procedural shaders for realistic magic and water caustics</li>
-            <li>Deferred lighting pass with dynamic point lights and soft shadows</li>
-            <li>Fully responsive touch, pointer, and gyro controls for mobile</li>
-          </ul>
-        </div>
-        <div class="project-actions-row">
-          <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="btn-ink-primary">
-            <span>⚙️</span> View Source Blueprint
-          </a>
-        </div>
-      </div>
-    `
-  },
-
-  /* ——— SPREAD 4: LANGUAGES & TROPHY ROOM ——— */
-  {
-    left: `
-      <div class="page-header">
-        <span class="page-chapter">Chapter V</span>
-        <span class="page-folio">Folio IX</span>
-      </div>
-      <h2 class="page-title">Tongues & Dialects</h2>
-      <div class="lang-columns">
-        <div>
-          <div class="lang-section-title"><span>🌍</span> Spoken Tongues</div>
-          <div class="lang-list">
-            <div class="lang-row">
-              <span class="lang-name">English</span>
-              <div class="lang-track"><div class="lang-fill" style="width:95%;"></div></div>
-              <span class="lang-status">Fluent</span>
-            </div>
-            <div class="lang-row">
-              <span class="lang-name">Hindi</span>
-              <div class="lang-track"><div class="lang-fill" style="width:100%;"></div></div>
-              <span class="lang-status">Native</span>
-            </div>
-            <div class="lang-row">
-              <span class="lang-name">Punjabi</span>
-              <div class="lang-track"><div class="lang-fill" style="width:85%;"></div></div>
-              <span class="lang-status">Proficient</span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="lang-section-title"><span>💻</span> Code Runes</div>
-          <div class="lang-list">
-            <div class="lang-row">
-              <span class="lang-name">C / C++</span>
-              <div class="lang-track"><div class="lang-fill" style="width:91%;"></div></div>
-              <span class="lang-status">Expert</span>
-            </div>
-            <div class="lang-row">
-              <span class="lang-name">Python</span>
-              <div class="lang-track"><div class="lang-fill" style="width:88%;"></div></div>
-              <span class="lang-status">Expert</span>
-            </div>
-            <div class="lang-row">
-              <span class="lang-name">JavaScript</span>
-              <div class="lang-track"><div class="lang-fill" style="width:84%;"></div></div>
-              <span class="lang-status">Advanced</span>
-            </div>
-            <div class="lang-row">
-              <span class="lang-name">GLSL / Shaders</span>
-              <div class="lang-track"><div class="lang-fill" style="width:78%;"></div></div>
-              <span class="lang-status">Skilled</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    `,
-    right: `
-      <div class="page-header">
-        <span class="page-chapter">Chapter VI</span>
-        <span class="page-folio">Folio X</span>
-      </div>
-      <h2 class="page-title">Trophy Room & Honors</h2>
-      <div class="trophies-grid">
-        <div class="trophy-card">
-          <div class="trophy-icon">🏆</div>
-          <div class="trophy-title">Quidditch Cup</div>
-          <div class="trophy-desc">Delivered championship-caliber software engineering from concept to production.</div>
-        </div>
-        <div class="trophy-card">
-          <div class="trophy-icon">✨</div>
-          <div class="trophy-title">Snitch Seeker</div>
-          <div class="trophy-desc">Consistently catches the most intricate edge-case bugs and complex algorithmic challenges.</div>
-        </div>
-        <div class="trophy-card">
-          <div class="trophy-icon">🧹</div>
-          <div class="trophy-title">Nimbus Systems</div>
-          <div class="trophy-desc">Engineered memory-safe high-speed computational pipelines in modern C++.</div>
-        </div>
-        <div class="trophy-card">
-          <div class="trophy-icon">🎬</div>
-          <div class="trophy-title">Order of the Pixel</div>
-          <div class="trophy-desc">Mastered cinematic storytelling, visual pacing, and professional color grading.</div>
-        </div>
-        <div class="trophy-card">
-          <div class="trophy-icon">🧪</div>
-          <div class="trophy-title">AI Alchemist</div>
-          <div class="trophy-desc">Brewed autonomous LLM agents that turn unstructured data into intelligence.</div>
-        </div>
-        <div class="trophy-card">
-          <div class="trophy-icon">🐛</div>
-          <div class="trophy-title">Dark Arts Debugger</div>
-          <div class="trophy-desc">Exorcised memory leaks, race conditions, and segmentation faults with surgical poise.</div>
-        </div>
-      </div>
-    `
-  },
-
-  /* ——— SPREAD 5: OWL POST & TRANSMISSIONS ——— */
-  {
-    left: `
-      <div class="page-header">
-        <span class="page-chapter">Chapter VII</span>
-        <span class="page-folio">Folio XI</span>
-      </div>
-      <h2 class="page-title">Dispatch an Owl</h2>
-      <p style="font-size:0.83rem; color:var(--ink-secondary); margin-bottom:0.7rem;">
-        Have a quest, a project, or an opportunity? Inscribe your scroll and release an owl:
-      </p>
-      <form id="book-owl-form" class="owl-form-wrap">
-        <div class="form-field">
-          <label for="owl-sender">Your Name</label>
-          <input type="text" id="owl-sender" required placeholder="e.g. Albus Dumbledore" />
-        </div>
-        <div class="form-field">
-          <label for="owl-address">Your Owl Address (Email)</label>
-          <input type="email" id="owl-address" required placeholder="e.g. albus@hogwarts.edu" />
-        </div>
-        <div class="form-field">
-          <label for="owl-message">Scroll Message</label>
-          <textarea id="owl-message" required placeholder="Write your proposition, project idea, or invitation..."></textarea>
-        </div>
-        <button type="submit" class="btn-dispatch-owl" id="btn-dispatch">
-          <span>🦉</span>
-          <span id="dispatch-label">Release Owl Post</span>
-        </button>
-      </form>
-    `,
-    right: `
-      <div class="page-header">
-        <span class="page-chapter">Transmissions</span>
-        <span class="page-folio">Folio XII</span>
-      </div>
-      <h2 class="page-title">Coordinates & Links</h2>
-      <div class="transmissions-wrap">
-        <a href="mailto:harvendersinghrawat@gmail.com" class="contact-item-card">
-          <span class="cic-icon">✉️</span>
-          <div class="cic-details">
-            <span class="cic-label">Direct Owl Post</span>
-            <span class="cic-value">harvendersinghrawat@gmail.com</span>
-          </div>
-        </a>
-
-        <a href="https://github.com/harvender-rawat" target="_blank" rel="noopener" class="contact-item-card">
-          <span class="cic-icon">⚙️</span>
-          <div class="cic-details">
-            <span class="cic-label">Code Repository</span>
-            <span class="cic-value">github.com/harvender-rawat</span>
-          </div>
-        </a>
-
-        <a href="https://linkedin.com/in/harvendersinghrawat" target="_blank" rel="noopener" class="contact-item-card">
-          <span class="cic-icon">🔗</span>
-          <div class="cic-details">
-            <span class="cic-label">Professional Network</span>
-            <span class="cic-value">linkedin.com/in/harvendersinghrawat</span>
-          </div>
-        </a>
-
-        <div class="contact-item-card" style="cursor:default;">
-          <span class="cic-icon">📍</span>
-          <div class="cic-details">
-            <span class="cic-label">Location Base</span>
-            <span class="cic-value">India · Available Worldwide (Remote)</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="parchment-seal-box">
-        <div class="quote-text">
-          "Words are, in my not-so-humble opinion, our most inexhaustible source of magic."
-        </div>
-        <div class="seal-signature">⚡ Harvender Singh Rawat</div>
-      </div>
-    `
+  p4: {
+    eyebrow: 'MATCH #004 · 3D WEB GRAPHICS',
+    title: 'Interactive 3D Web Universe',
+    tags: ['Three.js', 'WebGL', 'GLSL Shaders', 'Particle Physics', 'Vanilla JS'],
+    desc: 'An in-browser real-time 3D universe featuring GPU particle simulations, custom GLSL vertex/fragment shaders, and responsive spatial camera controls.',
+    highlights: [
+      'Custom procedural vertex and fragment shaders for atmospheric lighting and magic auras',
+      '100,000+ GPU particles rendered fluidly at 60 FPS on both mobile and desktop',
+      'Post-processing pipeline with unreal bloom, depth-of-field, and chromatic aberration',
+      'Responsive touch, pointer, and orbital gyroscope controls'
+    ],
+    links: [
+      { label: '⚙️ View Repository on GitHub', url: 'https://github.com/harvender-rawat' }
+    ]
   }
-];
+};
 
 /* ═══════════════════════════════════════════════
-   4. BOOK CONTROLLER ENGINE (3D PARALLAX & FLIP)
+   4. SORTING HAT & HOUSE SYSTEM
    ═══════════════════════════════════════════════ */
-class BookController {
+const HOUSE_DATA = {
+  gryffindor: {
+    name: 'Gryffindor',
+    crest: '🦁',
+    points: '450 PTS',
+    quote: '"Ah, yes! Daring, nerve, and chivalry set Gryffindors apart! Welcome to the lion\'s den!"'
+  },
+  slytherin: {
+    name: 'Slytherin',
+    crest: '🐍',
+    points: '430 PTS',
+    quote: '"Slytherin will help you on the way to greatness, no doubt about that! Ambition and power!"'
+  },
+  ravenclaw: {
+    name: 'Ravenclaw',
+    crest: '🦅',
+    points: '445 PTS',
+    quote: '"Wit beyond measure is man\'s greatest treasure! Where those of wit and learning will always find their kind."'
+  },
+  hufflepuff: {
+    name: 'Hufflepuff',
+    crest: '🦡',
+    points: '425 PTS',
+    quote: '"Where they are just and loyal, patient Hufflepuffs are true and unafraid of toil!"'
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   5. MAIN APP CONTROLLER
+   ═══════════════════════════════════════════════ */
+class WizardingPortfolioApp {
   constructor() {
-    this.audio = new BookAudio();
-    this.isOpen = false;
-    this.currentSpread = 0;
-    this.totalSpreads = PORTFOLIO_SPREADS.length;
-    this.isFlipping = false;
-    this.wheelThrottleTimer = null;
-    this.snitchScore = 0;
+    this.audio = new WizardAudio();
+    this.currentHouse = 'gryffindor';
 
-    // 3D Parallax properties
-    this.mouseX = window.innerWidth / 2;
-    this.mouseY = window.innerHeight / 2;
-    this.targetTiltX = 0;
-    this.targetTiltY = 0;
-    this.currentTiltX = 0;
-    this.currentTiltY = 0;
+    // Elements
+    this.header = document.getElementById('main-header');
+    this.mobileToggle = document.getElementById('mobile-toggle');
+    this.navLinks = document.getElementById('nav-links');
+    this.btnSound = document.getElementById('btn-sound');
+    this.soundIcon = document.getElementById('sound-icon');
+    this.btnLumos = document.getElementById('btn-lumos');
+    this.lumosIcon = document.getElementById('lumos-icon');
+    this.toast = document.getElementById('toast');
+    this.spellFlash = document.getElementById('spell-flash');
+    this.typewriterEl = document.getElementById('role-typewriter');
+    this.modal = document.getElementById('project-modal');
+    this.modalClose = document.getElementById('modal-close');
+    this.dialogueEl = document.getElementById('sorting-dialogue');
+    this.passportPoints = document.getElementById('passport-points');
 
-    // DOM Elements
-    this.stateClosed   = document.getElementById('state-closed');
-    this.stateOpen     = document.getElementById('state-open');
-    this.bookClosedBtn = document.getElementById('book-closed');
-    this.btnCloseBook  = document.getElementById('btn-close-book');
-    this.btnSound      = document.getElementById('btn-sound-toggle');
-    this.soundIcon     = document.getElementById('sound-icon');
-    this.btnToc        = document.getElementById('btn-toc-toggle');
-    this.pageLeft      = document.getElementById('page-left');
-    this.pageRight     = document.getElementById('page-right');
-    this.pageFlipper   = document.getElementById('page-flipper');
-    this.pfFront       = document.getElementById('pf-front');
-    this.pfBack        = document.getElementById('pf-back');
-    this.leftShadow    = document.getElementById('left-shadow-overlay');
-    this.rightShadow   = document.getElementById('right-shadow-overlay');
-    this.btnPrev       = document.getElementById('btn-prev');
-    this.btnNext       = document.getElementById('btn-next');
-    this.pageCounter   = document.getElementById('page-counter');
-    this.toast         = document.getElementById('toast');
-    this.spellFlash    = document.getElementById('spell-flash');
-    this.bookContainer = document.getElementById('book-container-3d');
-    this.bookSpread    = document.getElementById('book-spread');
-    this.curlBR        = document.getElementById('corner-curl-br');
-    this.curlBL        = document.getElementById('corner-curl-bl');
-    this.ribbon        = document.getElementById('book-ribbon');
-    this.snitch        = document.getElementById('snitch-companion');
-    this.snitchPopup   = document.getElementById('snitch-score-popup');
-
-    this._bindEvents();
-    this._startParallaxLoop();
+    this._initTypewriter();
+    this._initSortingHat();
+    this._initModal();
+    this._initNavScroll();
+    this._initOwlPost();
+    this._initCardsInteractivity();
+    this._initControls();
   }
 
-  _bindEvents() {
-    // Open Book
-    if (this.bookClosedBtn) {
-      this.bookClosedBtn.addEventListener('click', () => this.openBook());
-      this.bookClosedBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          this.openBook();
-        }
-      });
-    }
+  /* Dynamic Typewriter */
+  _initTypewriter() {
+    if (!this.typewriterEl) return;
+    const roles = [
+      'C++ Systems & Engines',
+      'Autonomous Python AI',
+      'Cinematic Video & VFX',
+      'Interactive 3D Web',
+      'Quidditch Seeker'
+    ];
 
-    // Close Book
-    if (this.btnCloseBook) {
-      this.btnCloseBook.addEventListener('click', () => this.closeBook());
-    }
+    let roleIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    const speed = { type: 65, del: 35, pause: 2000 };
 
-    // Sound Toggle
-    if (this.btnSound) {
-      this.btnSound.addEventListener('click', () => {
-        const isSoundOn = this.audio.toggle();
-        this.soundIcon.textContent = isSoundOn ? '🔊' : '🔇';
-        this._showToast(isSoundOn ? '🔊 Sound effects active' : '🔇 Sound effects muted');
-      });
-    }
-
-    // Table of Contents Quick Jump
-    if (this.btnToc) {
-      this.btnToc.addEventListener('click', () => {
-        if (this.currentSpread !== 0) {
-          this.turnToSpread(0, 'backward');
-        }
-      });
-    }
-
-    // Ribbon click jumps to TOC
-    if (this.ribbon) {
-      this.ribbon.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.audio.playSpellChime();
-        this.turnToSpread(0, this.currentSpread > 0 ? 'backward' : 'forward');
-        this._showToast('Bookmark: Turned to Table of Contents');
-      });
-    }
-
-    // Navigation buttons
-    if (this.btnPrev) {
-      this.btnPrev.addEventListener('click', () => this.prevPage());
-    }
-    if (this.btnNext) {
-      this.btnNext.addEventListener('click', () => this.nextPage());
-    }
-
-    // Interactive Dog-Ear Corner Curls
-    if (this.curlBR) {
-      this.curlBR.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.nextPage();
-      });
-    }
-    if (this.curlBL) {
-      this.curlBL.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.prevPage();
-      });
-    }
-
-    // Interactive Golden Snitch Companion
-    if (this.snitch) {
-      this.snitch.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.snitchScore += 150;
-        this.audio.playSnitchCatch();
-        this._flashSpell();
-
-        if (this.snitchPopup) {
-          this.snitchPopup.textContent = `+150 (Total: ${this.snitchScore})`;
-          this.snitchPopup.classList.add('pop');
-          setTimeout(() => this.snitchPopup.classList.remove('pop'), 1200);
-        }
-
-        this._showToast(`⚡ Golden Snitch Caught! +150 to Gryffindor!`);
-      });
-    }
-
-    // Mouse Parallax tracking
-    window.addEventListener('mousemove', (e) => {
-      this.mouseX = e.clientX;
-      this.mouseY = e.clientY;
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2;
-
-      // Calculate subtle tilt angle
-      this.targetTiltY = (e.clientX - centerX) * 0.011; // deg
-      this.targetTiltX = -(e.clientY - centerY) * 0.011; // deg
-    });
-
-    // Scroll Wheel Page Turn with clean debouncing
-    window.addEventListener('wheel', (e) => {
-      if (!this.isOpen || this.isFlipping) return;
-      if (this.wheelThrottleTimer) return;
-
-      if (e.deltaY > 20) {
-        this.nextPage();
-        this._throttleWheel();
-      } else if (e.deltaY < -20) {
-        this.prevPage();
-        this._throttleWheel();
-      }
-    }, { passive: true });
-
-    // Keyboard Navigation
-    window.addEventListener('keydown', (e) => {
-      if (!this.isOpen) return;
-      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
-        e.preventDefault();
-        this.nextPage();
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault();
-        this.prevPage();
-      } else if (e.key === 'Escape') {
-        this.closeBook();
-      }
-    });
-
-    // Touch Swipe Navigation
-    let touchStartX = 0;
-    let touchStartY = 0;
-    if (this.bookSpread) {
-      this.bookSpread.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      }, { passive: true });
-
-      this.bookSpread.addEventListener('touchend', (e) => {
-        if (!this.isOpen || this.isFlipping) return;
-        const dx = e.changedTouches[0].clientX - touchStartX;
-        const dy = e.changedTouches[0].clientY - touchStartY;
-        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 35) {
-          if (dx < 0) this.nextPage();
-          else this.prevPage();
-        }
-      }, { passive: true });
-    }
-  }
-
-  _startParallaxLoop() {
-    const updateParallax = () => {
-      if (this.isOpen && this.bookContainer) {
-        // Linear interpolation for smooth lag
-        this.currentTiltX += (this.targetTiltX - this.currentTiltX) * 0.08;
-        this.currentTiltY += (this.targetTiltY - this.currentTiltY) * 0.08;
-
-        this.bookContainer.style.transform = `rotateX(${this.currentTiltX}deg) rotateY(${this.currentTiltY}deg)`;
-      }
-      requestAnimationFrame(updateParallax);
-    };
-    requestAnimationFrame(updateParallax);
-  }
-
-  _throttleWheel() {
-    this.wheelThrottleTimer = setTimeout(() => {
-      this.wheelThrottleTimer = null;
-    }, 450);
-  }
-
-  openBook() {
-    if (this.isOpen) return;
-    this.isOpen = true;
-    this.audio.playBookOpen();
-    this._flashSpell();
-
-    this.stateClosed.hidden = true;
-    this.stateOpen.hidden = false;
-
-    this.renderSpread(0);
-    this._showToast('⚡ Grimoire opened! Scroll or tap corners to turn pages.');
-  }
-
-  closeBook() {
-    if (!this.isOpen) return;
-    this.isOpen = false;
-    this.audio.playBookClose();
-
-    this.stateOpen.hidden = true;
-    this.stateClosed.hidden = false;
-    this._showToast('Grimoire sealed.');
-  }
-
-  nextPage() {
-    if (this.currentSpread >= this.totalSpreads - 1 || this.isFlipping) return;
-    this.turnToSpread(this.currentSpread + 1, 'forward');
-  }
-
-  prevPage() {
-    if (this.currentSpread <= 0 || this.isFlipping) return;
-    this.turnToSpread(this.currentSpread - 1, 'backward');
-  }
-
-  turnToSpread(targetIndex, direction = 'forward') {
-    if (targetIndex < 0 || targetIndex >= this.totalSpreads || this.isFlipping) return;
-    this.isFlipping = true;
-
-    // Play tactile paper sound
-    this.audio.playPageTurn();
-
-    const oldSpread = PORTFOLIO_SPREADS[this.currentSpread];
-    const newSpread = PORTFOLIO_SPREADS[targetIndex];
-
-    if (direction === 'forward') {
-      // Setup turning faces
-      this.pfFront.innerHTML = oldSpread.right;
-      this.pfBack.innerHTML  = newSpread.left;
-
-      // Trigger dynamic cast shadow on left stack
-      if (this.leftShadow) this.leftShadow.style.opacity = '1';
-
-      this.pageFlipper.className = 'page-flipper flip-forward';
-
-      // Halfway through arc: swap the base content
-      setTimeout(() => {
-        this.pageLeft.innerHTML = newSpread.left;
-        this.pageRight.innerHTML = newSpread.right;
-        if (this.leftShadow) this.leftShadow.style.opacity = '0';
-      }, 360);
-
-      // Animation complete
-      setTimeout(() => {
-        this.pageFlipper.className = 'page-flipper';
-        this.currentSpread = targetIndex;
-        this.updateControls();
-        this._attachDynamicListeners();
-        this.isFlipping = false;
-      }, 720);
-
-    } else {
-      // Backward turning
-      this.pfFront.innerHTML = oldSpread.left;
-      this.pfBack.innerHTML  = newSpread.right;
-
-      // Trigger dynamic cast shadow on right stack
-      if (this.rightShadow) this.rightShadow.style.opacity = '1';
-
-      this.pageFlipper.className = 'page-flipper flip-backward';
-
-      setTimeout(() => {
-        this.pageLeft.innerHTML = newSpread.left;
-        this.pageRight.innerHTML = newSpread.right;
-        if (this.rightShadow) this.rightShadow.style.opacity = '0';
-      }, 360);
-
-      setTimeout(() => {
-        this.pageFlipper.className = 'page-flipper';
-        this.currentSpread = targetIndex;
-        this.updateControls();
-        this._attachDynamicListeners();
-        this.isFlipping = false;
-      }, 720);
-    }
-  }
-
-  renderSpread(index) {
-    this.currentSpread = index;
-    const spread = PORTFOLIO_SPREADS[index];
-    this.pageLeft.innerHTML  = spread.left;
-    this.pageRight.innerHTML = spread.right;
-    this.updateControls();
-    this._attachDynamicListeners();
-  }
-
-  updateControls() {
-    // Update counter
-    const leftPageNum  = this.currentSpread * 2 + 1;
-    const rightPageNum = this.currentSpread * 2 + 2;
-    const totalPages   = this.totalSpreads * 2;
-    this.pageCounter.textContent = `Pages ${leftPageNum}–${rightPageNum} of ${totalPages}`;
-
-    // Update buttons
-    this.btnPrev.disabled = (this.currentSpread === 0);
-    this.btnNext.disabled = (this.currentSpread === this.totalSpreads - 1);
-
-    // Update corner curls visibility
-    if (this.curlBL) this.curlBL.style.display = (this.currentSpread === 0) ? 'none' : 'block';
-    if (this.curlBR) this.curlBR.style.display = (this.currentSpread === this.totalSpreads - 1) ? 'none' : 'block';
-  }
-
-  _attachDynamicListeners() {
-    // TOC Links click
-    const tocLinks = document.querySelectorAll('.toc-item');
-    tocLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const spreadIndex = parseInt(link.getAttribute('data-spread'), 10);
-        if (!isNaN(spreadIndex) && spreadIndex !== this.currentSpread) {
-          const dir = spreadIndex > this.currentSpread ? 'forward' : 'backward';
-          this.turnToSpread(spreadIndex, dir);
-        }
-      });
-    });
-
-    // Spell items click test
-    const spells = document.querySelectorAll('.spell-item');
-    spells.forEach(spell => {
-      spell.addEventListener('click', () => {
-        this.audio.playSpellChime();
-        this._flashSpell();
-        const name = spell.querySelector('.spell-name')?.textContent || 'Spell';
-        this._showToast(`✨ Invoked: ${name}`);
-      });
-    });
-
-    // Quill scratch sound when typing in inputs
-    const inputs = document.querySelectorAll('#book-owl-form input, #book-owl-form textarea');
-    inputs.forEach(input => {
-      input.addEventListener('input', () => {
-        this.audio.playQuillScratch();
-      });
-    });
-
-    // Owl Post Form Submit
-    const form = document.getElementById('book-owl-form');
-    if (form) {
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const sender = document.getElementById('owl-sender').value.trim();
-        const address = document.getElementById('owl-address').value.trim();
-        const message = document.getElementById('owl-message').value.trim();
-
-        if (!sender || !address || !message) {
-          this._showToast('⚠️ Please inscribe all fields on the scroll.');
+    const typeStep = () => {
+      const currentRole = roles[roleIdx];
+      if (!isDeleting) {
+        charIdx++;
+        this.typewriterEl.textContent = currentRole.substring(0, charIdx);
+        if (charIdx === currentRole.length) {
+          isDeleting = true;
+          setTimeout(typeStep, speed.pause);
           return;
         }
+      } else {
+        charIdx--;
+        this.typewriterEl.textContent = currentRole.substring(0, charIdx);
+        if (charIdx === 0) {
+          isDeleting = false;
+          roleIdx = (roleIdx + 1) % roles.length;
+        }
+      }
+      setTimeout(typeStep, isDeleting ? speed.del : speed.type);
+    };
 
-        const btn = document.getElementById('btn-dispatch');
-        const label = document.getElementById('dispatch-label');
-        btn.disabled = true;
-        label.textContent = 'Enchanting Owl...';
+    typeStep();
+  }
 
-        this.audio.playSnitchCatch();
+  /* Sorting Hat Experience */
+  _initSortingHat() {
+    const houseButtons = document.querySelectorAll('.house-btn');
+    houseButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selected = btn.dataset.house;
+        if (!HOUSE_DATA[selected]) return;
+
+        this.currentHouse = selected;
+        this.audio.playSortingFanfare();
         this._flashSpell();
 
+        // Update body class
+        document.body.className = `house-${selected}`;
+
+        // Update active button state
+        houseButtons.forEach(b => b.classList.remove('active-house'));
+        btn.classList.add('active-house');
+
+        // Update dialogue
+        if (this.dialogueEl) {
+          this.dialogueEl.textContent = HOUSE_DATA[selected].quote;
+        }
+
+        // Update passport
+        if (this.passportPoints) {
+          this.passportPoints.textContent = HOUSE_DATA[selected].points;
+        }
+
+        const passportHouse = document.querySelector('.house-highlight');
+        if (passportHouse) {
+          passportHouse.textContent = HOUSE_DATA[selected].name;
+        }
+
+        this._showToast(`🧙 Sorted into ${HOUSE_DATA[selected].name}! ${HOUSE_DATA[selected].crest}`);
+      });
+    });
+  }
+
+  /* Project Blueprint Inspector Modal */
+  _initModal() {
+    const inspectBtns = document.querySelectorAll('.btn-card-inspect');
+    inspectBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.inspect;
+        const data = PROJECT_BLUEPRINTS[id];
+        if (!data || !this.modal) return;
+
+        this.audio.playWandSwoosh();
+
+        document.getElementById('modal-eyebrow').textContent = data.eyebrow;
+        document.getElementById('modal-title').textContent = data.title;
+        document.getElementById('modal-desc').textContent = data.desc;
+
+        const tagsContainer = document.getElementById('modal-tags');
+        tagsContainer.innerHTML = data.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+        const highlightsContainer = document.getElementById('modal-highlights');
+        highlightsContainer.innerHTML = `<ul>${data.highlights.map(h => `<li>${h}</li>`).join('')}</ul>`;
+
+        const linksContainer = document.getElementById('modal-links');
+        linksContainer.innerHTML = data.links.map(l =>
+          `<a href="${l.url}" target="_blank" rel="noopener" class="btn-gold-primary">${l.label}</a>`
+        ).join('');
+
+        this.modal.hidden = false;
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    if (this.modalClose) {
+      this.modalClose.addEventListener('click', () => this._closeModal());
+    }
+    if (this.modal) {
+      this.modal.addEventListener('click', (e) => {
+        if (e.target === this.modal) this._closeModal();
+      });
+    }
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.modal && !this.modal.hidden) {
+        this._closeModal();
+      }
+    });
+  }
+
+  _closeModal() {
+    if (this.modal) {
+      this.modal.hidden = true;
+      document.body.style.overflow = '';
+    }
+  }
+
+  /* Navigation & Smooth Scroll */
+  _initNavScroll() {
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    // Header scroll background toggle
+    window.addEventListener('scroll', () => {
+      if (this.header) {
+        this.header.classList.toggle('scrolled', window.scrollY > 50);
+      }
+    });
+
+    // IntersectionObserver for active link update
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            const href = link.getAttribute('href').replace('#', '');
+            link.classList.toggle('active', href === id);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(s => observer.observe(s));
+
+    // Mobile menu toggle
+    if (this.mobileToggle && this.navLinks) {
+      this.mobileToggle.addEventListener('click', () => {
+        const isOpen = this.navLinks.classList.toggle('open');
+        this.mobileToggle.setAttribute('aria-expanded', isOpen);
+      });
+
+      this.navLinks.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          this.navLinks.classList.remove('open');
+          this.mobileToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+    }
+  }
+
+  /* Owl Post Form Submission */
+  _initOwlPost() {
+    const form = document.getElementById('owl-form');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = form.querySelector('#sender-name').value.trim();
+      const email = form.querySelector('#sender-email').value.trim();
+      const subject = form.querySelector('#letter-subject').value.trim();
+      const message = form.querySelector('#letter-message').value.trim();
+
+      if (!name || !email || !message) {
+        this._showToast('⚠️ Please inscribe all required fields on the scroll.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-dispatch');
+      const text = document.getElementById('dispatch-btn-text');
+      btn.disabled = true;
+      text.textContent = 'Enchanting Owl Post...';
+
+      this.audio.playOwlPost();
+      this._flashSpell();
+
+      setTimeout(() => {
+        this._showToast(`🦉 Owl dispatched to Harvender! Expect a swift reply, ${name}.`);
+        text.textContent = 'Owl Dispatched! ✉️';
+        form.reset();
         setTimeout(() => {
-          this._showToast(`🦉 Owl dispatched successfully from ${sender}!`);
-          label.textContent = 'Owl Dispatched! ✉️';
-          form.reset();
-          setTimeout(() => {
-            btn.disabled = false;
-            label.textContent = 'Release Owl Post';
-          }, 3000);
-        }, 1200);
+          btn.disabled = false;
+          text.textContent = 'Dispatch Owl Post';
+        }, 3000);
+      }, 1400);
+    });
+  }
+
+  /* Interactive Cards & 3D Tilt */
+  _initCardsInteractivity() {
+    // Masteries spells click
+    const masteryCards = document.querySelectorAll('.editorial-card');
+    masteryCards.forEach(card => {
+      card.addEventListener('click', () => {
+        this.audio.playSpellChime();
+        this._flashSpell();
+        const title = card.querySelector('.card-title')?.textContent || 'Spell';
+        this._showToast(`✨ Invoked: ${title}`);
+      });
+    });
+
+    // 3D Tilt on holo-tilt elements
+    const tiltElements = document.querySelectorAll('.holo-tilt');
+    tiltElements.forEach(el => {
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rx = ((y - cy) / cy) * -6;
+        const ry = ((x - cx) / cx) * 6;
+        el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = '';
+      });
+    });
+  }
+
+  /* Audio & Lumos Controls */
+  _initControls() {
+    if (this.btnSound) {
+      this.btnSound.addEventListener('click', () => {
+        const isOn = this.audio.toggle();
+        this.soundIcon.textContent = isOn ? '🔊' : '🔇';
+        this._showToast(isOn ? '🔊 Sound effects active' : '🔇 Sound effects muted');
+      });
+    }
+
+    if (this.btnLumos) {
+      this.btnLumos.addEventListener('click', () => {
+        const isLumos = document.body.classList.toggle('lumos-active');
+        this.lumosIcon.textContent = isLumos ? '🌙' : '✨';
+        this.audio.playLumos();
+        this._flashSpell();
+        this._showToast(isLumos ? '✨ Lumos Maxima!' : '🌙 Nox!');
       });
     }
   }
@@ -1202,15 +674,16 @@ class BookController {
     this.spellFlash.classList.add('active');
     setTimeout(() => {
       this.spellFlash.classList.remove('active');
-    }, 180);
+    }, 160);
   }
 }
 
 /* ═══════════════════════════════════════════════
-   5. DOM INITIALIZATION
+   6. DOM READY INITIALIZATION
    ═══════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
-  new AmbientDustEngine('ambient-canvas');
-  window.portfolioBook = new BookController();
-  console.log('%c⚡ Harvender Singh Rawat — Realistic 3D Grimoire Loaded ⚡', 'color:#d4af37; font-weight:bold; font-size:14px;');
+  new MagicCanvasEngine('magic-canvas');
+  window.wizardingPortfolio = new WizardingPortfolioApp();
+  console.log('%c⚡ Harvender Singh Rawat — Official Wizarding World Portfolio ⚡', 'color:#ffd700; font-weight:bold; font-size:15px;');
+  console.log('%c"Draco Dormiens Nunquam Titillandus"', 'color:#d4af37; font-style:italic;');
 });
