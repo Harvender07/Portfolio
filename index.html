@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvender Singh Rawat — Grimoire Portfolio</title>
+  <meta name="description" content="Harvender Singh Rawat (Rocky) — Interactive 3D Magical Book Portfolio. C++ Systems, Python AI, Cinematic Video, Interactive 3D Web." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════
+       SCENE — DARK LIBRARY DESK
+       ══════════════════════════════════ -->
+  <div id="scene">
+
+    <!-- AMBIENT PARTICLES (GOLDEN DUST / MOTES) -->
+    <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+    <!-- SPELL FLASH OVERLAY -->
+    <div id="spell-flash" aria-hidden="true"></div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <!-- CANDLE AT DESK -->
+    <div id="desk-candle" aria-hidden="true" title="Flickering Candle">
+      <div class="candle-halo"></div>
+      <div class="candle-glow"></div>
+      <div class="candle-flame"></div>
+      <div class="candle-wick"></div>
+      <div class="candle-wax"></div>
+      <div class="candle-holder"></div>
+    </div>
+
+    <!-- GOLDEN SNITCH COMPANION -->
+    <div id="snitch-companion" role="button" tabindex="0" aria-label="Catch the Golden Snitch! (+150 Points)" title="Click to catch the Golden Snitch!">
+      <div class="snitch-sphere">
+        <div class="snitch-rune">⚡</div>
+      </div>
+      <div class="snitch-wing snitch-wing-l"></div>
+      <div class="snitch-wing snitch-wing-r"></div>
+      <div class="snitch-aura"></div>
+      <div class="snitch-score-popup" id="snitch-score-popup">+150</div>
+    </div>
+
+    <!-- ════════════════════════════
+         CLOSED BOOK STATE
+         ════════════════════════════ -->
+    <div id="state-closed" class="scene-state">
+      <div class="desk-lamp-glow" aria-hidden="true"></div>
+
+      <div id="book-closed" role="button" tabindex="0" aria-label="Click to open portfolio grimoire">
+        <div class="book-3d">
+          <div class="b3d-spine">
+            <span class="spine-ribbon-tag">GRYFFINDOR</span>
+          </div>
+          <div class="b3d-pages"></div>
+          <div class="b3d-top"></div>
+          <div class="b3d-cover">
+            <!-- Corner brass brackets -->
+            <div class="brass-corner brass-tl"></div>
+            <div class="brass-corner brass-tr"></div>
+            <div class="brass-corner brass-bl"></div>
+            <div class="brass-corner brass-br"></div>
+
+            <div class="bc-top-ornament">✦ ⚡ ✦</div>
+            <div class="bc-crest" aria-hidden="true">
+              <div class="bc-crest-shield">
+                <span>G</span>
+              </div>
+            </div>
+            <div class="bc-title">PORTFOLIO</div>
+            <div class="bc-subtitle">THE SEEKER'S GRIMOIRE</div>
+            <div class="bc-rule" aria-hidden="true"></div>
+            <div class="bc-author">Harvender Singh Rawat</div>
+            <div class="bc-role">Systems · AI · Cinema · 3D Web</div>
+            <div class="bc-year">MMXXIV · HOGWARTS EDITION</div>
+            <div class="bc-bottom-ornament">✦ ✦ ✦</div>
+          </div>
+        </div>
+        <!-- Realistic 3D floor shadow -->
+        <div class="book-shadow" aria-hidden="true"></div>
+      </div>
+
+      <!-- Open prompt with pulsing feather -->
+      <p class="open-hint" aria-hidden="true">
+        <span class="hint-feather">🪶</span>
+        Click the Grimoire to Open
+      </p>
+    </div>
+
+    <!-- ════════════════════════════
+         OPEN BOOK STATE
+         ════════════════════════════ -->
+    <div id="state-open" class="scene-state" hidden>
+
+      <!-- Top bar with controls -->
+      <div class="book-topbar" role="toolbar" aria-label="Book controls">
+        <div class="topbar-left">
+          <button id="btn-close-book" class="btn-topbar" aria-label="Close book">
+            <span>✕</span> Close
+          </button>
+          <button id="btn-sound-toggle" class="btn-topbar" aria-label="Toggle Sound Effects" title="Toggle Sound">
+            <span id="sound-icon">🔊</span> Sound
+          </button>
+        </div>
+
+        <div class="book-title-bar">Harvender Singh Rawat — Grimoire</div>
+
+        <div class="topbar-right">
+          <button id="btn-toc-toggle" class="btn-topbar" aria-label="Table of Contents" title="Index of Chapters">
+            <span>📜</span> Index
+          </button>
+          <div class="book-page-counter" id="page-counter" aria-live="polite" aria-label="Page number">Pages 1–2 of 12</div>
+        </div>
+      </div>
+
+      <!-- The 3D Open Book Container (with 3D Parallax Tilt) -->
+      <div id="book-container-3d" class="book-container-3d">
+
+        <div id="book-spread" class="book-spread" role="main" aria-label="Portfolio book spread">
+
+          <!-- Cast shadow beneath the book -->
+          <div class="spread-desk-shadow" aria-hidden="true"></div>
+
+          <!-- Left page -->
+          <div class="book-page book-page-left" id="page-left" aria-label="Left page">
+            <!-- Injected dynamically -->
+          </div>
+
+          <!-- Dynamic Left Shadow overlay during page turns -->
+          <div class="page-shadow-overlay left-shadow" id="left-shadow-overlay" aria-hidden="true"></div>
+
+          <!-- Center spine / gutter with stitched leather & crease -->
+          <div class="book-gutter" aria-hidden="true">
+            <div class="gutter-shadow-l"></div>
+            <div class="gutter-line"></div>
+            <div class="gutter-shadow-r"></div>
+            <!-- Silk Bookmark Ribbon -->
+            <div class="book-ribbon" id="book-ribbon" title="Click for Chapter Navigation">
+              <div class="ribbon-tail"></div>
+            </div>
+          </div>
+
+          <!-- Right page -->
+          <div class="book-page book-page-right" id="page-right" aria-label="Right page">
+            <!-- Injected dynamically -->
+          </div>
+
+          <!-- Dynamic Right Shadow overlay during page turns -->
+          <div class="page-shadow-overlay right-shadow" id="right-shadow-overlay" aria-hidden="true"></div>
+
+          <!-- 3D Organic Curved Page Flipper (Multi-Segment Arc Simulation) -->
+          <div class="page-flipper" id="page-flipper" aria-hidden="true">
+            <div class="pf-segment-wrap" id="pf-segment-wrap">
+              <div class="pf-face pf-front" id="pf-front"></div>
+              <div class="pf-face pf-back"  id="pf-back"></div>
+              <div class="pf-curl-shadow" id="pf-curl-shadow"></div>
+              <div class="pf-specular-highlight" id="pf-specular-highlight"></div>
+            </div>
+          </div>
+
+          <!-- Interactive Corner Dog-Ear Curl (Bottom Right) -->
+          <div class="corner-curl corner-curl-br" id="corner-curl-br" title="Click or Drag to turn page forward">
+            <div class="curl-triangle"></div>
+            <div class="curl-shadow"></div>
+          </div>
+
+          <!-- Interactive Corner Dog-Ear Curl (Bottom Left) -->
+          <div class="corner-curl corner-curl-bl" id="corner-curl-bl" title="Click or Drag to turn page backward">
+            <div class="curl-triangle"></div>
+            <div class="curl-shadow"></div>
+          </div>
+
+        </div><!-- end #book-spread -->
+
+      </div><!-- end #book-container-3d -->
+
+      <!-- Bottom navigation bar -->
+      <div class="book-navbar" role="navigation" aria-label="Page navigation">
+        <button class="book-nav-btn" id="btn-prev" aria-label="Previous page">
+          ◀ Previous
+        </button>
+        <div class="nav-hint">
+          <span class="nav-hint-icon">✦</span> Scroll Wheel · Arrow Keys · Drag Corner <span class="nav-hint-icon">✦</span>
+        </div>
+        <button class="book-nav-btn" id="btn-next" aria-label="Next page">
+          Next ▶
+        </button>
+      </div>
+
+    </div><!-- end #state-open -->
+
+  </div><!-- end #scene -->
+
+  <script src="app.js"></script>
+</body>
+</html>

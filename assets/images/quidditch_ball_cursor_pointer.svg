@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <defs>
+    <!-- Radiant Golden Ball Gradient -->
+    <radialGradient id="snitchActiveGold" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="20%" stop-color="#fff8a6" />
+      <stop offset="55%" stop-color="#ffd700" />
+      <stop offset="85%" stop-color="#ff9900" />
+      <stop offset="100%" stop-color="#7a3e00" />
+    </radialGradient>
+
+    <!-- Glowing Active Wings -->
+    <linearGradient id="activeWingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#fff275" />
+      <stop offset="80%" stop-color="#ffb703" />
+      <stop offset="100%" stop-color="rgba(255, 183, 3, 0.2)" />
+    </linearGradient>
+
+    <filter id="superGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="1.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Radiant Aura Ring -->
+  <circle cx="18" cy="19" r="10.5" fill="none" stroke="#ffd700" stroke-width="1" stroke-dasharray="2 2" opacity="0.8" />
+
+  <!-- High Flutter Wings -->
+  <!-- Left Wing -->
+  <path d="M14 16 C10 6, 4 2, 2 2 C1 7, 6 13, 11 18 Z" fill="url(#activeWingGrad)" stroke="#ffffff" stroke-width="0.8" />
+  <path d="M13 14 C9 8, 5 4, 3 3" fill="none" stroke="#ffffff" stroke-width="0.6" />
+
+  <!-- Right Wing -->
+  <path d="M22 16 C26 6, 32 2, 34 2 C35 7, 30 13, 25 18 Z" fill="url(#activeWingGrad)" stroke="#ffffff" stroke-width="0.8" />
+  <path d="M23 14 C27 8, 31 4, 33 3" fill="none" stroke="#ffffff" stroke-width="0.6" />
+
+  <!-- The Golden Snitch Sphere -->
+  <circle cx="18" cy="19" r="8" fill="url(#snitchActiveGold)" stroke="#ffffff" stroke-width="1" filter="url(#superGlow)" />
+
+  <!-- Ball Runic Seams & Grooves -->
+  <path d="M13 17 C15.5 20.5, 20.5 20.5, 23 17" fill="none" stroke="#663300" stroke-width="0.9" stroke-linecap="round" />
+  <path d="M13 21 C15.5 17.5, 20.5 17.5, 23 21" fill="none" stroke="#663300" stroke-width="0.9" stroke-linecap="round" />
+
+  <!-- Action Starburst Pointer at (2, 2) -->
+  <polygon points="2,0 2.8,1.8 4.6,2 3.2,3.2 3.6,5 2,3.8 0.4,5 0.8,3.2 -0.6,2 1.2,1.8" fill="#ffd700" stroke="#ffffff" stroke-width="0.5" transform="translate(1, 1)" />
+</svg>
+
