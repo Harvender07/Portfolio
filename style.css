@@ -1770,3 +1770,367 @@ button {
     gap: 1.2rem;
   }
 }
+
+/* ══════════════════════════════════════════════
+   SPOKEN SPELL INCANTATION HUD BANNER
+   ══════════════════════════════════════════════ */
+#incantation-hud-root {
+  position: fixed;
+  top: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8500;
+  pointer-events: none;
+}
+
+.incantation-hud {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: linear-gradient(135deg, rgba(20, 24, 45, 0.96), rgba(8, 10, 22, 0.96));
+  border: 1.5px solid var(--gold-bright);
+  border-radius: 30px;
+  padding: 0.55rem 1.6rem;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.85), 0 0 25px var(--gold-glow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: incantation-slide-in 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: auto;
+  max-width: 90vw;
+}
+
+@keyframes incantation-slide-in {
+  from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.incantation-icon {
+  font-size: 1.3rem;
+  color: var(--gold-bright);
+  animation: pulse-speaker 1.2s ease-in-out infinite alternate;
+}
+@keyframes pulse-speaker {
+  from { transform: scale(1); filter: drop-shadow(0 0 2px var(--gold)); }
+  to   { transform: scale(1.2); filter: drop-shadow(0 0 8px var(--gold-bright)); }
+}
+
+.incantation-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.incantation-label {
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.incantation-quote {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--text-white);
+  letter-spacing: 0.04em;
+}
+
+/* Sound Wave Audio Visualizer */
+.incantation-waves {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 18px;
+}
+.wave-bar {
+  width: 3px;
+  background: linear-gradient(180deg, var(--gold-bright), var(--house-primary));
+  border-radius: 2px;
+  height: 100%;
+  animation: wave-bounce 0.8s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+.wave-bar:nth-child(1) { animation-delay: 0.05s; height: 40%; }
+.wave-bar:nth-child(2) { animation-delay: 0.15s; height: 80%; }
+.wave-bar:nth-child(3) { animation-delay: 0.25s; height: 100%; }
+.wave-bar:nth-child(4) { animation-delay: 0.35s; height: 60%; }
+.wave-bar:nth-child(5) { animation-delay: 0.45s; height: 90%; }
+@keyframes wave-bounce {
+  0%   { transform: scaleY(0.3); }
+  100% { transform: scaleY(1.1); }
+}
+
+/* ══════════════════════════════════════════════
+   INTERACTIVE 3D FLYING BROOM CONTROLLER
+   ══════════════════════════════════════════════ */
+#broom-root {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 7500;
+  pointer-events: auto;
+}
+
+.broom-flight-controller {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Flight states */
+.broom-flight-controller.broom-cruising {
+  animation: broom-hover-glide 4s ease-in-out infinite alternate;
+}
+.broom-flight-controller.broom-diving {
+  transform: translateY(24px) rotate(-18deg) scale(1.05);
+}
+.broom-flight-controller.broom-climbing {
+  transform: translateY(-22px) rotate(16deg) scale(1.05);
+}
+.broom-flight-controller.broom-boosted {
+  transform: scale(1.2) translate(-20px, -15px) rotate(-8deg);
+  filter: drop-shadow(0 0 25px var(--gold-bright));
+}
+
+@keyframes broom-hover-glide {
+  0%   { transform: translateY(0) rotate(-2deg); }
+  50%  { transform: translateY(-10px) rotate(1deg); }
+  100% { transform: translateY(2px) rotate(-4deg); }
+}
+
+/* Speech Bubble above the Seeker */
+.broom-speech-bubble {
+  background: rgba(15, 20, 38, 0.95);
+  border: 1px solid var(--gold);
+  border-radius: 12px 12px 0 12px;
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  color: var(--gold-bright);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  margin-bottom: 8px;
+  max-width: 210px;
+  text-align: center;
+  line-height: 1.4;
+  backdrop-filter: blur(8px);
+  animation: bubble-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes bubble-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Broom Assembly */
+.broom-assembly {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.8));
+}
+
+/* Harvender Seeker Pilot */
+.broom-rider {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px;
+  margin-right: -12px;
+  z-index: 3;
+}
+.rider-portrait-frame {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+  flex-shrink: 0;
+  background: #000;
+}
+.rider-portrait-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Billowing Gryffindor Scarlet Cape */
+.rider-scarlet-cape {
+  position: absolute;
+  top: 36px;
+  right: 28px;
+  width: 32px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--house-primary) 0%, var(--house-dark) 100%);
+  clip-path: polygon(15% 0%, 85% 0%, 100% 100%, 0% 100%);
+  transform-origin: top right;
+  animation: cape-flutter 0.6s ease-in-out infinite alternate;
+  box-shadow: -2px 4px 8px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+@keyframes cape-flutter {
+  0%   { transform: rotate(-5deg) skewX(-4deg) scaleY(0.95); }
+  100% { transform: rotate(18deg) skewX(8deg) scaleY(1.08); }
+}
+
+/* Broom Wooden Stick & Tail */
+.broom-stick-wrap {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.broom-handle {
+  width: 105px;
+  height: 9px;
+  background: linear-gradient(90deg, #1e0d05 0%, #4a240f 25%, #7a3e1c 50%, #4a240f 80%, #2b1307 100%);
+  border-radius: 5px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), 0 2px 6px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+/* Gold Ferrules */
+.broom-handle::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: 25px;
+  width: 4px;
+  background: var(--gold-bright);
+  border-radius: 1px;
+  box-shadow: 0 0 4px var(--gold);
+}
+.broom-handle::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: 65px;
+  width: 4px;
+  background: var(--gold-bright);
+  border-radius: 1px;
+  box-shadow: 0 0 4px var(--gold);
+}
+
+/* Golden Birch Twigs / Bristles */
+.broom-bristles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: -2px;
+}
+.broom-bristles span {
+  display: block;
+  height: 2.5px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, #7a3e1c 0%, #c4832c 40%, #e6a745 80%, #ffd700 100%);
+  transform-origin: left center;
+  box-shadow: 0 0 4px rgba(212, 175, 55, 0.4);
+}
+.broom-bristles span:nth-child(1) { width: 24px; transform: rotate(-22deg) translateY(-4px); }
+.broom-bristles span:nth-child(2) { width: 30px; transform: rotate(-12deg) translateY(-2px); }
+.broom-bristles span:nth-child(3) { width: 34px; transform: rotate(0deg); }
+.broom-bristles span:nth-child(4) { width: 30px; transform: rotate(12deg) translateY(2px); }
+.broom-bristles span:nth-child(5) { width: 24px; transform: rotate(22deg) translateY(4px); }
+
+/* Wind Speeds & Jet Streak */
+.broom-wind-streaks {
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  pointer-events: none;
+}
+.wind-line {
+  height: 1.5px;
+  border-radius: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6), transparent);
+  animation: wind-streak-move 0.4s linear infinite;
+}
+.wind-line:nth-child(1) { width: 35px; animation-duration: 0.35s; }
+.wind-line:nth-child(2) { width: 50px; animation-duration: 0.25s; }
+.wind-line:nth-child(3) { width: 40px; animation-duration: 0.4s; }
+
+@keyframes wind-streak-move {
+  0%   { transform: translateX(25px); opacity: 0; }
+  50%  { opacity: 0.8; }
+  100% { transform: translateX(-40px); opacity: 0; }
+}
+
+/* Speedometer Telemetry HUD */
+.broom-telemetry-hud {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(12, 16, 32, 0.9);
+  border: 1px solid var(--border-gold);
+  border-radius: 20px;
+  padding: 0.3rem 0.75rem;
+  font-family: var(--font-code);
+  font-size: 0.65rem;
+  color: var(--gold);
+  margin-top: 6px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+.telemetry-val {
+  color: var(--text-white);
+  font-weight: 700;
+}
+.btn-broom-boost {
+  background: linear-gradient(135deg, var(--house-dark), var(--house-primary));
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  color: var(--gold-bright);
+  font-family: var(--font-heading);
+  font-size: 0.62rem;
+  padding: 1px 6px;
+  letter-spacing: 0.05em;
+  transition: var(--transition);
+}
+.btn-broom-boost:hover {
+  background: var(--house-primary);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* Fullscreen Broom Flyby */
+.broom-flyby-ghost {
+  position: fixed;
+  top: 35vh;
+  left: -200px;
+  z-index: 99998;
+  pointer-events: none;
+  animation: screen-flyby 1.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes screen-flyby {
+  0% {
+    transform: translate(-100px, 120px) rotate(-15deg) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate(50vw, -80px) rotate(-5deg) scale(1.3);
+    filter: drop-shadow(0 0 35px var(--gold-bright));
+  }
+  100% {
+    transform: translate(110vw, -160px) rotate(8deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  #broom-root {
+    bottom: 1rem;
+    right: 1rem;
+    transform: scale(0.85);
+    transform-origin: bottom right;
+  }
+}

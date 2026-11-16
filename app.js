@@ -1,10 +1,12 @@
 /* ============================================================
    HARVENDER SINGH RAWAT — OFFICIAL WIZARDING PORTFOLIO
-   app.js — Inspired by HarryPotter.com (Wizarding World)
-   Interactive Sorting Hat, Web Audio Engine & Editorial UX
+   app.js — Powered by React 18, Web Speech API & Web Audio
+   Broom Animation, Spoken Spells & HarryPotter.com Experience
    ============================================================ */
 
 'use strict';
+
+const h = React.createElement;
 
 /* ═══════════════════════════════════════════════
    1. WIZARDING AUDIO SYNTHESIZER (Web Audio API)
@@ -32,7 +34,7 @@ class WizardAudio {
     return this.enabled;
   }
 
-  /* Wand flick & swoosh */
+  /* Wand flick swoosh */
   playWandSwoosh() {
     if (!this.enabled) return;
     this._init();
@@ -61,6 +63,42 @@ class WizardAudio {
     const gain = this.ctx.createGain();
     gain.gain.setValueAtTime(0.01, t);
     gain.gain.linearRampToValueAtTime(0.25, t + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    src.start(t);
+  }
+
+  /* Turbo broom supersonic boost whoosh */
+  playBroomBoost() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const t = this.ctx.currentTime;
+    const dur = 0.55;
+    const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+
+    for (let i = 0; i < data.length; i++) {
+      const env = Math.sin((i / data.length) * Math.PI);
+      data[i] = (Math.random() * 2 - 1) * env;
+    }
+
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, t);
+    filter.frequency.exponentialRampToValueAtTime(3800, t + 0.2);
+    filter.frequency.exponentialRampToValueAtTime(300, t + dur);
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, t);
+    gain.gain.linearRampToValueAtTime(0.35, t + 0.1);
     gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
 
     src.connect(filter);
@@ -140,7 +178,6 @@ class WizardAudio {
     if (!this.ctx) return;
 
     const t = this.ctx.currentTime;
-    // Two gentle hoot frequencies
     const hoots = [[440, 0], [493.88, 0.16], [440, 0.38]];
     hoots.forEach(([freq, delay]) => {
       const osc = this.ctx.createOscillator();
@@ -158,7 +195,419 @@ class WizardAudio {
 }
 
 /* ═══════════════════════════════════════════════
-   2. STARRY NIGHT & EMBER CANVAS
+   2. SPOKEN SPELLS ENGINE (Web Speech API)
+   ═══════════════════════════════════════════════ */
+class SpokenSpellEngine {
+  constructor(audio) {
+    this.audio = audio;
+    this.enabled = true;
+    this.synth = window.speechSynthesis || null;
+    this.currentUtterance = null;
+    this.onSpeechStart = null;
+    this.onSpeechEnd = null;
+
+    // Dictionary of spoken incantations according to topics
+    this.topicSpells = {
+      p1: {
+        incantation: 'Compilicus Maxima! Accio Raytracer!',
+        speech: 'Compilicus Maxima! Accio Raytracer! Rendering physical light from pure mathematics.'
+      },
+      p2: {
+        incantation: 'Legilimens Automata! Awaken AI Agent!',
+        speech: 'Legilimens Automata! Awaken the thinking mind and execute autonomous tool loops.'
+      },
+      p3: {
+        incantation: 'Cinematicus Revelio! Motion VFX!',
+        speech: 'Cinematicus Revelio! Illuminating the grand visual illusion.'
+      },
+      p4: {
+        incantation: 'Aura WebGL! Bending 3D Light!',
+        speech: 'Aura WebGL! Bending three dimensions into living interactive light.'
+      },
+      cpp: {
+        incantation: 'Compilicus Maxima!',
+        speech: 'Compilicus Maxima! C plus plus systems invoked!'
+      },
+      python: {
+        incantation: 'Pythonis Automata!',
+        speech: 'Pythonis Automata! Python intelligence unleashed!'
+      },
+      video: {
+        incantation: 'Cinematicus Revelio!',
+        speech: 'Cinematicus Revelio! Cinematic storytelling revealed!'
+      },
+      web: {
+        incantation: 'Aura WebGL!',
+        speech: 'Aura WebGL! Three dimensional web summoned!'
+      },
+      gryffindor: {
+        incantation: 'Gryffindor! Daring & Chivalry!',
+        speech: 'Gryffindor! Where dwell the brave at heart, their daring, nerve, and chivalry set Gryffindors apart!'
+      },
+      slytherin: {
+        incantation: 'Slytherin! Ambition & Power!',
+        speech: 'Slytherin! Where those cunning folk use any means to achieve their ends!'
+      },
+      ravenclaw: {
+        incantation: 'Ravenclaw! Wit & Wisdom!',
+        speech: 'Ravenclaw! Where those of wit and learning will always find their kind!'
+      },
+      hufflepuff: {
+        incantation: 'Hufflepuff! Loyalty & Patience!',
+        speech: 'Hufflepuff! Where they are just and loyal, patient and unafraid of toil!'
+      },
+      owl: {
+        incantation: 'Expecto Nuntium! Dispatch Owl!',
+        speech: 'Expecto Nuntium! Fly swift, noble owl of Hogwarts!'
+      }
+    };
+  }
+
+  toggle() {
+    this.enabled = !this.enabled;
+    if (!this.enabled && this.synth) {
+      this.synth.cancel();
+      if (this.onSpeechEnd) this.onSpeechEnd();
+    }
+    return this.enabled;
+  }
+
+  speak(topicKey) {
+    const spellData = this.topicSpells[topicKey];
+    if (!spellData) return;
+
+    // Trigger spell chime audio
+    this.audio.playSpellChime();
+
+    // Trigger visual HUD banner callback
+    if (this.onSpeechStart) {
+      this.onSpeechStart(spellData.incantation);
+    }
+
+    if (!this.enabled || !this.synth) {
+      // Auto close banner after 2.5s if voice is disabled
+      setTimeout(() => {
+        if (this.onSpeechEnd) this.onSpeechEnd();
+      }, 2500);
+      return;
+    }
+
+    // Cancel any ongoing speech
+    this.synth.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(spellData.speech);
+    utterance.rate = 0.92;   // Regal, deliberate wizard pace
+    utterance.pitch = 0.95;  // Slightly deeper resonant timbre
+
+    // Try selecting an English voice (preferring British English for Hogwarts flair)
+    const voices = this.synth.getVoices();
+    const britishVoice = voices.find(v => v.lang.includes('en-GB') || v.name.toLowerCase().includes('daniel') || v.name.toLowerCase().includes('oliver') || v.name.toLowerCase().includes('george'));
+    const englishVoice = voices.find(v => v.lang.startsWith('en'));
+    if (britishVoice) {
+      utterance.voice = britishVoice;
+    } else if (englishVoice) {
+      utterance.voice = englishVoice;
+    }
+
+    utterance.onend = () => {
+      if (this.onSpeechEnd) this.onSpeechEnd();
+    };
+    utterance.onerror = () => {
+      if (this.onSpeechEnd) this.onSpeechEnd();
+    };
+
+    this.currentUtterance = utterance;
+    this.synth.speak(utterance);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   3. REACT COMPONENT: SPOKEN INCANTATION HUD
+   ═══════════════════════════════════════════════ */
+function IncantationHudComponent() {
+  const [activeSpell, setActiveSpell] = React.useState(null);
+
+  React.useEffect(() => {
+    window.spellEngine.onSpeechStart = (incantation) => {
+      setActiveSpell(incantation);
+    };
+    window.spellEngine.onSpeechEnd = () => {
+      setActiveSpell(null);
+    };
+  }, []);
+
+  if (!activeSpell) return null;
+
+  return h('div', { className: 'incantation-hud', role: 'status', 'aria-live': 'assertive' },
+    h('span', { className: 'incantation-icon', 'aria-hidden': 'true' }, '🗣️'),
+    h('div', { className: 'incantation-text-wrap' },
+      h('span', { className: 'incantation-label' }, 'SPOKEN SPELL INCANTATION'),
+      h('span', { className: 'incantation-quote' }, `"${activeSpell}"`)
+    ),
+    h('div', { className: 'incantation-waves', 'aria-hidden': 'true' },
+      h('span', { className: 'wave-bar' }),
+      h('span', { className: 'wave-bar' }),
+      h('span', { className: 'wave-bar' }),
+      h('span', { className: 'wave-bar' }),
+      h('span', { className: 'wave-bar' })
+    )
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   4. REACT COMPONENT: 3D FLYING BROOM CONTROLLER
+   ═══════════════════════════════════════════════ */
+function BroomFlightComponent() {
+  const [speed, setSpeed] = React.useState(110);
+  const [altitude, setAltitude] = React.useState(240);
+  const [isDiving, setIsDiving] = React.useState(false);
+  const [isClimbing, setIsClimbing] = React.useState(false);
+  const [boostActive, setBoostActive] = React.useState(false);
+  const [bubbleText, setBubbleText] = React.useState('Seeking glory on the Nimbus 2000! ⚡');
+  const [showBubble, setShowBubble] = React.useState(false);
+  const [showFlyby, setShowFlyby] = React.useState(false);
+
+  const lastScrollY = React.useRef(window.scrollY);
+  const scrollTimeout = React.useRef(null);
+
+  // Scroll-driven dive / climb physics
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollY.current;
+      lastScrollY.current = currentScrollY;
+
+      if (delta > 15) {
+        // Scrolling down -> Dive
+        setIsDiving(true);
+        setIsClimbing(false);
+        setSpeed(prev => Math.min(155, Math.round(110 + delta * 1.2)));
+        setAltitude(prev => Math.max(80, Math.round(240 - delta * 2)));
+      } else if (delta < -15) {
+        // Scrolling up -> Climb
+        setIsClimbing(true);
+        setIsDiving(false);
+        setSpeed(prev => Math.min(140, Math.round(110 + Math.abs(delta))));
+        setAltitude(prev => Math.min(480, Math.round(240 + Math.abs(delta) * 2)));
+      }
+
+      // Smoothly level out when scrolling stops
+      clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => {
+        setIsDiving(false);
+        setIsClimbing(false);
+        setSpeed(110);
+        setAltitude(240);
+      }, 400);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Click to trigger Turbo Boost ("Accelerando!")
+  const handleBoostClick = (e) => {
+    e.stopPropagation();
+    if (boostActive) return;
+
+    window.wizardAudio.playBroomBoost();
+    window.spellEngine.speak('p1'); // Speaks spell
+    setBoostActive(true);
+    setSpeed(175);
+    setAltitude(360);
+    setBubbleText('Accelerando! Turbo engaged at 175 MPH! ⚡');
+    setShowBubble(true);
+
+    // Also trigger full-screen flyby
+    setShowFlyby(true);
+    setTimeout(() => setShowFlyby(false), 1400);
+
+    setTimeout(() => {
+      setBoostActive(false);
+      setSpeed(110);
+      setAltitude(240);
+      setTimeout(() => setShowBubble(false), 3500);
+    }, 1200);
+  };
+
+  // Flying state class
+  let flightClass = 'broom-cruising';
+  if (boostActive) flightClass = 'broom-boosted';
+  else if (isDiving) flightClass = 'broom-diving';
+  else if (isClimbing) flightClass = 'broom-climbing';
+
+  return h(React.Fragment, null,
+    // Fullscreen Ghost Flyby during Boost
+    showFlyby && h('div', { className: 'broom-flyby-ghost', 'aria-hidden': 'true' },
+      h('div', { className: 'broom-assembly' },
+        h('div', { className: 'broom-rider' },
+          h('div', { className: 'rider-portrait-frame' },
+            h('img', { src: 'assets/images/quidditch_seeker_avatar.jpg', alt: 'Harvender' })
+          ),
+          h('div', { className: 'rider-scarlet-cape' })
+        ),
+        h('div', { className: 'broom-stick-wrap' },
+          h('div', { className: 'broom-handle' }),
+          h('div', { className: 'broom-bristles' },
+            h('span'), h('span'), h('span'), h('span'), h('span')
+          )
+        )
+      )
+    ),
+
+    // Main Floating Seeker Broom Widget (Bottom Right)
+    h('div', {
+      className: `broom-flight-controller ${flightClass}`,
+      onClick: handleBoostClick,
+      title: 'Click for Turbo Boost (Accelerando!)'
+    },
+      // Dynamic Speech Bubble
+      showBubble && h('div', { className: 'broom-speech-bubble' }, bubbleText),
+
+      // Broom Assembly
+      h('div', { className: 'broom-assembly' },
+        // Rider
+        h('div', { className: 'broom-rider' },
+          h('div', { className: 'rider-portrait-frame' },
+            h('img', { src: 'assets/images/quidditch_seeker_avatar.jpg', alt: 'Harvender — Gryffindor Seeker' })
+          ),
+          h('div', { className: 'rider-scarlet-cape' })
+        ),
+        // Stick & Tail
+        h('div', { className: 'broom-stick-wrap' },
+          h('div', { className: 'broom-wind-streaks' },
+            h('span', { className: 'wind-line' }),
+            h('span', { className: 'wind-line' }),
+            h('span', { className: 'wind-line' })
+          ),
+          h('div', { className: 'broom-handle' }),
+          h('div', { className: 'broom-bristles' },
+            h('span'), h('span'), h('span'), h('span'), h('span')
+          )
+        )
+      ),
+
+      // Speedometer Telemetry HUD
+      h('div', { className: 'broom-telemetry-hud' },
+        h('span', null, 'NIMBUS 2000'),
+        h('span', null, '·'),
+        h('span', { className: 'telemetry-val' }, `${speed} MPH`),
+        h('span', null, '·'),
+        h('span', null, `ALT ${altitude}FT`),
+        h('button', { className: 'btn-broom-boost', onClick: handleBoostClick }, 'BOOST ⚡')
+      )
+    )
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   5. LIVE MOVING ANIMATED SNITCH CURSOR ENGINE
+   ═══════════════════════════════════════════════ */
+class LiveMovingCursorEngine {
+  constructor(cursorId) {
+    this.el = document.getElementById(cursorId);
+    if (!this.el) return;
+
+    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!hasFinePointer) {
+      this.el.style.display = 'none';
+      return;
+    }
+
+    this.snitch = this.el.querySelector('.cursor-snitch');
+    this.trailDot = this.el.querySelector('.cursor-trail');
+
+    this.targetX = window.innerWidth / 2;
+    this.targetY = window.innerHeight / 2;
+    this.currentX = this.targetX;
+    this.currentY = this.targetY;
+    this.trailX = this.targetX;
+    this.trailY = this.targetY;
+    this.tilt = 0;
+    this.isVisible = false;
+
+    this._bindEvents();
+    this._startLoop();
+  }
+
+  _bindEvents() {
+    window.addEventListener('mousemove', (e) => {
+      this.targetX = e.clientX;
+      this.targetY = e.clientY;
+
+      if (!this.isVisible) {
+        this.isVisible = true;
+        this.el.classList.add('visible');
+      }
+    }, { passive: true });
+
+    document.addEventListener('mouseenter', () => {
+      this.isVisible = true;
+      this.el.classList.add('visible');
+    });
+
+    document.addEventListener('mouseleave', () => {
+      this.isVisible = false;
+      this.el.classList.remove('visible');
+    });
+
+    window.addEventListener('mousedown', () => {
+      this.el.classList.add('cursor-click');
+    });
+    window.addEventListener('mouseup', () => {
+      this.el.classList.remove('cursor-click');
+    });
+
+    const interactiveSelector = 'a, button, [role="button"], input, textarea, select, .editorial-card, .project-feature-card, .house-btn, .vault-badge-card, .channel-link-card, .btn-action-icon, .btn-passport-cta, .broom-flight-controller';
+
+    document.addEventListener('mouseover', (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        this.el.classList.add('cursor-hover');
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest(interactiveSelector)) {
+        this.el.classList.remove('cursor-hover');
+      }
+    });
+  }
+
+  _startLoop() {
+    const update = () => {
+      const dx = this.targetX - this.currentX;
+      const dy = this.targetY - this.currentY;
+
+      this.currentX += dx * 0.22;
+      this.currentY += dy * 0.22;
+
+      this.trailX += (this.currentX - this.trailX) * 0.35;
+      this.trailY += (this.currentY - this.trailY) * 0.35;
+
+      const targetTilt = Math.max(-25, Math.min(25, dx * 0.65));
+      this.tilt += (targetTilt - this.tilt) * 0.15;
+
+      this.el.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0)`;
+
+      if (this.snitch) {
+        this.snitch.style.transform = `rotate(${this.tilt}deg)`;
+      }
+
+      if (this.trailDot) {
+        const offsetTrailX = this.trailX - this.currentX;
+        const offsetTrailY = this.trailY - this.currentY;
+        this.trailDot.style.transform = `translate3d(${offsetTrailX}px, ${offsetTrailY}px, 0)`;
+      }
+
+      requestAnimationFrame(update);
+    };
+
+    requestAnimationFrame(update);
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   6. STARRY NIGHT & EMBER CANVAS
    ═══════════════════════════════════════════════ */
 class MagicCanvasEngine {
   constructor(canvasId) {
@@ -167,8 +616,6 @@ class MagicCanvasEngine {
     this.ctx = this.canvas.getContext('2d');
     this.stars = [];
     this.motes = [];
-    this.mouseX = window.innerWidth / 2;
-    this.mouseY = window.innerHeight / 2;
 
     this._resize();
     this._initObjects();
@@ -185,7 +632,6 @@ class MagicCanvasEngine {
     this.stars = [];
     this.motes = [];
 
-    // Background twinkling stars
     const starCount = Math.floor((this.width * this.height) / 8000);
     for (let i = 0; i < starCount; i++) {
       this.stars.push({
@@ -198,7 +644,6 @@ class MagicCanvasEngine {
       });
     }
 
-    // Floating golden embers
     for (let i = 0; i < 35; i++) {
       this.motes.push({
         x: Math.random() * this.width,
@@ -216,16 +661,11 @@ class MagicCanvasEngine {
       this._resize();
       this._initObjects();
     });
-    window.addEventListener('mousemove', (e) => {
-      this.mouseX = e.clientX;
-      this.mouseY = e.clientY;
-    });
   }
 
   _render() {
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // Stars
     for (let i = 0; i < this.stars.length; i++) {
       const s = this.stars[i];
       s.alpha += s.da;
@@ -239,7 +679,6 @@ class MagicCanvasEngine {
       this.ctx.fill();
     }
 
-    // Motes
     for (let i = 0; i < this.motes.length; i++) {
       const m = this.motes[i];
       m.x += m.vx;
@@ -266,7 +705,7 @@ class MagicCanvasEngine {
 }
 
 /* ═══════════════════════════════════════════════
-   3. PROJECT BLUEPRINT DATABASE & INSPECTOR
+   7. PROJECT BLUEPRINT DATABASE & INSPECTOR
    ═══════════════════════════════════════════════ */
 const PROJECT_BLUEPRINTS = {
   p1: {
@@ -332,7 +771,7 @@ const PROJECT_BLUEPRINTS = {
 };
 
 /* ═══════════════════════════════════════════════
-   4. SORTING HAT & HOUSE SYSTEM
+   8. SORTING HAT & HOUSE SYSTEM
    ═══════════════════════════════════════════════ */
 const HOUSE_DATA = {
   gryffindor: {
@@ -357,129 +796,17 @@ const HOUSE_DATA = {
     name: 'Hufflepuff',
     crest: '🦡',
     points: '425 PTS',
-    quote: '"Where they are just and loyal, patient Hufflepuffs are true and unafraid of toil!"'
+    quote: '"Where they are just and loyal, patient and unafraid of toil!"'
   }
 };
 
 /* ═══════════════════════════════════════════════
-   5. LIVE MOVING ANIMATED SNITCH CURSOR ENGINE
-   ═══════════════════════════════════════════════ */
-class LiveMovingCursorEngine {
-  constructor(cursorId) {
-    this.el = document.getElementById(cursorId);
-    if (!this.el) return;
-
-    // Check if device supports fine hover pointer
-    const hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    if (!hasFinePointer) {
-      this.el.style.display = 'none';
-      return;
-    }
-
-    this.snitch = this.el.querySelector('.cursor-snitch');
-    this.trailDot = this.el.querySelector('.cursor-trail');
-
-    this.targetX = window.innerWidth / 2;
-    this.targetY = window.innerHeight / 2;
-    this.currentX = this.targetX;
-    this.currentY = this.targetY;
-    this.trailX = this.targetX;
-    this.trailY = this.targetY;
-    this.tilt = 0;
-    this.isVisible = false;
-
-    this._bindEvents();
-    this._startLoop();
-  }
-
-  _bindEvents() {
-    window.addEventListener('mousemove', (e) => {
-      this.targetX = e.clientX;
-      this.targetY = e.clientY;
-
-      if (!this.isVisible) {
-        this.isVisible = true;
-        this.el.classList.add('visible');
-      }
-    }, { passive: true });
-
-    document.addEventListener('mouseenter', () => {
-      this.isVisible = true;
-      this.el.classList.add('visible');
-    });
-
-    document.addEventListener('mouseleave', () => {
-      this.isVisible = false;
-      this.el.classList.remove('visible');
-    });
-
-    // Click burst feedback
-    window.addEventListener('mousedown', () => {
-      this.el.classList.add('cursor-click');
-    });
-    window.addEventListener('mouseup', () => {
-      this.el.classList.remove('cursor-click');
-    });
-
-    // Interactive Hover State Delegation
-    const interactiveSelector = 'a, button, [role="button"], input, textarea, select, .editorial-card, .project-feature-card, .house-btn, .vault-badge-card, .channel-link-card, .btn-action-icon, .btn-passport-cta';
-
-    document.addEventListener('mouseover', (e) => {
-      if (e.target.closest(interactiveSelector)) {
-        this.el.classList.add('cursor-hover');
-      }
-    });
-
-    document.addEventListener('mouseout', (e) => {
-      if (e.target.closest(interactiveSelector)) {
-        this.el.classList.remove('cursor-hover');
-      }
-    });
-  }
-
-  _startLoop() {
-    const update = () => {
-      // Smooth linear interpolation (lerp)
-      const dx = this.targetX - this.currentX;
-      const dy = this.targetY - this.currentY;
-
-      this.currentX += dx * 0.22;
-      this.currentY += dy * 0.22;
-
-      // Trailing dot follows slightly behind
-      this.trailX += (this.currentX - this.trailX) * 0.35;
-      this.trailY += (this.currentY - this.trailY) * 0.35;
-
-      // Calculate banking tilt based on horizontal velocity
-      const targetTilt = Math.max(-25, Math.min(25, dx * 0.65));
-      this.tilt += (targetTilt - this.tilt) * 0.15;
-
-      // Apply transform
-      this.el.style.transform = `translate3d(${this.currentX}px, ${this.currentY}px, 0)`;
-
-      if (this.snitch) {
-        this.snitch.style.transform = `rotate(${this.tilt}deg)`;
-      }
-
-      if (this.trailDot) {
-        const offsetTrailX = this.trailX - this.currentX;
-        const offsetTrailY = this.trailY - this.currentY;
-        this.trailDot.style.transform = `translate3d(${offsetTrailX}px, ${offsetTrailY}px, 0)`;
-      }
-
-      requestAnimationFrame(update);
-    };
-
-    requestAnimationFrame(update);
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   6. MAIN APP CONTROLLER
+   9. MAIN APP CONTROLLER
    ═══════════════════════════════════════════════ */
 class WizardingPortfolioApp {
   constructor() {
-    this.audio = new WizardAudio();
+    this.audio = window.wizardAudio;
+    this.speech = window.spellEngine;
     this.currentHouse = 'gryffindor';
 
     // Elements
@@ -488,6 +815,8 @@ class WizardingPortfolioApp {
     this.navLinks = document.getElementById('nav-links');
     this.btnSound = document.getElementById('btn-sound');
     this.soundIcon = document.getElementById('sound-icon');
+    this.btnVoice = document.getElementById('btn-voice');
+    this.voiceIcon = document.getElementById('voice-icon');
     this.btnLumos = document.getElementById('btn-lumos');
     this.lumosIcon = document.getElementById('lumos-icon');
     this.toast = document.getElementById('toast');
@@ -559,6 +888,9 @@ class WizardingPortfolioApp {
         this.audio.playSortingFanfare();
         this._flashSpell();
 
+        // Speak house sorting decree
+        this.speech.speak(selected);
+
         // Update body class
         document.body.className = `house-${selected}`;
 
@@ -586,7 +918,7 @@ class WizardingPortfolioApp {
     });
   }
 
-  /* Project Blueprint Inspector Modal */
+  /* Project Blueprint Inspector Modal with Spoken Spell Trigger */
   _initModal() {
     const inspectBtns = document.querySelectorAll('.btn-card-inspect');
     inspectBtns.forEach(btn => {
@@ -595,6 +927,8 @@ class WizardingPortfolioApp {
         const data = PROJECT_BLUEPRINTS[id];
         if (!data || !this.modal) return;
 
+        // Speak the topic-specific spell according to the project!
+        this.speech.speak(id);
         this.audio.playWandSwoosh();
 
         document.getElementById('modal-eyebrow').textContent = data.eyebrow;
@@ -644,14 +978,12 @@ class WizardingPortfolioApp {
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    // Header scroll background toggle
     window.addEventListener('scroll', () => {
       if (this.header) {
         this.header.classList.toggle('scrolled', window.scrollY > 50);
       }
     });
 
-    // IntersectionObserver for active link update
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -666,7 +998,6 @@ class WizardingPortfolioApp {
 
     sections.forEach(s => observer.observe(s));
 
-    // Mobile menu toggle
     if (this.mobileToggle && this.navLinks) {
       this.mobileToggle.addEventListener('click', () => {
         const isOpen = this.navLinks.classList.toggle('open');
@@ -705,6 +1036,7 @@ class WizardingPortfolioApp {
       text.textContent = 'Enchanting Owl Post...';
 
       this.audio.playOwlPost();
+      this.speech.speak('owl');
       this._flashSpell();
 
       setTimeout(() => {
@@ -721,18 +1053,17 @@ class WizardingPortfolioApp {
 
   /* Interactive Cards & 3D Tilt */
   _initCardsInteractivity() {
-    // Masteries spells click
     const masteryCards = document.querySelectorAll('.editorial-card');
     masteryCards.forEach(card => {
       card.addEventListener('click', () => {
-        this.audio.playSpellChime();
+        const spell = card.dataset.spell;
+        this.speech.speak(spell);
         this._flashSpell();
         const title = card.querySelector('.card-title')?.textContent || 'Spell';
         this._showToast(`✨ Invoked: ${title}`);
       });
     });
 
-    // 3D Tilt on holo-tilt elements
     const tiltElements = document.querySelectorAll('.holo-tilt');
     tiltElements.forEach(el => {
       el.addEventListener('mousemove', (e) => {
@@ -751,13 +1082,21 @@ class WizardingPortfolioApp {
     });
   }
 
-  /* Audio & Lumos Controls */
+  /* Audio, Voice & Lumos Controls */
   _initControls() {
     if (this.btnSound) {
       this.btnSound.addEventListener('click', () => {
         const isOn = this.audio.toggle();
         this.soundIcon.textContent = isOn ? '🔊' : '🔇';
         this._showToast(isOn ? '🔊 Sound effects active' : '🔇 Sound effects muted');
+      });
+    }
+
+    if (this.btnVoice) {
+      this.btnVoice.addEventListener('click', () => {
+        const isVoiceOn = this.speech.toggle();
+        this.voiceIcon.textContent = isVoiceOn ? '🗣️' : '🤐';
+        this._showToast(isVoiceOn ? '🗣️ Spoken spells active' : '🤐 Spoken spells silenced');
       });
     }
 
@@ -792,12 +1131,36 @@ class WizardingPortfolioApp {
 }
 
 /* ═══════════════════════════════════════════════
-   7. DOM READY INITIALIZATION
+   10. MOUNT REACT APPS & BOOT
    ═══════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Global audio & speech singletons
+  window.wizardAudio = new WizardAudio();
+  window.spellEngine = new SpokenSpellEngine(window.wizardAudio);
+
+  // Mount React Spoken Incantation HUD
+  const hudContainer = document.getElementById('incantation-hud-root');
+  if (hudContainer && ReactDOM.createRoot) {
+    const hudRoot = ReactDOM.createRoot(hudContainer);
+    hudRoot.render(h(IncantationHudComponent));
+  }
+
+  // Mount React 3D Flying Broom Controller
+  const broomContainer = document.getElementById('broom-root');
+  if (broomContainer && ReactDOM.createRoot) {
+    const broomRoot = ReactDOM.createRoot(broomContainer);
+    broomRoot.render(h(BroomFlightComponent));
+  }
+
+  // Magic Starry Canvas
   new MagicCanvasEngine('magic-canvas');
+
+  // Live Moving Golden Snitch Cursor
   new LiveMovingCursorEngine('live-cursor');
+
+  // Main Portfolio Experience
   window.wizardingPortfolio = new WizardingPortfolioApp();
-  console.log('%c⚡ Harvender Singh Rawat — Official Wizarding World Portfolio ⚡', 'color:#ffd700; font-weight:bold; font-size:15px;');
+
+  console.log('%c⚡ Harvender Singh Rawat — React 18 & Spoken Spells Active ⚡', 'color:#ffd700; font-weight:bold; font-size:15px;');
   console.log('%c"Draco Dormiens Nunquam Titillandus"', 'color:#d4af37; font-style:italic;');
 });

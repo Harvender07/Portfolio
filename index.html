@@ -34,6 +34,12 @@
   <div id="spell-flash" aria-hidden="true"></div>
   <div id="toast" role="status" aria-live="polite"></div>
 
+  <!-- SPOKEN SPELL INCANTATION HUD ROOT -->
+  <div id="incantation-hud-root"></div>
+
+  <!-- INTERACTIVE 3D BROOM FLIGHT CONTROLLER ROOT -->
+  <div id="broom-root"></div>
+
   <!-- ══════════════════════════════════
        GLOBAL TOPBAR (HARRYPOTTER.COM STYLE)
        ══════════════════════════════════ -->
@@ -65,6 +71,9 @@
       <div class="nav-actions">
         <button id="btn-sound" class="btn-action-icon" aria-label="Toggle Sound Effects" title="Toggle Sound">
           <span id="sound-icon">🔊</span>
+        </button>
+        <button id="btn-voice" class="btn-action-icon" aria-label="Toggle Spoken Spells Voice" title="Toggle Spoken Spells Voice">
+          <span id="voice-icon">🗣️</span>
         </button>
         <button id="btn-lumos" class="btn-action-icon" aria-label="Toggle Lumos / Nox Light" title="Lumos / Nox">
           <span id="lumos-icon">✨</span>
@@ -692,6 +701,9 @@
     </div>
   </footer>
 
+  <!-- React 18 & ReactDOM (Local Vendor) -->
+  <script src="assets/vendor/react.min.js"></script>
+  <script src="assets/vendor/react-dom.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
