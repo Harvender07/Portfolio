@@ -2134,3 +2134,431 @@ button {
     transform-origin: bottom right;
   }
 }
+
+/* ══════════════════════════════════════════════
+   CINEMATIC OWL DISPATCH STAGE
+   (Paper Folds -> Envelope -> Owl Takes It Away)
+   ══════════════════════════════════════════════ */
+.owl-cinematic-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  background: radial-gradient(circle at 50% 45%, rgba(18, 24, 48, 0.94) 0%, rgba(6, 8, 16, 0.98) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  perspective: 2200px;
+  animation: stage-fade-in 0.4s ease-out;
+}
+.owl-cinematic-stage[hidden] {
+  display: none !important;
+}
+
+@keyframes stage-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.stage-viewport {
+  position: relative;
+  width: 440px;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+/* ── 1. THE 3D PARCHMENT LETTER ── */
+.stage-parchment-letter {
+  position: absolute;
+  width: 320px;
+  height: 240px;
+  background: linear-gradient(135deg, #fef8eb 0%, #f6ebd0 60%, #eadaba 100%);
+  border: 1.5px solid var(--gold);
+  border-radius: 6px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.2);
+  color: #2b1810;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-style: preserve-3d;
+  transition: all 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.letter-crest-watermark {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: #8a0303;
+  text-align: center;
+  border-bottom: 1px dashed rgba(92, 58, 33, 0.3);
+  padding-bottom: 4px;
+}
+.letter-preview-to {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: #5c3a21;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.letter-preview-body {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #2b1810;
+  margin: 6px 0;
+  max-height: 90px;
+  overflow: hidden;
+  font-style: italic;
+}
+.letter-preview-from {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  color: #8a0303;
+  text-align: right;
+  border-top: 1px dashed rgba(92, 58, 33, 0.3);
+  padding-top: 4px;
+}
+
+/* Folding States */
+.stage-parchment-letter.paper-folding {
+  transform: scale(0.72) rotateX(60deg) translateY(20px);
+  filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.6));
+}
+
+.stage-parchment-letter.paper-sliding-in {
+  transform: scale(0.68) translateY(65px);
+  opacity: 0;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s 0.2s;
+}
+
+/* ── 2. THE HOGWARTS ENVELOPE ── */
+.stage-envelope-package {
+  position: absolute;
+  width: 330px;
+  height: 200px;
+  transform-style: preserve-3d;
+  z-index: 5;
+  opacity: 0;
+  transform: translateY(30px) scale(0.92);
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.stage-envelope-package.envelope-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.envelope-body {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, #f7ecd2 0%, #ead7b0 60%, #ddc494 100%);
+  border: 1.5px solid var(--gold);
+  border-radius: 8px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(212, 175, 55, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.envelope-address-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+  font-family: var(--font-heading);
+  color: #2b1810;
+  z-index: 2;
+}
+.addr-line-1 {
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #740001;
+}
+.addr-line-2 {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: #5c3a21;
+}
+.addr-line-3 {
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  color: #8c6840;
+}
+
+/* Pocket Front Overlay */
+.envelope-pocket-front {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(200, 160, 100, 0.25) 100%);
+  pointer-events: none;
+}
+
+/* 3D Envelope Flap */
+.envelope-flap-3d {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 15;
+}
+.flap-triangle {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #edd9af 0%, #dec496 100%);
+  border-left: 1.5px solid var(--gold);
+  border-right: 1.5px solid var(--gold);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Closed Flap */
+.envelope-flap-3d.flap-closed {
+  transform: rotateX(-180deg);
+}
+
+/* Crimson Hogwarts Wax Seal */
+.envelope-wax-seal {
+  position: absolute;
+  top: 85px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #b50000 0%, #7d0000 60%, #470000 100%);
+  border: 1.5px solid #d4af37;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.envelope-wax-seal.seal-stamped {
+  transform: translateX(-50%) scale(1);
+}
+.wax-crest-inner {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--gold-bright);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+/* ── 3. THE HOGWARTS SNOWY OWL (HEDWIG) ── */
+.cinematic-owl-carrier {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translate(350px, -450px) scale(0.65) rotate(-22deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  z-index: 30;
+  opacity: 0;
+  transition: transform 1.1s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease;
+  pointer-events: none;
+}
+
+/* Swoop In above Envelope */
+.cinematic-owl-carrier.owl-swoop-in {
+  opacity: 1;
+  transform: translate(-50%, -75px) scale(1) rotate(0deg);
+}
+
+/* Central Owl Body & Head */
+.owl-center-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+.owl-face-head {
+  width: 58px;
+  height: 52px;
+  background: radial-gradient(circle at 50% 35%, #ffffff 0%, #edebe6 60%, #cfc8be 100%);
+  border-radius: 50% 50% 45% 45%;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.owl-eyes-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+.owl-eye {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffd700 0%, #b8860b 60%, #4a3605 100%);
+  border: 1px solid #ffe57f;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+.owl-eye::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 7px;
+  height: 7px;
+  background: #000;
+  border-radius: 50%;
+}
+
+.owl-beak-cone {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 5px 0 5px;
+  border-color: #3b2a1a transparent transparent transparent;
+  margin-top: 3px;
+}
+
+.owl-feather-chest {
+  width: 66px;
+  height: 72px;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f2ed 40%, #e0dcd5 100%);
+  border-radius: 40% 40% 50% 50%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  margin-top: -6px;
+  position: relative;
+}
+/* Flecked feathers */
+.owl-feather-chest::before {
+  content: '·  ·  ·\A ·  ·  ·\A·  ·';
+  white-space: pre-wrap;
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  color: #7a736a;
+  opacity: 0.6;
+  line-height: 1.1;
+}
+
+/* Talons */
+.owl-talons-wrap {
+  display: flex;
+  gap: 32px;
+  margin-top: -6px;
+  z-index: 6;
+}
+.talon-claw {
+  width: 12px;
+  height: 18px;
+  background: linear-gradient(180deg, #d4af37 0%, #8c6d1f 100%);
+  border-radius: 3px 3px 6px 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
+  transition: transform 0.3s ease;
+}
+.talon-l { transform: rotate(12deg); }
+.talon-r { transform: rotate(-12deg); }
+
+/* Wings with Realistic Feather Layers */
+.owl-wing {
+  position: absolute;
+  top: 12px;
+  width: 85px;
+  height: 48px;
+  z-index: 4;
+}
+.wing-left {
+  right: 50%;
+  transform-origin: right top;
+  animation: owl-flap-wing-l 0.18s ease-in-out infinite alternate;
+}
+.wing-right {
+  left: 50%;
+  transform-origin: left top;
+  animation: owl-flap-wing-r 0.18s ease-in-out infinite alternate;
+}
+
+.wing-feather-1, .wing-feather-2, .wing-feather-3 {
+  position: absolute;
+  background: linear-gradient(180deg, #ffffff 0%, #ede8df 60%, #c4bdb2 100%);
+  border-radius: 50% 50% 10% 10%;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+.wing-feather-1 { width: 75px; height: 32px; top: 0; }
+.wing-feather-2 { width: 65px; height: 28px; top: 12px; }
+.wing-feather-3 { width: 55px; height: 24px; top: 22px; }
+
+@keyframes owl-flap-wing-l {
+  0%   { transform: rotate(-35deg) scaleY(0.75); }
+  100% { transform: rotate(30deg) scaleY(1.2); }
+}
+@keyframes owl-flap-wing-r {
+  0%   { transform: rotate(35deg) scaleY(0.75); }
+  100% { transform: rotate(-30deg) scaleY(1.2); }
+}
+
+/* ── 4. TAKEOFF & FLY AWAY WITH ENVELOPE ── */
+.stage-viewport.takeoff-active {
+  animation: owl-carry-flyaway 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes owl-carry-flyaway {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  25% {
+    /* Upward thrust */
+    transform: translate(40px, -40px) scale(1.05) rotate(10deg);
+  }
+  50% {
+    /* High banking into starlit sky */
+    transform: translate(160px, -180px) scale(0.8) rotate(18deg);
+    filter: drop-shadow(0 0 25px var(--gold-bright));
+  }
+  100% {
+    /* Disappearing into distant night */
+    transform: translate(600px, -700px) scale(0.08) rotate(28deg);
+    opacity: 0;
+  }
+}
+
+/* Status Caption */
+.stage-status-caption {
+  margin-top: 2rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  letter-spacing: 0.14em;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  text-shadow: 0 0 15px var(--gold-glow);
+  text-align: center;
+  animation: caption-glow 1.5s ease-in-out infinite alternate;
+}
+@keyframes caption-glow {
+  from { opacity: 0.8; }
+  to   { opacity: 1; text-shadow: 0 0 25px var(--gold-bright); }
+}
+

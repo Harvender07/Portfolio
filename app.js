@@ -192,6 +192,57 @@ class WizardAudio {
       osc.stop(t + delay + 0.25);
     });
   }
+
+  /* Paper fold rustle sound */
+  playPaperFold() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const dur = 0.28;
+    const buf = this.ctx.createBuffer(1, Math.floor(this.ctx.sampleRate * dur), this.ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      const env = Math.sin((i / data.length) * Math.PI);
+      data[i] = (Math.random() * 2 - 1) * Math.pow(env, 1.8);
+    }
+    const src = this.ctx.createBufferSource();
+    src.buffer = buf;
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(1200, t);
+    filter.frequency.exponentialRampToValueAtTime(2800, t + 0.1);
+    filter.frequency.exponentialRampToValueAtTime(600, t + dur);
+    filter.Q.value = 2.4;
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.01, t);
+    gain.gain.linearRampToValueAtTime(0.25, t + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+    src.start(t);
+  }
+
+  /* Crimson wax seal stamp thud & chime */
+  playWaxSealStamp() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(130, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.25);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.32);
+    setTimeout(() => this.playSpellChime(), 60);
+  }
 }
 
 /* ═══════════════════════════════════════════════
@@ -1013,6 +1064,120 @@ class WizardingPortfolioApp {
     }
   }
 
+  /* 3D Cinematic Owl Dispatch Sequence:
+     Letter Paper Folds -> Slides into Hogwarts Envelope -> Flap Folds -> Wax Stamped -> Hedwig Swoops in & Flies Away with Envelope */
+  runOwlDispatchCinematic(name, email, subject, message) {
+    return new Promise((resolve) => {
+      const stage = document.getElementById('owl-cinematic-stage');
+      const letter = document.getElementById('cinematic-letter');
+      const envelope = document.getElementById('cinematic-envelope');
+      const flap = document.getElementById('cinematic-flap');
+      const seal = document.getElementById('cinematic-seal');
+      const owl = document.getElementById('cinematic-owl');
+      const viewport = document.getElementById('stage-viewport');
+      const caption = document.getElementById('stage-status-caption');
+      const letterBody = document.getElementById('cinematic-letter-body');
+      const letterFrom = document.getElementById('cinematic-letter-from');
+
+      if (!stage || !letter || !envelope || !flap || !seal || !owl || !viewport) {
+        resolve();
+        return;
+      }
+
+      // Populate letter parchment preview
+      if (letterBody) {
+        letterBody.textContent = message.length > 140 ? message.substring(0, 140) + '...' : message;
+      }
+      if (letterFrom) {
+        letterFrom.textContent = `From: ${name} (${email})`;
+      }
+
+      // Reset any classes from previous runs
+      letter.className = 'stage-parchment-letter';
+      envelope.className = 'stage-envelope-package';
+      flap.className = 'envelope-flap-3d';
+      seal.className = 'envelope-wax-seal';
+      owl.className = 'cinematic-owl-carrier';
+      viewport.className = 'stage-viewport';
+
+      // Open Stage Modal
+      stage.hidden = false;
+      document.body.style.overflow = 'hidden';
+      if (caption) caption.textContent = 'Folding parchment letter in 3D...';
+
+      let timers = [];
+      const cleanup = () => {
+        timers.forEach(t => clearTimeout(t));
+        timers = [];
+        stage.hidden = true;
+        document.body.style.overflow = '';
+        letter.className = 'stage-parchment-letter';
+        envelope.className = 'stage-envelope-package';
+        flap.className = 'envelope-flap-3d';
+        seal.className = 'envelope-wax-seal';
+        owl.className = 'cinematic-owl-carrier';
+        viewport.className = 'stage-viewport';
+      };
+
+      // Allow clicking backdrop to skip if desired
+      const backdrop = stage.querySelector('.stage-backdrop');
+      const onDismiss = () => {
+        cleanup();
+        resolve();
+      };
+      if (backdrop) backdrop.addEventListener('click', onDismiss, { once: true });
+
+      // Step 1: Fold paper (t = 350ms)
+      timers.push(setTimeout(() => {
+        this.audio.playPaperFold();
+        letter.classList.add('paper-folding');
+      }, 350));
+
+      // Step 2: Envelope reveals, folded parchment slips inside (t = 1100ms)
+      timers.push(setTimeout(() => {
+        if (caption) caption.textContent = 'Slipping scroll inside Hogwarts envelope...';
+        envelope.classList.add('envelope-active');
+        letter.classList.add('paper-sliding-in');
+        this.audio.playPaperFold();
+      }, 1100));
+
+      // Step 3: Flap folds downward over the pocket (t = 1900ms)
+      timers.push(setTimeout(() => {
+        if (caption) caption.textContent = 'Sealing envelope with Hogwarts crimson wax...';
+        flap.classList.add('flap-closed');
+        this.audio.playPaperFold();
+      }, 1900));
+
+      // Step 4: Crimson Wax Seal stamps down onto flap (t = 2600ms)
+      timers.push(setTimeout(() => {
+        seal.classList.add('seal-stamped');
+        this.audio.playWaxSealStamp();
+        this._flashSpell();
+      }, 2600));
+
+      // Step 5: Hedwig Snowy Owl swoops down from starlit sky (t = 3200ms)
+      timers.push(setTimeout(() => {
+        if (caption) caption.textContent = 'Hedwig arrives to take your envelope...';
+        owl.classList.add('owl-swoop-in');
+        this.audio.playOwlPost();
+      }, 3200));
+
+      // Step 6: Hedwig grips envelope with talons and takes off into the sky (t = 4300ms)
+      timers.push(setTimeout(() => {
+        if (caption) caption.textContent = 'Hedwig takes flight across the night sky to Harvender!';
+        viewport.classList.add('takeoff-active');
+        this.audio.playWandSwoosh();
+        this._flashSpell();
+      }, 4300));
+
+      // Step 7: Animation complete, stage dismisses (t = 5900ms)
+      timers.push(setTimeout(() => {
+        cleanup();
+        resolve();
+      }, 5900));
+    });
+  }
+
   /* Owl Post Form Submission (Automated Live Delivery to harvendersinghrawat@gmail.com) */
   _initOwlPost() {
     const form = document.getElementById('owl-form');
@@ -1035,9 +1200,13 @@ class WizardingPortfolioApp {
       btn.disabled = true;
       text.textContent = 'Enchanting Owl Post...';
 
-      this.audio.playOwlPost();
       this.speech.speak('owl');
       this._flashSpell();
+
+      // Launch cinematic sequence and AJAX dispatch in parallel
+      const cinematicPromise = this.runOwlDispatchCinematic(name, email, subject, message);
+
+      let sendError = null;
 
       try {
         const payload = {
@@ -1059,30 +1228,30 @@ class WizardingPortfolioApp {
         });
 
         const data = await res.json().catch(() => ({}));
-
-        if (res.ok) {
-          this._showToast(`🦉 Owl dispatched directly to Harvender's inbox! Expect a swift reply, ${name}.`);
-          text.textContent = 'Owl Dispatched! ✉️';
-          form.reset();
-        } else {
-          // If first-time activation or service message
-          this._showToast(`🦉 Owl dispatched to harvendersinghrawat@gmail.com!`);
-          text.textContent = 'Owl Dispatched! ✉️';
-          form.reset();
-        }
       } catch (err) {
-        console.warn('Direct AJAX dispatch encountered network restriction, launching direct mailto client:', err);
+        console.warn('Direct AJAX dispatch encountered network restriction, prepared fallback:', err);
+        sendError = err;
+      }
+
+      // Wait for the full cinematic flight animation to complete before showing toast
+      await cinematicPromise;
+
+      if (!sendError) {
+        this._showToast(`🦉 Owl dispatched directly to Harvender's inbox! Expect a swift reply, ${name}.`);
+        text.textContent = 'Owl Dispatched! ✉️';
+        form.reset();
+      } else {
         const mailtoUrl = `mailto:harvendersinghrawat@gmail.com?subject=${encodeURIComponent('[Owl Post] ' + subject)}&body=${encodeURIComponent('From: ' + name + ' (' + email + ')\n\n' + message)}`;
         window.open(mailtoUrl, '_blank');
         this._showToast(`🦉 Opened in your email client to send directly to Harvender!`);
         text.textContent = 'Opened in Mail! ✉️';
         form.reset();
-      } finally {
-        setTimeout(() => {
-          btn.disabled = false;
-          text.textContent = 'Dispatch Owl Post';
-        }, 3500);
       }
+
+      setTimeout(() => {
+        btn.disabled = false;
+        text.textContent = 'Dispatch Owl Post';
+      }, 3500);
     });
   }
 
