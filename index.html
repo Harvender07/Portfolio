@@ -580,26 +580,30 @@
           <!-- Left: Hogwarts Parchment Form -->
           <div class="hogwarts-letter-box">
             <div class="letter-stamp-mark">HOGWARTS POSTAL SERVICE</div>
-            <form id="owl-form" class="letter-form" novalidate>
+            <form id="owl-form" class="letter-form" action="https://formsubmit.co/harvendersinghrawat@gmail.com" method="POST" novalidate>
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_next" value="#owl-post" />
+
               <div class="form-row">
                 <div class="form-group">
                   <label for="sender-name">YOUR NAME</label>
-                  <input type="text" id="sender-name" required placeholder="e.g. Albus Dumbledore" />
+                  <input type="text" id="sender-name" name="name" required placeholder="e.g. Albus Dumbledore" />
                 </div>
                 <div class="form-group">
                   <label for="sender-email">YOUR OWL ADDRESS (EMAIL)</label>
-                  <input type="email" id="sender-email" required placeholder="e.g. albus@hogwarts.edu" />
+                  <input type="email" id="sender-email" name="email" required placeholder="e.g. albus@hogwarts.edu" />
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="letter-subject">SUBJECT / PURSUIT</label>
-                <input type="text" id="letter-subject" required placeholder="e.g. Opportunity · Collaboration · Project Inscription" />
+                <input type="text" id="letter-subject" name="_subject" required placeholder="e.g. Opportunity · Collaboration · Project Inscription" />
               </div>
 
               <div class="form-group">
                 <label for="letter-message">PARCHMENT MESSAGE</label>
-                <textarea id="letter-message" required rows="5" placeholder="Inscribe your proposition, role details, or collaboration ideas..."></textarea>
+                <textarea id="letter-message" name="message" required rows="5" placeholder="Inscribe your proposition, role details, or collaboration ideas..."></textarea>
               </div>
 
               <button type="submit" class="btn-dispatch-owl" id="btn-dispatch">

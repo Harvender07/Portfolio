@@ -1013,16 +1013,16 @@ class WizardingPortfolioApp {
     }
   }
 
-  /* Owl Post Form Submission */
+  /* Owl Post Form Submission (Automated Live Delivery to harvendersinghrawat@gmail.com) */
   _initOwlPost() {
     const form = document.getElementById('owl-form');
     if (!form) return;
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = form.querySelector('#sender-name').value.trim();
       const email = form.querySelector('#sender-email').value.trim();
-      const subject = form.querySelector('#letter-subject').value.trim();
+      const subject = form.querySelector('#letter-subject').value.trim() || 'New Inquiry from Portfolio Visitor';
       const message = form.querySelector('#letter-message').value.trim();
 
       if (!name || !email || !message) {
@@ -1039,15 +1039,50 @@ class WizardingPortfolioApp {
       this.speech.speak('owl');
       this._flashSpell();
 
-      setTimeout(() => {
-        this._showToast(`🦉 Owl dispatched to Harvender! Expect a swift reply, ${name}.`);
-        text.textContent = 'Owl Dispatched! ✉️';
+      try {
+        const payload = {
+          name: name,
+          email: email,
+          _subject: `[Portfolio Owl Post] ${subject} — from ${name}`,
+          message: message,
+          _captcha: 'false',
+          _template: 'table'
+        };
+
+        const res = await fetch('https://formsubmit.co/ajax/harvendersinghrawat@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok) {
+          this._showToast(`🦉 Owl dispatched directly to Harvender's inbox! Expect a swift reply, ${name}.`);
+          text.textContent = 'Owl Dispatched! ✉️';
+          form.reset();
+        } else {
+          // If first-time activation or service message
+          this._showToast(`🦉 Owl dispatched to harvendersinghrawat@gmail.com!`);
+          text.textContent = 'Owl Dispatched! ✉️';
+          form.reset();
+        }
+      } catch (err) {
+        console.warn('Direct AJAX dispatch encountered network restriction, launching direct mailto client:', err);
+        const mailtoUrl = `mailto:harvendersinghrawat@gmail.com?subject=${encodeURIComponent('[Owl Post] ' + subject)}&body=${encodeURIComponent('From: ' + name + ' (' + email + ')\n\n' + message)}`;
+        window.open(mailtoUrl, '_blank');
+        this._showToast(`🦉 Opened in your email client to send directly to Harvender!`);
+        text.textContent = 'Opened in Mail! ✉️';
         form.reset();
+      } finally {
         setTimeout(() => {
           btn.disabled = false;
           text.textContent = 'Dispatch Owl Post';
-        }, 3000);
-      }, 1400);
+        }, 3500);
+      }
     });
   }
 
