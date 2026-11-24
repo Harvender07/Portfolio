@@ -73,7 +73,7 @@ export const Certifications: React.FC<CertificationsProps> = ({ onSelectCert }) 
                     {cert.title}
                   </h3>
                   <div className="text-xs font-medium text-sky-400 dark:text-sky-400 light:text-sky-600 mt-0.5">
-                    {cert.issuer}
+                    {cert.issuer} · <span className="font-mono">{cert.date}</span>
                   </div>
                 </div>
 

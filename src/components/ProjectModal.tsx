@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, ExternalLink, AlertCircle, CheckCircle2, Layers, Image as ImageIcon } from 'lucide-react';
+import { X, ExternalLink, CheckCircle2, Layers, UserCheck } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
 import { Project } from '../types';
 
@@ -43,38 +43,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
           </button>
         </div>
 
-        {/* Editable Placeholder Notice */}
-        {project.isPlaceholder && (
-          <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 dark:text-amber-200 light:text-amber-900 flex items-start gap-2.5">
-            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            <div>
-              <strong>Editable Placeholder Slot:</strong> This slot is reserved for an upcoming project in <strong>{project.categoryLabel}</strong>. Update <code className="text-sky-400">src/data/portfolioData.ts</code> when the repository, screenshots, and live deployment are finalized.
-            </div>
-          </div>
-        )}
-
-        {/* Screenshot / Preview Area */}
-        <div className="rounded-xl overflow-hidden border border-dashed border-slate-700 dark:border-slate-700 light:border-slate-300 bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-100 h-48 flex flex-col items-center justify-center text-center p-4">
-          {project.screenshotUrl ? (
-            <img src={project.screenshotUrl} alt={project.title} className="w-full h-full object-cover" />
-          ) : (
-            <>
-              <ImageIcon className="w-8 h-8 text-slate-500 mb-2" />
-              <span className="text-xs font-mono text-slate-400 dark:text-slate-400 light:text-slate-600">
-                Screenshot / UI Preview Slot
-              </span>
-              <span className="text-[11px] font-mono text-slate-500 mt-1">
-                {project.screenshotPlaceholderNote}
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Overview & Problem Solved */}
+        {/* Overview, Problem Statement, Solution Architecture */}
         <div className="space-y-4">
           <div>
             <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-1">
-              Problem Being Solved
+              Problem Statement
             </h3>
             <p className="text-sm text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
               {project.problem}
@@ -83,18 +56,28 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
           <div>
             <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-1">
-              Project Overview
+              Solution Architecture
             </h3>
             <p className="text-sm text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
-              {project.overview}
+              {project.solutionArchitecture}
             </p>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 flex items-start gap-2.5">
+            <UserCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <strong className="text-slate-100 dark:text-slate-100 light:text-slate-900 block text-xs font-mono uppercase mb-0.5">
+                Individual Contribution
+              </strong>
+              {project.individualContribution}
+            </div>
           </div>
         </div>
 
-        {/* Technologies */}
+        {/* Tech Stack */}
         <div>
           <h3 className="text-xs font-mono uppercase tracking-wider text-slate-500 mb-2">
-            Technologies Used
+            Tech Stack Used
           </h3>
           <div className="flex flex-wrap gap-2">
             {project.technologies.map((tech) => (
@@ -111,7 +94,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         {/* Key Features */}
         <div>
           <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-2">
-            Planned / Implemented Features
+            Implemented Capabilities
           </h3>
           <ul className="space-y-2">
             {project.keyFeatures.map((feature, idx) => (
@@ -126,7 +109,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         {/* Architecture Notes */}
         <div>
           <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-2">
-            Configuration & Slot Notes
+            Architecture & Repository Structure
           </h3>
           <div className="p-4 rounded-xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 space-y-2">
             {project.architectureHighlights.map((hl, idx) => (
@@ -141,7 +124,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         {/* Footer */}
         <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800 dark:border-slate-800 light:border-slate-200">
           <div className="text-xs font-mono text-slate-500">
-            Status: <span className="text-amber-400">{project.status}</span>
+            Status: <span className="text-emerald-400">{project.status}</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -149,27 +132,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 bg-slate-800/80 dark:bg-slate-800/80 light:bg-slate-200 hover:bg-slate-700 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 transition-colors"
             >
               <GithubIcon className="w-4 h-4" />
-              <span>GitHub Profile</span>
+              <span>Repository & Docs</span>
+              <ExternalLink className="w-3.5 h-3.5" />
             </a>
-
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors"
-              >
-                <ExternalLink className="w-4 h-4" />
-                <span>Live Demo</span>
-              </a>
-            )}
 
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 transition-colors cursor-pointer"
+              className="px-5 py-2 rounded-xl text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 bg-slate-800 dark:bg-slate-800 light:bg-slate-200 hover:bg-slate-700 transition-colors cursor-pointer"
             >
               Close
             </button>

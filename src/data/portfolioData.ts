@@ -1,6 +1,7 @@
 import {
   Project,
   SkillItem,
+  SaiPullRequest,
   EducationItem,
   CertificationItem,
   JourneyMilestone,
@@ -27,9 +28,9 @@ export const PERSONAL_INFO = {
     'https://www.linkedin.com/posts/harvender-singh-rawat-3407a12a1_worldquant-computerscience-ai-ugcPost-7521212556233998336-wLMd',
   profileImageUrl: '/profile.jpg',
   bioIntro:
-    'Motivated first-year B.Tech student specializing in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology. Eager to explore software development, emerging technologies, and AI-driven solutions while building strong fundamentals through practical projects.',
+    'First-year B.Tech Computer Science and Artificial Intelligence & Machine Learning student at Newton School of Technology (2026–2030). Focused on software engineering fundamentals, Git internals, interactive web interfaces, and AI/ML visualizations, seeking software development or AI/ML internships.',
   professionalSummary:
-    'Motivated first-year B.Tech student specializing in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology. Eager to explore software development, emerging technologies, and AI-driven solutions. Possesses foundational programming knowledge, creative problem-solving abilities, and an interest in learning through practical projects. Seeking internship opportunities to develop technical skills and gain industry experience.',
+    'I am a first-year B.Tech student specializing in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology (Batch 2026–2030). My current technical focus spans Python, automated CLI testing and Git internals through S&AI open-source pull requests, interactive HTML/JavaScript visualizations, and React/TypeScript web applications. My goal is to secure a Software Development, Frontend Engineering, or AI/ML internship where I can contribute to production codebases and build reliable engineering habits.',
   careerObjective:
     'To begin my professional journey in the technology industry, contribute to meaningful projects, continuously improve my technical abilities, and grow as a software and AI/ML professional.',
   languages: [
@@ -66,302 +67,382 @@ export const ABOUT_PILLARS = [
     title: 'Problem Solving & Logic',
     subtitle: 'First-Principles Thinking',
     description:
-      'Breaking complex challenges down into clear, modular logic and developing practical, maintainable software implementations.',
+      'Breaking complex challenges down into clear, modular logic and developing practical, testable software implementations.',
     icon: 'Cpu',
   },
   {
     title: 'Creativity & Innovation',
     subtitle: 'Curiosity-Driven',
     description:
-      'Combining creative ideation, video storytelling instincts, and emerging AI tools to turn new concepts into working digital prototypes.',
+      'Combining creative ideation, visual storytelling instincts, and emerging AI tools to turn concepts into working digital prototypes.',
     icon: 'Compass',
   },
   {
     title: 'Teamwork & Communication',
     subtitle: 'Hindi & English (Fluent)',
     description:
-      'Fluent in both Hindi and English, collaborating clearly across diverse peers, taking feedback openly, and contributing positively to teams.',
+      'Fluent in both Hindi and English, collaborating clearly across peers, taking feedback openly, and contributing positively to teams.',
     icon: 'Users',
   },
 ];
 
+// Every skill links directly to verified code or pull requests in this portfolio
 export const SKILLS_DATA: SkillItem[] = [
-  // PROGRAMMING (Current Verified Basic Skills)
-  {
-    name: 'C++',
-    proficiency: 'Basic / Foundational',
-    levelPercentage: 45,
-    category: 'programming',
-    description:
-      'Foundational syntax, control flow, functions, arrays, and introductory object-oriented programming concepts.',
-  },
   {
     name: 'Python',
-    proficiency: 'Basic / Foundational',
-    levelPercentage: 50,
+    proficiency: 'Applied in Projects / PRs',
+    levelPercentage: 65,
     category: 'programming',
     description:
-      'Basic scripting, built-in data structures (lists, dictionaries), conditional logic, and foundational problem solving.',
+      'Applied across 10 verification scripts (check.py) for S&AI Git internals and Python lab exercises in the Hopper repository.',
+    evidenceLabel: 'S&AI PR #83 (R21-T001 check.py)',
+    evidenceUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/83',
   },
   {
-    name: 'HTML',
-    proficiency: 'Basic / Foundational',
+    name: 'HTML & Interactive Canvas',
+    proficiency: 'Applied in Projects / PRs',
+    levelPercentage: 65,
+    category: 'programming',
+    description:
+      'Semantic markup and interactive client-side visualization built in the 3D Vector Attention Matrix Simulator.',
+    evidenceLabel: 'llm-attention-matrix (index.html)',
+    evidenceUrl: 'https://github.com/Harvender07/llm-attention-matrix',
+  },
+  {
+    name: 'Bash & Shell Scripting',
+    proficiency: 'Applied in Projects / PRs',
     levelPercentage: 55,
     category: 'programming',
     description:
-      'Semantic document structure, accessible landmarks, forms, and clean web page markup.',
+      'Automated test harness execution and CLI boundary verification in wyag-tests.sh across S&AI pull requests.',
+    evidenceLabel: 'S&AI PR #90 (wyag-tests.sh)',
+    evidenceUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/90',
   },
-
-  // DEVELOPMENT INTERESTS (Not presented as mastered skills)
   {
-    name: 'Software Development',
-    proficiency: 'Active Exploration',
-    levelPercentage: 35,
-    category: 'interests',
+    name: 'C++',
+    proficiency: 'Foundational (Basic)',
+    levelPercentage: 45,
+    category: 'programming',
     description:
-      'Core interest area: building reliable, maintainable applications and learning clean architectural practices.',
+      'Foundational syntax, control flow, functions, and introductory object-oriented programming concepts practiced in coursework.',
+    evidenceLabel: 'GitHub Profile (Harvender07)',
+    evidenceUrl: 'https://github.com/Harvender07',
   },
   {
-    name: 'Frontend Development',
-    proficiency: 'Active Exploration',
-    levelPercentage: 35,
-    category: 'interests',
+    name: 'React & TypeScript',
+    proficiency: 'Applied in Projects / PRs',
+    levelPercentage: 60,
+    category: 'frameworks',
     description:
-      'Core interest area: crafting clean, responsive, accessible user interfaces and smooth client-side workflows.',
+      'Component-based UI architecture, typed data models, state management, and Vite bundling used in this portfolio.',
+    evidenceLabel: 'Portfolio Repository (src/)',
+    evidenceUrl: 'https://github.com/Harvender07/Portfolio',
   },
   {
-    name: 'Artificial Intelligence',
-    proficiency: 'Active Exploration',
-    levelPercentage: 30,
-    category: 'interests',
+    name: 'Tailwind CSS',
+    proficiency: 'Applied in Projects / PRs',
+    levelPercentage: 60,
+    category: 'frameworks',
     description:
-      'Core interest area: studying intelligent systems, reasoning workflows, and applied AI-driven solutions.',
+      'Responsive utility-first styling, dark/light theme custom variants, and accessible layouts in the Portfolio codebase.',
+    evidenceLabel: 'Portfolio Repository (index.css)',
+    evidenceUrl: 'https://github.com/Harvender07/Portfolio',
   },
   {
-    name: 'Machine Learning',
-    proficiency: 'Active Exploration',
-    levelPercentage: 30,
-    category: 'interests',
-    description:
-      'Core interest area: exploring supervised learning fundamentals, data preprocessing, and model evaluation.',
-  },
-  {
-    name: 'Web Technologies',
-    proficiency: 'Active Exploration',
-    levelPercentage: 35,
-    category: 'interests',
-    description:
-      'Core interest area: understanding browser mechanics, HTTP fundamentals, and modern full-stack web architecture.',
-  },
-
-  // ADDITIONAL SKILLS
-  {
-    name: 'Vibe Coding',
-    proficiency: 'Basic / Foundational',
+    name: 'Git & GitHub Internals',
+    proficiency: 'Applied in Projects / PRs',
     levelPercentage: 70,
-    category: 'additional',
+    category: 'tools',
     description:
-      'Rapid AI-assisted prototyping, structured prompt iteration, and turning product concepts into testable interfaces.',
+      'Deep practical understanding of Git objects, index staging, trees, refs, and PR workflows via write-yourself-a-git.',
+    evidenceLabel: 'S&AI PR #92 (object_read regression)',
+    evidenceUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/92',
   },
   {
-    name: 'MS Office',
-    proficiency: 'Basic / Foundational',
+    name: 'Automated Regression Testing',
+    proficiency: 'Applied in Projects / PRs',
     levelPercentage: 65,
-    category: 'additional',
+    category: 'tools',
     description:
-      'Basic spreadsheets, structured documentation, and clean presentation design for academic and team reporting.',
+      'Writing deterministic input/output fixtures (inputs.json, results.json) and regression checks for CLI state contracts.',
+    evidenceLabel: 'S&AI PR #85 (state transitions)',
+    evidenceUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/85',
   },
   {
-    name: 'Video Editing',
-    proficiency: 'Basic / Foundational',
+    name: 'Vibe Coding & AI Prototyping',
+    proficiency: 'Applied in Projects / PRs',
     levelPercentage: 70,
-    category: 'additional',
+    category: 'tools',
     description:
-      'Visual pacing, storytelling, timeline editing, and multimedia production for creative digital content.',
+      'Rapid AI-assisted iteration and prototyping applied to interactive Transformer visualizations and web interfaces.',
+    evidenceLabel: 'llm-attention-matrix Repository',
+    evidenceUrl: 'https://github.com/Harvender07/llm-attention-matrix',
   },
+];
 
-  // EXPANDABLE LEARNING ROADMAP (Technologies Currently Learning)
+export const SAI_REPO_INFO = {
+  repoName: 'S-AI-Projects/write-yourself-a-git',
+  repoUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git',
+  prsFilterUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pulls?q=is%3Apr+author%3AHarvender07',
+  contributorHandle: 'Harvender07',
+  description:
+    'Contributed 10 structured verification, contract documentation, isolation, and regression-protection Pull Requests (#83–#92) across tasks R21-T001 through R21-T010 for the Python-based write-yourself-a-git implementation.',
+};
+
+export const SAI_PULL_REQUESTS: SaiPullRequest[] = [
   {
-    name: 'JavaScript (ES6+)',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 25,
-    category: 'learning',
-    description:
-      'Learning core language mechanics, DOM manipulation, events, and asynchronous JavaScript fundamentals.',
+    taskId: 'R21-T001',
+    prNumber: 83,
+    title: 'Specify cmd_add command contract',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/83',
+    status: 'Open',
+    issueRef: 'Fixes #1',
+    filesModified: ['work/R21-T001/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Documented and tested the cmd_add staging contract so valid paths produce bytewise-sorted index entries while invalid or missing paths are rejected before mutating the index.',
+    technicalRationale:
+      'Prevents silent index corruption on invalid file arguments and guarantees deterministic index ordering matching canonical Git.',
   },
   {
-    name: 'CSS & Tailwind CSS',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 30,
-    category: 'learning',
-    description:
-      'Developing fluency in Flexbox, CSS Grid, responsive breakpoints, and utility-first component styling.',
+    taskId: 'R21-T002',
+    prNumber: 84,
+    title: 'Exercise argument boundaries for cmd_ls_tree',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/84',
+    status: 'Open',
+    issueRef: 'Fixes #7',
+    filesModified: ['work/R21-T002/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Added boundary tests for cmd_ls_tree validating the required TREE argument and optional -r/--recursive flag, asserting clean usage errors when omitted.',
+    technicalRationale:
+      'Ensures missing positional CLI arguments fail explicitly without altering repository state or raising unhandled tracebacks.',
   },
   {
-    name: 'React',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 25,
-    category: 'learning',
-    description:
-      'Learning component architecture, props, state hooks, and building modular single-page web interfaces.',
+    taskId: 'R21-T003',
+    prNumber: 85,
+    title: 'Verify state transitions for cmd_show_ref',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/85',
+    status: 'Open',
+    issueRef: 'Fixes #8',
+    filesModified: ['work/R21-T003/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Verified read-only idempotence of cmd_show_ref and validated that branch updates after commits reflect the updated target without affecting unrelated refs.',
+    technicalRationale:
+      'Confirms inspection commands never mutate on-disk refs or index state while accurately tracking branch pointer updates.',
   },
   {
-    name: 'SQL',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 20,
-    category: 'learning',
-    description:
-      'Planned learning track: relational database schemas, SELECT queries, joins, and data normalization.',
+    taskId: 'R21-T004',
+    prNumber: 86,
+    title: 'Preserve quoted arguments in tree_from_index',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/86',
+    status: 'Open',
+    issueRef: 'Fixes #9',
+    filesModified: ['work/R21-T004/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Added checks verifying tree_from_index preserves paths containing spaces and literal wildcard characters verbatim inside generated tree objects.',
+    technicalRationale:
+      'Guards against accidental shell globbing or word-splitting bugs when staging and serializing non-trivial filenames.',
   },
   {
-    name: 'Git & GitHub',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 35,
-    category: 'learning',
-    description:
-      'Learning branching, commits, pull requests, and clean repository workflows for team collaboration.',
+    taskId: 'R21-T005',
+    prNumber: 87,
+    title: 'Isolate environment dependencies for tree_to_dict',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/87',
+    status: 'Open',
+    issueRef: 'Fixes #10',
+    filesModified: ['work/R21-T005/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Isolated environment dependencies in tree_to_dict and added handling for unresolvable tree references under isolated local Git configs.',
+    technicalRationale:
+      'Makes execution deterministic across developer machines by removing implicit reliance on host-level Git configuration.',
   },
   {
-    name: 'APIs',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 20,
-    category: 'learning',
-    description:
-      'Learning HTTP request/response lifecycles, JSON payloads, and integrating RESTful services.',
+    taskId: 'R21-T006',
+    prNumber: 88,
+    title: 'Clarify one source responsibility in cmd_init',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/88',
+    status: 'Open',
+    issueRef: 'Fixes #11',
+    filesModified: ['work/R21-T006/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Clarified path dispatch responsibility in cmd_init so the default directory fallback condition is explicit while preserving observable repo initialization.',
+    technicalRationale:
+      'Eliminates ambiguous path resolution branches and keeps initialization behavior easy to reason about and test.',
   },
   {
-    name: 'Data Structures & Algorithms',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 25,
-    category: 'learning',
-    description:
-      'Building systematic proficiency in arrays, strings, recursion, sorting, searching, and time complexity.',
+    taskId: 'R21-T007',
+    prNumber: 89,
+    title: 'Publish a tested usage example for cmd_status',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/89',
+    status: 'Open',
+    issueRef: 'Fixes #12',
+    filesModified: ['work/R21-T007/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Published and validated an executable usage example for cmd_status covering repo setup, command invocation, output sections, and state verification.',
+    technicalRationale:
+      'Prevents documentation drift by tying documented CLI examples directly to automated CI/verification checks.',
   },
   {
-    name: 'Machine Learning Tools',
-    proficiency: 'Learning In Progress',
-    levelPercentage: 20,
-    category: 'learning',
-    description:
-      'Planned learning track: NumPy, Pandas, scikit-learn, and Jupyter notebooks for practical experimentation.',
+    taskId: 'R21-T008',
+    prNumber: 90,
+    title: 'Explain a failing invocation for cmd_status_index_worktree',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/90',
+    status: 'Open',
+    issueRef: 'Fixes #13',
+    filesModified: ['work/R21-T008/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Documented and tested failing invocations of cmd_status_index_worktree outside a repository context, verifying non-zero exit codes and diagnostic guidance.',
+    technicalRationale:
+      'Improves CLI usability and safety by surfacing clear actionable errors when invoked outside a valid Git worktree.',
+  },
+  {
+    taskId: 'R21-T009',
+    prNumber: 91,
+    title: 'Integrate a focused check for cmd_log',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/91',
+    status: 'Open',
+    issueRef: 'Fixes #14',
+    filesModified: ['work/R21-T009/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Integrated a repeatable offline check for cmd_log verifying DAG Graphviz output generation and error propagation on nonexistent commit references.',
+    technicalRationale:
+      'Guarantees commit-graph traversal output stays accurate and completely independent of external network services.',
+  },
+  {
+    taskId: 'R21-T010',
+    prNumber: 92,
+    title: 'Protect header length & format conditions in object_read',
+    prUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pull/92',
+    status: 'Open',
+    issueRef: 'Fixes #15',
+    filesModified: ['work/R21-T010/check.py', 'inputs.json', 'results.json', 'write-yourself-a-git.org', 'wyag-tests.sh'],
+    codeModifications:
+      'Added regression tests protecting header length and format validation in object_read, rejecting mutated objects with mismatched lengths or unsupported types.',
+    technicalRationale:
+      'Prevents malformed or corrupted Git object files from silently deserializing into invalid internal state.',
   },
 ];
 
 export const PROJECTS_DATA: Project[] = [
   {
-    id: 'software-dev-placeholder',
-    title: 'Software Development Project Slot (C++ / Python)',
-    category: 'software',
-    categoryLabel: 'Software Development',
-    tagline:
-      'Editable placeholder for upcoming Python applications, C++ CLI tools, and algorithmic problem-solving builds.',
-    problem:
-      'Placeholder: Define the real-world workflow bottleneck, CLI automation need, or algorithmic problem this application solves.',
-    overview:
-      'Reserved showcase slot for foundational C++ and Python software engineering projects built during coursework and independent practice at Newton School of Technology.',
-    technologies: ['C++ (Basic)', 'Python (Basic)', 'Problem Solving', 'CLI Architecture'],
-    keyFeatures: [
-      'Structured problem decomposition using modular functions and clean control flow',
-      'Input validation and deterministic edge-case test cases',
-      'Clear README documentation covering build steps and complexity notes',
-    ],
-    architectureHighlights: [
-      'Editable Slot: Replace with actual project architecture diagram and benchmark results',
-      'Supports Python scripts, C++ console applications, and DSA implementations',
-    ],
-    screenshotUrl: '',
-    screenshotPlaceholderNote: 'Upload screenshot at public/projects/software-preview.png',
-    githubUrl: 'https://github.com/Harvender07',
-    liveUrl: '',
-    isPlaceholder: true,
-    status: 'Placeholder Blueprint',
-    featured: true,
-  },
-  {
-    id: 'web-dev-placeholder',
-    title: 'Web Development Project Slot (Responsive & Frontend)',
-    category: 'web',
-    categoryLabel: 'Web Development',
-    tagline:
-      'Editable placeholder for responsive websites, personal web applications, and frontend engineering experiments.',
-    problem:
-      'Placeholder: Identify the user experience friction or accessibility gap addressed by this web application.',
-    overview:
-      'Reserved showcase slot for semantic HTML, responsive CSS/Tailwind layouts, and interactive frontend projects as I expand into JavaScript and React.',
-    technologies: ['HTML (Basic)', 'CSS / Tailwind (Learning)', 'JavaScript (Learning)', 'Responsive UI'],
-    keyFeatures: [
-      'Mobile-first responsive layout verified across phone, tablet, and desktop viewports',
-      'Accessible semantic HTML landmarks and keyboard navigation support',
-      'Clean UI typography and minimal distraction-free layout',
-    ],
-    architectureHighlights: [
-      'Editable Slot: Add component hierarchy and state flow details once built',
-      'Deployable directly on Vercel with GitHub repository integration',
-    ],
-    screenshotUrl: '',
-    screenshotPlaceholderNote: 'Upload screenshot at public/projects/web-preview.png',
-    githubUrl: 'https://github.com/Harvender07',
-    liveUrl: '',
-    isPlaceholder: true,
-    status: 'Placeholder Blueprint',
-    featured: true,
-  },
-  {
-    id: 'ai-ml-placeholder',
-    title: 'AI & Machine Learning Project Slot (Experiments & Data)',
+    id: 'llm-attention-matrix',
+    title: '3D Vector Attention Matrix Simulator',
     category: 'ai',
     categoryLabel: 'AI & Machine Learning',
     tagline:
-      'Editable placeholder for beginner AI/ML experiments, exploratory data analysis notebooks, and model prototypes.',
+      'Interactive 3D visualization of Transformer self-attention scores, vector space embeddings, and token-to-token attention beams.',
     problem:
-      'Placeholder: Describe the dataset question, classification/regression goal, or insight extraction objective.',
+      'Understanding how Transformer models weight token relationships in multi-dimensional vector space is difficult when reading static equations or raw attention tensors.',
     overview:
-      'Reserved showcase slot for introductory Python data analysis experiments and foundational machine learning implementations aligned with my B.Tech specialization.',
-    technologies: ['Python (Basic)', 'Data Analysis (Learning)', 'ML Fundamentals (Learning)'],
+      'Built an interactive browser-based 3D vector space simulator that renders token embeddings on a perspective coordinate grid with dynamic softmax attention threshold gating, 2D heatmaps, and an NLP weight inspector.',
+    solutionArchitecture:
+      'Single-page HTML/Canvas/WebGL-style 3D projection architecture with interactive camera orbit, threshold slider filtering (τ), real-time token search beacon highlights, and synchronized 2D attention heatmap.',
+    individualContribution:
+      'Sole author — designed and implemented the 3D coordinate projection, attention threshold slider, token search highlights, zoom/fullscreen controls, and Vercel deployment config.',
+    technologies: ['HTML5', 'JavaScript', '3D Perspective Canvas', 'Transformer Attention', 'Vercel'],
     keyFeatures: [
-      'Reproducible dataset exploration and structured data cleaning pipeline',
-      'Baseline model evaluation with honest metric reporting',
-      'Clear visual summaries and documented assumptions',
+      '3D Vector Matrix Space with drop stems and dynamic laser attention beams',
+      'Attention Threshold Gating (τ) slider filtering active beams by softmax score',
+      'Interactive token search with pulsing highlights and 35%–450% zoom + camera orbit',
+      '2D Heatmap & NLP Inspector for examining token-to-token attention weights',
     ],
     architectureHighlights: [
-      'Editable Slot: Document dataset source, preprocessing pipeline, and validation split',
-      'Focused on verifiable, reproducible beginner ML experiments',
+      'Client-side zero-backend architecture configured via vercel.json for instant deployment',
+      'Synchronized 3D spatial view and 2D matrix heatmap inspector',
     ],
-    screenshotUrl: '',
-    screenshotPlaceholderNote: 'Upload screenshot at public/projects/aiml-preview.png',
-    githubUrl: 'https://github.com/Harvender07',
-    liveUrl: '',
-    isPlaceholder: true,
-    status: 'Placeholder Blueprint',
+    githubUrl: 'https://github.com/Harvender07/llm-attention-matrix',
+    liveUrl: 'https://github.com/Harvender07/llm-attention-matrix',
+    status: 'Completed',
     featured: true,
   },
   {
-    id: 'creative-tech-placeholder',
-    title: 'Creative Technology Project Slot (Vibe Coding & Automation)',
-    category: 'creative',
-    categoryLabel: 'Creative Technology',
+    id: 'write-yourself-a-git',
+    title: 'Write Yourself a Git — Verification & Core Contracts',
+    category: 'software',
+    categoryLabel: 'Software Development',
     tagline:
-      'Editable placeholder for vibe-coded applications, workflow automation experiments, and innovative digital concepts.',
+      'Python-based Git implementation enhanced with 10 automated command contract, boundary, isolation, and regression test suites.',
     problem:
-      'Placeholder: Outline the repetitive manual task or creative workflow friction being automated.',
+      'Educational Git reimplementations frequently break on edge cases such as invalid paths, quoted filenames with spaces, missing tree arguments, or host-dependent Git configs.',
     overview:
-      'Reserved showcase slot for rapid AI-augmented prototypes, creative web concepts, and practical automation utilities built through iterative vibe coding.',
-    technologies: ['Vibe Coding', 'AI Prototyping', 'Automation Concepts', 'Web Tools'],
+      'Forked and contributed 10 verified Pull Requests (#83–#92) to S-AI-Projects/write-yourself-a-git covering cmd_add, cmd_ls_tree, cmd_show_ref, tree_from_index, tree_to_dict, cmd_init, cmd_status, cmd_log, and object_read.',
+    solutionArchitecture:
+      'Modular verification harness pairing isolated Python check.py runners and JSON test fixtures (inputs.json / results.json) with wyag-tests.sh shell assertions and Org-mode documentation.',
+    individualContribution:
+      'Authored all 10 PRs (R21-T001 through R21-T010) under Harvender07, writing Python verification scripts, boundary test cases, and technical documentation.',
+    technologies: ['Python', 'Bash / Shell', 'Git Internals', 'JSON Fixtures', 'Regression Testing'],
     keyFeatures: [
-      'Rapid end-to-end prototype iteration from concept brief to working interface',
-      'Practical focus on usability, speed, and real-world utility',
-      'Iterative refinement based on direct user feedback',
+      'Deterministic CLI contract verification across 10 core Git subcommands',
+      'Environment isolation ensuring reproducible runs regardless of host config',
+      'Header-length and object-format corruption guards in object_read',
+      'Tested executable usage documentation preventing doc drift',
     ],
     architectureHighlights: [
-      'Editable Slot: Add workflow steps, prompt orchestration notes, and live preview link',
-      'Demonstrates adaptability and creative experimentation with modern AI tooling',
+      'Structured per-task verification directory layout (work/R21-T001 .. R21-T010)',
+      'Automated shell test orchestration via wyag-tests.sh',
     ],
-    screenshotUrl: '',
-    screenshotPlaceholderNote: 'Upload screenshot at public/projects/creative-preview.png',
-    githubUrl: 'https://github.com/Harvender07',
-    liveUrl: '',
-    isPlaceholder: true,
-    status: 'Placeholder Blueprint',
+    githubUrl: 'https://github.com/S-AI-Projects/write-yourself-a-git/pulls?q=is%3Apr+author%3AHarvender07',
+    liveUrl: 'https://github.com/Harvender07/write-yourself-a-git',
+    status: 'Open Source',
+    featured: true,
+  },
+  {
+    id: 'recruiter-portfolio-platform',
+    title: 'Developer Portfolio & ATS Credential Platform',
+    category: 'web',
+    categoryLabel: 'Web Development',
+    tagline:
+      'Recruiter-focused React, TypeScript, and Tailwind CSS portfolio with verified S&AI PR telemetry, WorldQuant credentials, and ATS PDF export.',
+    problem:
+      'Generic student portfolios often obscure real GitHub contributions, lack verifiable evidence for listed skills, and omit ATS-compatible resumes.',
+    overview:
+      'Engineered a dark/light themed web application structured directly around engineering hiring criteria, linking every technical skill to verifiable GitHub PRs or repositories.',
+    solutionArchitecture:
+      'Vite + React + TypeScript single-page application using typed data contracts (src/data/portfolioData.ts), Tailwind CSS v4 custom theme variants, and FormSubmit AJAX contact delivery.',
+    individualContribution:
+      'Built end-to-end component architecture, responsive dark/light design tokens, ATS resume drawer + PDF generator, and live FormSubmit contact pipeline.',
+    technologies: ['React', 'TypeScript', 'Tailwind CSS', 'Vite', 'FormSubmit API', 'Vercel'],
+    keyFeatures: [
+      'Dedicated S&AI Open-Source Contributions section tracking PRs #83–#92',
+      'Evidence-linked Skills matrix connecting each skill to GitHub code',
+      'Authentic WorldQuant certificate viewer and 1-page printable ATS resume',
+      'Accessible dark/light theme switcher and FormSubmit contact form',
+    ],
+    architectureHighlights: [
+      'Zero external UI bloat; tree-shaken Lucide icons and strict TypeScript types',
+      'Vercel SPA rewrite routing configured in vercel.json',
+    ],
+    githubUrl: 'https://github.com/Harvender07/Portfolio',
+    liveUrl: 'https://github.com/Harvender07/Portfolio',
+    status: 'Active',
+    featured: true,
+  },
+  {
+    id: 'hopper-python-labs',
+    title: 'Hopper — Python Problem Solving & Lab Archive',
+    category: 'creative',
+    categoryLabel: 'Software & Problem Solving',
+    tagline:
+      'Structured Python coursework repository organizing PSP modules, lab implementations, executable scripts, and engineering logbooks.',
+    problem:
+      'Early programming exercises become disorganized without structured separation between problem-solving practice, reusable scripts, and reflection logbooks.',
+    overview:
+      'Maintained a structured Python repository containing Problem Solving & Programming (PSP) exercises, lab modules, CLI utilities, and learning logbooks.',
+    solutionArchitecture:
+      'Directory-separated repository layout (PSP/, bin/, labs/, logbook/) isolating runnable scripts from lab assignments and progress logs.',
+    individualContribution:
+      'Maintained and authored Python scripts, lab solutions, and structured logbook documentation.',
+    technologies: ['Python', 'Problem Solving', 'CLI Scripts', 'GitHub'],
+    keyFeatures: [
+      'Organized separation of PSP exercises, lab modules, and logbook notes',
+      'Version-controlled Python solutions tracking iterative skill progression',
+      'Reusable command-line utilities in bin/',
+    ],
+    architectureHighlights: [
+      'Clean repository organization supporting fast review of foundational Python work',
+    ],
+    githubUrl: 'https://github.com/Harvender07/hopper',
+    liveUrl: 'https://github.com/Harvender07/hopper',
+    status: 'Active',
     featured: false,
   },
 ];
@@ -374,11 +455,11 @@ export const EDUCATION_DATA: EducationItem[] = [
     status: 'Currently in First Year',
     location: 'Pune, Maharashtra, India',
     highlights: [
-      'Developing core programming foundations in C++, Python, and HTML alongside problem-solving methodology',
-      'Pursuing specialized Computer Science and Artificial Intelligence & Machine Learning coursework',
-      'Actively building independent exploration projects and participating in technical challenges',
+      'Developing core programming foundations in Python, C++, HTML, and Git internals',
+      'Contributed 10 verified Pull Requests (#83–#92) to S-AI-Projects/write-yourself-a-git',
+      'Building practical AI/ML visualizations and recruiter-ready web applications',
     ],
-    focusAreas: ['Computer Science Core', 'AI & Machine Learning', 'C++ & Python', 'Software Development'],
+    focusAreas: ['Computer Science Core', 'AI & Machine Learning', 'Python & Git Internals', 'Web Development'],
   },
   {
     institution: 'SVR PU College',
@@ -416,7 +497,7 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
     title: 'WorldQuant Challenge – Gold Certificate',
     issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Gold',
-    date: 'Gold Level Achievement',
+    date: 'Gold Level (2025–2026)',
     credentialNote: 'Certificate of Accomplishment — Gold Level in the WorldQuant Challenge®',
     fileUrl: '/certificates/worldquant-gold.jpg',
     fileType: 'image',
@@ -437,7 +518,7 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
     title: 'WorldQuant Challenge – Silver Certificate',
     issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Silver',
-    date: 'Silver Level Achievement',
+    date: 'Silver Level (2025)',
     credentialNote: 'Certificate of Accomplishment — Silver Level in the WorldQuant Challenge®',
     fileUrl: '/certificates/worldquant-silver.jpg',
     fileType: 'image',
@@ -457,7 +538,7 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
     title: 'WorldQuant Challenge – Bronze Certificate',
     issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Bronze',
-    date: 'Bronze Level Achievement',
+    date: 'Bronze Level (2024–2025)',
     credentialNote: 'Certificate of Accomplishment — Bronze Level in the WorldQuant Challenge®',
     fileUrl: '/certificates/worldquant-bronze.jpg',
     fileType: 'image',
@@ -483,35 +564,35 @@ export const JOURNEY_MILESTONES: JourneyMilestone[] = [
     description:
       'Building technical knowledge and practical skills through first-year coursework at Newton School of Technology, Pune.',
     bulletPoints: [
-      'Developing foundational programming fluency in C++, Python, and HTML',
+      'Developing programming fluency in Python, C++, HTML, and React/TypeScript',
       'Strengthening mathematical reasoning and algorithmic problem-solving habits',
-      'Seeking internship opportunities to apply academic learning in real-world engineering teams',
+      'Seeking internship opportunities to apply academic learning in engineering teams',
     ],
   },
   {
-    title: 'Independent Projects & Vibe Coding',
-    period: 'Ongoing',
-    tag: 'Practical Exploration',
+    title: 'S&AI Open-Source Contributions',
+    period: 'November 2026',
+    tag: '10 Pull Requests',
     iconName: 'Code2',
     description:
-      'Exploring software development, frontend experiments, and AI-driven workflows through practical prototypes.',
+      'Submitted 10 verified Pull Requests (#83–#92) to S-AI-Projects/write-yourself-a-git covering tasks R21-T001 to R21-T010.',
     bulletPoints: [
-      'Designing structured project slots across Software, Web, AI/ML, and Creative Tech',
-      'Practicing rapid prototyping and iterative debugging via Vibe Coding',
-      'Building clean GitHub hygiene and deployable web workflows',
+      'Implemented Python check.py verification suites and JSON input/result fixtures',
+      'Isolated test environments and added regression guards for Git object parsing',
+      'Documented CLI contracts and failing invocation diagnostics',
     ],
   },
   {
-    title: 'Technical Learning & Coding Challenges',
-    period: 'Active Track',
-    tag: 'Skill Expansion',
+    title: 'Independent Projects & Visualization',
+    period: 'Ongoing',
+    tag: 'Practical Builds',
     iconName: 'BookOpen',
     description:
-      'Expanding systematically beyond introductory syntax into modern web development, databases, APIs, and ML tools.',
+      'Applying classroom AI/ML and web concepts into deployed interactive applications.',
     bulletPoints: [
-      'Following a structured roadmap across JavaScript, CSS, React, SQL, Git, APIs, and DSA',
-      'Applying quick-learning and problem-solving habits to new developer ecosystems',
-      'Maintaining steady weekly practice and transparent documentation',
+      'Built the 3D Vector Attention Matrix Simulator for Transformer self-attention',
+      'Engineered this React + TypeScript + Tailwind portfolio with Vercel deployment',
+      'Organized Python PSP exercises and lab utilities in the Hopper repository',
     ],
   },
   {
@@ -578,7 +659,7 @@ export const ATS_RESUME_DATA = {
   careerObjective:
     'To begin my professional journey in the technology industry, contribute to meaningful projects, continuously improve my technical abilities, and grow as a software and AI/ML professional.',
   experience:
-    'Fresher — Currently building technical knowledge and practical skills through academic learning and independent exploration.',
+    'Fresher — Currently building technical knowledge and practical skills through academic learning, S&AI open-source pull requests (#83–#92), and independent projects.',
   education: [
     {
       institution: 'Newton School of Technology',
@@ -600,10 +681,10 @@ export const ATS_RESUME_DATA = {
     },
   ],
   skills: {
-    programming: 'C++ – Basic, Python – Basic, HTML – Basic',
+    programming: 'Python, C++ (Basic), HTML, Bash / Shell Scripting',
     interests: 'Software Development, Frontend Development, Artificial Intelligence, Machine Learning, Web Technologies',
-    additional: 'MS Office – Basic, Video Editing, Vibe Coding',
-    inProgress: 'JavaScript, CSS, React, SQL, Git, APIs, Data Structures & Algorithms, Machine Learning Tools',
+    additional: 'React, TypeScript, Tailwind CSS, Git & GitHub, Automated Regression Testing, Vibe Coding, MS Office, Video Editing',
+    inProgress: 'Data Structures & Algorithms, SQL, REST APIs, Machine Learning Tooling',
   },
   strengths: 'Quick Learner, Problem Solving, Adaptability, Teamwork, Creativity, Discipline and Time Management',
   languages: 'Hindi – Fluent, English – Fluent',
@@ -626,11 +707,17 @@ export const ATS_RESUME_DATA = {
   ],
   projects: [
     {
-      name: 'Recruiter-Focused Developer Portfolio (React + TypeScript + Tailwind)',
-      tech: 'React, TypeScript, Tailwind CSS, Vite, Vercel',
+      name: 'S-AI-Projects/write-yourself-a-git — 10 Open-Source Pull Requests (#83–#92)',
+      tech: 'Python, Bash, Git Internals, Regression Testing',
       points: [
-        'Designed and deployed a clean, minimal dark/light developer portfolio structured around recruiter usability.',
-        'Integrated verified WorldQuant certificate previews, ATS resume viewer, and FormSubmit email contact.',
+        'Submitted 10 verified PRs (R21-T001 to R21-T010) validating cmd_add, cmd_ls_tree, cmd_show_ref, cmd_init, cmd_status, cmd_log, and object_read.',
+      ],
+    },
+    {
+      name: '3D Vector Attention Matrix Simulator (Harvender07/llm-attention-matrix)',
+      tech: 'HTML5, JavaScript, 3D Perspective Canvas, Vercel',
+      points: [
+        'Built an interactive 3D Transformer attention visualizer with softmax threshold gating (τ), token search, and 2D heatmap inspection.',
       ],
     },
   ],

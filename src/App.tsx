@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Skills } from './components/Skills';
+import { SAIContributions } from './components/SAIContributions';
 import { Projects } from './components/Projects';
 import { Education } from './components/Education';
 import { Certifications } from './components/Certifications';
@@ -61,6 +62,9 @@ export const App: React.FC = () => {
 
         {/* Technical Skills Section */}
         <Skills />
+
+        {/* S&AI Open-Source Contributions */}
+        <SAIContributions />
 
         {/* Featured Projects Section */}
         <Projects onSelectProject={(p) => setSelectedProject(p)} />

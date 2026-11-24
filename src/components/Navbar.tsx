@@ -21,12 +21,11 @@ export const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onOpenResume
   }, []);
 
   const navLinks = [
-    { label: 'Home', href: '#hero' },
     { label: 'About', href: '#about' },
     { label: 'Skills', href: '#skills' },
+    { label: 'S&AI PRs', href: '#contributions' },
     { label: 'Projects', href: '#projects' },
     { label: 'Education', href: '#education' },
-    { label: 'Certifications', href: '#certifications' },
     { label: 'Resume', href: '#resume' },
     { label: 'Contact', href: '#contact' },
   ];

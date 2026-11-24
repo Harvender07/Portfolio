@@ -8,27 +8,40 @@ export interface Project {
   tagline: string;
   problem: string;
   overview: string;
+  solutionArchitecture: string;
+  individualContribution: string;
   technologies: string[];
   keyFeatures: string[];
   architectureHighlights: string[];
   screenshotUrl?: string;
-  screenshotPlaceholderNote: string;
   githubUrl: string;
   liveUrl: string;
-  isPlaceholder: boolean;
-  status: 'Placeholder Blueprint' | 'In Development' | 'Prototype' | 'Active';
+  status: 'Active' | 'Completed' | 'Open Source';
   featured?: boolean;
 }
 
-export type SkillCategory = 'programming' | 'interests' | 'additional' | 'learning';
+export type SkillCategory = 'programming' | 'frameworks' | 'tools';
 
 export interface SkillItem {
   name: string;
-  proficiency: 'Basic / Foundational' | 'Active Exploration' | 'Learning In Progress';
+  proficiency: 'Applied in Projects / PRs' | 'Foundational (Basic)' | 'Supporting Skill';
   levelPercentage: number;
   category: SkillCategory;
   description: string;
-  badgeColor?: string;
+  evidenceLabel: string;
+  evidenceUrl: string;
+}
+
+export interface SaiPullRequest {
+  taskId: string;
+  prNumber: number;
+  title: string;
+  prUrl: string;
+  status: 'Open' | 'Merged' | 'Closed';
+  issueRef: string;
+  filesModified: string[];
+  codeModifications: string;
+  technicalRationale: string;
 }
 
 export interface EducationItem {
