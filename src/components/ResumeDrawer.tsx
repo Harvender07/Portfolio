@@ -78,11 +78,13 @@ export const ResumeDrawer: React.FC<ResumeDrawerProps> = ({ isOpen, onClose }) =
               {ATS_RESUME_DATA.title}
             </div>
             <div className="text-xs text-slate-400 font-mono pt-1 flex flex-wrap items-center justify-center gap-3">
-              <span>{ATS_RESUME_DATA.contact.email}</span>
-              <span>•</span>
               <span>{ATS_RESUME_DATA.contact.location}</span>
               <span>•</span>
+              <span>{ATS_RESUME_DATA.contact.email}</span>
+              <span>•</span>
               <span>{ATS_RESUME_DATA.contact.github}</span>
+              <span>•</span>
+              <span>{ATS_RESUME_DATA.contact.linkedin}</span>
             </div>
           </div>
 
@@ -115,12 +117,12 @@ export const ResumeDrawer: React.FC<ResumeDrawerProps> = ({ isOpen, onClose }) =
 
           <div className="space-y-1.5">
             <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 border-b border-slate-800/80 pb-0.5">
-              Technical Skills
+              Technical Skills, Core Strengths & Languages
             </h3>
             <div className="text-xs space-y-1 text-slate-300 dark:text-slate-300 light:text-slate-700">
-              <div><strong>Programming:</strong> {ATS_RESUME_DATA.skills.programming}</div>
-              <div><strong>Development Interests:</strong> {ATS_RESUME_DATA.skills.interests}</div>
-              <div><strong>Additional Skills:</strong> {ATS_RESUME_DATA.skills.additional}</div>
+              <div><strong>Technical Skills:</strong> {ATS_RESUME_DATA.skills.programming}; {ATS_RESUME_DATA.skills.additional}</div>
+              <div><strong>Core Strengths:</strong> {ATS_RESUME_DATA.strengths}</div>
+              <div><strong>Languages:</strong> {ATS_RESUME_DATA.languages}</div>
               <div><strong>Currently Learning:</strong> {ATS_RESUME_DATA.skills.inProgress}</div>
             </div>
           </div>
@@ -140,24 +142,18 @@ export const ResumeDrawer: React.FC<ResumeDrawerProps> = ({ isOpen, onClose }) =
             </div>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 border-b border-slate-800/80 pb-0.5">
-              Technical Initiatives
-            </h3>
-            <div className="space-y-2 text-xs">
-              {ATS_RESUME_DATA.projects.map((proj, idx) => (
-                <div key={idx} className="space-y-0.5">
-                  <div className="flex justify-between font-bold">
-                    <span>{proj.name}</span>
-                    <span className="font-mono text-sky-400 text-[11px]">{proj.tech}</span>
-                  </div>
-                  <ul className="list-disc list-inside text-slate-400 text-[11px] space-y-0.5">
-                    {proj.points.map((pt, pIdx) => (
-                      <li key={pIdx}>{pt}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-xs">
+            <div className="space-y-1">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 border-b border-slate-800/80 pb-0.5">
+                Experience
+              </h3>
+              <p className="text-slate-300 dark:text-slate-300 light:text-slate-700">{ATS_RESUME_DATA.experience}</p>
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 border-b border-slate-800/80 pb-0.5">
+                Career Objective
+              </h3>
+              <p className="text-slate-300 dark:text-slate-300 light:text-slate-700">{ATS_RESUME_DATA.careerObjective}</p>
             </div>
           </div>
 

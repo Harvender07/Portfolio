@@ -58,7 +58,7 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
         </div>
 
         {/* ATS-Friendly 1-Page Resume Preview */}
-        <div className="max-w-4xl mx-auto rounded-2xl glass-panel bg-[#0b1329] dark:bg-[#0b1329] light:bg-white border border-sky-500/20 p-6 sm:p-10 shadow-2xl space-y-6 font-sans">
+        <div className="max-w-4xl mx-auto rounded-2xl glass-panel bg-[#0b1329] dark:bg-[#0b1329] light:bg-white border border-sky-500/20 p-6 sm:p-10 shadow-2xl space-y-5 font-sans">
           
           {/* Resume Header */}
           <div className="text-center pb-5 border-b border-slate-800 dark:border-slate-800 light:border-slate-200 space-y-1.5">
@@ -69,9 +69,9 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
               {ATS_RESUME_DATA.title}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 font-mono pt-1">
-              <span>{ATS_RESUME_DATA.contact.email}</span>
-              <span>•</span>
               <span>{ATS_RESUME_DATA.contact.location}</span>
+              <span>•</span>
+              <span>{ATS_RESUME_DATA.contact.email}</span>
               <span>•</span>
               <span>{ATS_RESUME_DATA.contact.github}</span>
               <span>•</span>
@@ -90,11 +90,11 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
           </div>
 
           {/* Education */}
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 dark:text-sky-400 light:text-sky-600 border-b border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 pb-1">
               Education
             </h2>
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {ATS_RESUME_DATA.education.map((edu, idx) => (
                 <div key={idx} className="space-y-0.5">
                   <div className="flex flex-wrap items-baseline justify-between text-xs sm:text-sm">
@@ -116,20 +116,20 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
             </div>
           </div>
 
-          {/* Technical Skills */}
+          {/* Technical Skills & Core Strengths */}
           <div className="space-y-2">
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 dark:text-sky-400 light:text-sky-600 border-b border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 pb-1">
-              Technical Skills
+              Technical Skills, Strengths & Languages
             </h2>
             <div className="text-xs space-y-1 text-slate-300 dark:text-slate-300 light:text-slate-700">
               <div>
-                <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Programming:</strong> {ATS_RESUME_DATA.skills.programming}
+                <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Technical Skills:</strong> {ATS_RESUME_DATA.skills.programming}; {ATS_RESUME_DATA.skills.additional}
               </div>
               <div>
-                <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Development Interests:</strong> {ATS_RESUME_DATA.skills.interests}
+                <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Core Strengths:</strong> {ATS_RESUME_DATA.strengths}
               </div>
               <div>
-                <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Additional Skills:</strong> {ATS_RESUME_DATA.skills.additional}
+                <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Languages:</strong> {ATS_RESUME_DATA.languages}
               </div>
               <div>
                 <strong className="text-slate-200 dark:text-slate-200 light:text-slate-900">Currently Learning:</strong> {ATS_RESUME_DATA.skills.inProgress}
@@ -142,7 +142,7 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
             <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 dark:text-sky-400 light:text-sky-600 border-b border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 pb-1">
               Certifications & Achievements
             </h2>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               {ATS_RESUME_DATA.certifications.map((c, idx) => (
                 <div key={idx} className="text-xs">
                   <span className="font-bold text-amber-400 dark:text-amber-400 light:text-amber-700">
@@ -159,29 +159,23 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
             </div>
           </div>
 
-          {/* Projects */}
-          <div className="space-y-2">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 dark:text-sky-400 light:text-sky-600 border-b border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 pb-1">
-              Technical Initiatives
-            </h2>
-            <div className="space-y-2">
-              {ATS_RESUME_DATA.projects.map((proj, idx) => (
-                <div key={idx} className="space-y-1">
-                  <div className="flex flex-wrap items-baseline justify-between text-xs sm:text-sm">
-                    <span className="font-bold text-slate-200 dark:text-slate-200 light:text-slate-900">
-                      {proj.name}
-                    </span>
-                    <span className="text-[11px] font-mono text-sky-400 dark:text-sky-400 light:text-sky-600">
-                      {proj.tech}
-                    </span>
-                  </div>
-                  <ul className="list-disc list-inside text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 space-y-0.5">
-                    {proj.points.map((pt, pIdx) => (
-                      <li key={pIdx}>{pt}</li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+          {/* Experience & Career Objective */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+            <div className="space-y-1">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 dark:text-sky-400 light:text-sky-600 border-b border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 pb-1">
+                Experience
+              </h2>
+              <p className="text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
+                {ATS_RESUME_DATA.experience}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-sky-400 dark:text-sky-400 light:text-sky-600 border-b border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 pb-1">
+                Career Objective
+              </h2>
+              <p className="text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
+                {ATS_RESUME_DATA.careerObjective}
+              </p>
             </div>
           </div>
 
@@ -190,7 +184,7 @@ export const ResumeSection: React.FC<ResumeSectionProps> = ({ onOpenResumeDrawer
             <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <strong className="text-slate-200 dark:text-slate-200 light:text-slate-800">Custom Resume Upload Slot:</strong>{' '}
-              A ready-to-download ATS PDF is served at <code className="text-sky-400">public/resume.pdf</code>. Replace that file anytime with your exported resume PDF and the Download button will serve your updated file automatically.
+              Your ATS resume PDF is ready at <code className="text-sky-400">public/resume.pdf</code>. Replace that file anytime with your exported custom PDF and the Download button will serve it automatically.
             </div>
           </div>
 

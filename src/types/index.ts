@@ -51,6 +51,7 @@ export interface CertificationItem {
   credentialNote: string;
   fileUrl: string;
   fileType: 'image' | 'pdf';
+  verificationPostUrl?: string;
   skillsDemonstrated: string[];
   description: string;
   badgeColor: string;

@@ -10,61 +10,77 @@ import {
 export const PERSONAL_INFO = {
   name: 'Harvender Singh Rawat',
   initials: 'HSR',
-  role: 'Aspiring Software Engineer & AI/ML Undergraduate',
+  role: 'B.Tech CSE (Artificial Intelligence & Machine Learning) Student',
   headline: 'Building Technology. Exploring Intelligence. Creating Impact.',
-  designation: 'Computer Science & AI/ML Undergraduate | Aspiring Software Engineer',
+  designation: 'B.Tech CSE (Artificial Intelligence & Machine Learning) | Aspiring Software Engineer',
   institution: 'Newton School of Technology',
-  degree: 'B.Tech in Computer Science & Artificial Intelligence and Machine Learning',
-  batch: '2026–2030',
-  location: 'India',
-  careerLevel: 'Fresher / Undergraduate Student',
+  degree: 'B.Tech – Computer Science & Artificial Intelligence and Machine Learning',
+  batch: '2026–2030 | Currently in First Year',
+  location: 'Pune, Maharashtra, India',
+  careerLevel: 'Fresher / First-Year Undergraduate',
   careerGoal: 'Software Development, AI/ML, Frontend Development, and Technology Internships',
   status: 'Open to Internship Opportunities',
   email: 'harvendersinghrawat7336@gmail.com',
   github: 'https://github.com/Harvender07',
-  linkedin: 'https://www.linkedin.com/in/harvender-singh-rawat', // Configurable LinkedIn URL
-  profileImageUrl: '/profile.jpg', // Place your headshot at public/profile.jpg
+  linkedin: 'https://www.linkedin.com/in/harvender-singh-rawat-3407a12a1',
+  worldquantPostUrl:
+    'https://www.linkedin.com/posts/harvender-singh-rawat-3407a12a1_worldquant-computerscience-ai-ugcPost-7521212556233998336-wLMd',
+  profileImageUrl: '/profile.jpg',
   bioIntro:
-    "I'm a Computer Science and AI/ML undergraduate at Newton School of Technology, passionate about software engineering, artificial intelligence, and web technologies. I enjoy exploring new technologies, developing practical solutions, and continuously improving my technical abilities.",
-  bioExtended:
-    "I'm currently pursuing my B.Tech in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology. I am developing my foundation in programming, software development, and emerging technologies.\n\nI believe in learning through experimentation, building projects, and solving real-world problems. My goal is to grow into a versatile software engineer with strong foundations in development and artificial intelligence.",
-  resumeDownloadUrl: '/resume.pdf', // Place your updated resume PDF at public/resume.pdf
+    'Motivated first-year B.Tech student specializing in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology. Eager to explore software development, emerging technologies, and AI-driven solutions while building strong fundamentals through practical projects.',
+  professionalSummary:
+    'Motivated first-year B.Tech student specializing in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology. Eager to explore software development, emerging technologies, and AI-driven solutions. Possesses foundational programming knowledge, creative problem-solving abilities, and an interest in learning through practical projects. Seeking internship opportunities to develop technical skills and gain industry experience.',
+  careerObjective:
+    'To begin my professional journey in the technology industry, contribute to meaningful projects, continuously improve my technical abilities, and grow as a software and AI/ML professional.',
+  languages: [
+    { name: 'Hindi', proficiency: 'Fluent' },
+    { name: 'English', proficiency: 'Fluent' },
+  ],
+  coreStrengths: [
+    'Quick Learner',
+    'Problem Solving',
+    'Adaptability',
+    'Teamwork',
+    'Creativity',
+    'Discipline and Time Management',
+  ],
+  resumeDownloadUrl: '/resume.pdf',
 };
 
 export const ABOUT_PILLARS = [
   {
-    title: 'Army Background & Disciplined Mindset',
-    subtitle: 'Rigor & Consistency',
+    title: 'Army Background & Discipline',
+    subtitle: 'Discipline & Time Management',
     description:
-      'Raised in an army environment, I bring structured personal discipline, punctuality, resilience under pressure, and consistent follow-through on engineering commitments.',
+      'Rooted in Army Public School values, bringing punctuality, composure under pressure, and consistent follow-through on engineering commitments.',
     icon: 'Shield',
   },
   {
-    title: 'Self-Learning & Adaptability',
-    subtitle: 'Rapid Technology Uptake',
+    title: 'Quick Learner & Adaptable',
+    subtitle: 'Self-Directed Growth',
     description:
-      'I learn proactively through hands-on experimentation, official technical documentation, and iterative coding rather than waiting for classroom instruction.',
+      'Proactively learning through experimentation, technical documentation, and practical coding rather than relying solely on classroom lectures.',
     icon: 'Zap',
   },
   {
-    title: 'Creative Problem-Solving',
+    title: 'Problem Solving & Logic',
     subtitle: 'First-Principles Thinking',
     description:
-      'I enjoy decomposing complex, open-ended challenges into clear, modular logic and developing practical software solutions.',
+      'Breaking complex challenges down into clear, modular logic and developing practical, maintainable software implementations.',
     icon: 'Cpu',
   },
   {
-    title: 'Interest in Technology & Innovation',
+    title: 'Creativity & Innovation',
     subtitle: 'Curiosity-Driven',
     description:
-      'Deeply enthusiastic about how software engineering, artificial intelligence, and modern web technologies converge to build high-leverage products.',
+      'Combining creative ideation, video storytelling instincts, and emerging AI tools to turn new concepts into working digital prototypes.',
     icon: 'Compass',
   },
   {
     title: 'Teamwork & Communication',
-    subtitle: 'Collaborative Execution',
+    subtitle: 'Hindi & English (Fluent)',
     description:
-      'Comfortable collaborating across diverse peers, listening carefully to feedback, documenting work clearly, and contributing positively to team velocity.',
+      'Fluent in both Hindi and English, collaborating clearly across diverse peers, taking feedback openly, and contributing positively to teams.',
     icon: 'Users',
   },
 ];
@@ -119,7 +135,7 @@ export const SKILLS_DATA: SkillItem[] = [
     levelPercentage: 30,
     category: 'interests',
     description:
-      'Core interest area: studying intelligent systems, reasoning workflows, and applied AI concepts.',
+      'Core interest area: studying intelligent systems, reasoning workflows, and applied AI-driven solutions.',
   },
   {
     name: 'Machine Learning',
@@ -231,7 +247,6 @@ export const SKILLS_DATA: SkillItem[] = [
   },
 ];
 
-// Clearly marked editable placeholder projects until completed builds are added
 export const PROJECTS_DATA: Project[] = [
   {
     id: 'software-dev-placeholder',
@@ -356,93 +371,98 @@ export const EDUCATION_DATA: EducationItem[] = [
     institution: 'Newton School of Technology',
     degree: 'B.Tech – Computer Science & Artificial Intelligence and Machine Learning',
     timeline: '2026 – 2030',
-    status: 'Currently Pursuing',
-    location: 'India',
+    status: 'Currently in First Year',
+    location: 'Pune, Maharashtra, India',
     highlights: [
-      'Developing core programming foundations, algorithmic thinking, and modern software engineering practices',
-      'Pursuing specialized coursework in Artificial Intelligence and Machine Learning',
-      'Participating in hands-on coding labs, peer learning, and technical project sprints',
+      'Developing core programming foundations in C++, Python, and HTML alongside problem-solving methodology',
+      'Pursuing specialized Computer Science and Artificial Intelligence & Machine Learning coursework',
+      'Actively building independent exploration projects and participating in technical challenges',
     ],
-    focusAreas: ['Computer Science Core', 'AI & Machine Learning', 'C++ & Python', 'Software Engineering'],
+    focusAreas: ['Computer Science Core', 'AI & Machine Learning', 'C++ & Python', 'Software Development'],
   },
   {
     institution: 'SVR PU College',
-    degree: 'Class 12 (Pre-University)',
+    degree: 'Class XII – Science (PCM)',
     timeline: 'Completed',
     score: '89.5%',
     status: '89.5% Aggregate',
     location: 'India',
     highlights: [
-      'Achieved 89.5% overall score in senior secondary education',
-      'Strengthened analytical reasoning, mathematics, and disciplined study habits',
-      'Built academic readiness for undergraduate Computer Science & AI/ML engineering',
+      'Achieved 89.5% aggregate in Class XII Science (Physics, Chemistry, Mathematics)',
+      'Strengthened quantitative reasoning, analytical thinking, and structured study discipline',
+      'Built strong mathematical foundations supporting CS and AI/ML studies',
     ],
-    focusAreas: ['Mathematics', 'Analytical Problem Solving', 'Science Foundations'],
+    focusAreas: ['Physics', 'Chemistry', 'Mathematics (PCM)', 'Analytical Reasoning'],
   },
   {
     institution: 'Army Public School',
-    degree: 'Class 10 (Secondary School)',
+    degree: 'Class X (Secondary School)',
     timeline: 'Completed',
     score: '72.2%',
     status: '72.2% Aggregate',
     location: 'India',
     highlights: [
-      'Completed secondary schooling with 72.2% in an army school environment',
-      'Cultivated personal discipline, punctuality, teamwork, and resilience through sports and academics',
-      'Developed foundational communication and leadership skills',
+      'Completed Class X schooling with 72.2% in an army school environment',
+      'Cultivated personal discipline, time management, teamwork, and resilience through sports and academics',
+      'Built strong communication habits across Hindi and English',
     ],
-    focusAreas: ['Disciplined Mindset', 'Teamwork & Sports', 'Core Academics'],
+    focusAreas: ['Discipline & Time Management', 'Teamwork & Sports', 'Core Academics'],
   },
 ];
 
-// Place original certificate PDFs or images inside public/certificates/ to render them directly
 export const CERTIFICATIONS_DATA: CertificationItem[] = [
   {
     id: 'worldquant-gold',
     title: 'WorldQuant Challenge – Gold Certificate',
-    issuer: 'WorldQuant Challenge',
+    issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Gold',
-    date: 'Gold Achievement',
-    credentialNote: 'Upload original certificate file at public/certificates/worldquant-gold.pdf (or .jpg/.png)',
-    fileUrl: '/certificates/worldquant-gold.pdf',
-    fileType: 'pdf',
+    date: 'Gold Level Achievement',
+    credentialNote: 'Certificate of Accomplishment — Gold Level in the WorldQuant Challenge®',
+    fileUrl: '/certificates/worldquant-gold.jpg',
+    fileType: 'image',
+    verificationPostUrl:
+      'https://www.linkedin.com/posts/harvender-singh-rawat-3407a12a1_worldquant-computerscience-ai-ugcPost-7521212556233998336-wLMd',
     badgeColor: 'border-amber-400/50 text-amber-400 bg-amber-500/10',
     skillsDemonstrated: [
-      'Quantitative Modeling & Logical Reasoning',
+      'Quantitative Research & Modeling',
       'Iterative Hypothesis Testing',
       'Analytical Problem Solving',
-      'Research Persistence',
+      'Continuous Learning',
     ],
     description:
-      'Earned the Gold Certificate in the WorldQuant Challenge, demonstrating analytical curiosity, structured quantitative thinking, and persistence through competitive problem-solving milestones.',
+      'Awarded Certificate of Accomplishment for reaching Gold Level in the WorldQuant Challenge®, authorized and presented by Nitish Maini, Chief Strategy Officer of WorldQuant.',
   },
   {
     id: 'worldquant-silver',
     title: 'WorldQuant Challenge – Silver Certificate',
-    issuer: 'WorldQuant Challenge',
+    issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Silver',
-    date: 'Silver Achievement',
-    credentialNote: 'Upload original certificate file at public/certificates/worldquant-silver.pdf (or .jpg/.png)',
-    fileUrl: '/certificates/worldquant-silver.pdf',
-    fileType: 'pdf',
+    date: 'Silver Level Achievement',
+    credentialNote: 'Certificate of Accomplishment — Silver Level in the WorldQuant Challenge®',
+    fileUrl: '/certificates/worldquant-silver.jpg',
+    fileType: 'image',
+    verificationPostUrl:
+      'https://www.linkedin.com/posts/harvender-singh-rawat-3407a12a1_worldquant-computerscience-ai-ugcPost-7521212556233998336-wLMd',
     badgeColor: 'border-slate-300/50 text-slate-300 bg-slate-400/10',
     skillsDemonstrated: [
       'Quantitative Data Exploration',
-      'Pattern & Signal Evaluation',
+      'Signal & Pattern Evaluation',
       'Structured Experimentation',
     ],
     description:
-      'Awarded the Silver Certificate in the WorldQuant Challenge for consistent progress in quantitative problem analysis and formula experimentation.',
+      'Awarded Certificate of Accomplishment for reaching Silver Level in the WorldQuant Challenge®, demonstrating consistent progression in quantitative problem analysis.',
   },
   {
     id: 'worldquant-bronze',
     title: 'WorldQuant Challenge – Bronze Certificate',
-    issuer: 'WorldQuant Challenge',
+    issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Bronze',
-    date: 'Bronze Achievement',
-    credentialNote: 'Upload original certificate file at public/certificates/worldquant-bronze.pdf (or .jpg/.png)',
-    fileUrl: '/certificates/worldquant-bronze.pdf',
-    fileType: 'pdf',
+    date: 'Bronze Level Achievement',
+    credentialNote: 'Certificate of Accomplishment — Bronze Level in the WorldQuant Challenge®',
+    fileUrl: '/certificates/worldquant-bronze.jpg',
+    fileType: 'image',
+    verificationPostUrl:
+      'https://www.linkedin.com/posts/harvender-singh-rawat-3407a12a1_worldquant-computerscience-ai-ugcPost-7521212556233998336-wLMd',
     badgeColor: 'border-amber-700/60 text-amber-500 bg-amber-700/10',
     skillsDemonstrated: [
       'Foundational Quantitative Thinking',
@@ -450,35 +470,35 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
       'Competitive Readiness',
     ],
     description:
-      'Recognized with the Bronze Certificate in the WorldQuant Challenge for completing early competitive quantitative research and analysis milestones.',
+      'Awarded Certificate of Accomplishment for reaching Bronze Level in the WorldQuant Challenge®, marking the first milestone in my WorldQuant quantitative research journey.',
   },
 ];
 
 export const JOURNEY_MILESTONES: JourneyMilestone[] = [
   {
     title: 'Academic Development',
-    period: '2026 – 2030',
-    tag: 'B.Tech CS & AI/ML',
+    period: '2026 – 2030 (First Year)',
+    tag: 'B.Tech CSE (AI & ML)',
     iconName: 'GraduationCap',
     description:
-      'Building a strong engineering foundation at Newton School of Technology through structured computer science and AI/ML coursework.',
+      'Building technical knowledge and practical skills through first-year coursework at Newton School of Technology, Pune.',
     bulletPoints: [
-      'Practicing programming fundamentals in C++, Python, and HTML',
-      'Strengthening mathematical reasoning and computational logic',
-      'Collaborating in peer review and team problem-solving sessions',
+      'Developing foundational programming fluency in C++, Python, and HTML',
+      'Strengthening mathematical reasoning and algorithmic problem-solving habits',
+      'Seeking internship opportunities to apply academic learning in real-world engineering teams',
     ],
   },
   {
     title: 'Independent Projects & Vibe Coding',
     period: 'Ongoing',
-    tag: 'Hands-On Building',
+    tag: 'Practical Exploration',
     iconName: 'Code2',
     description:
-      'Translating concepts into working prototypes through independent exploration, documentation, and AI-assisted development workflows.',
+      'Exploring software development, frontend experiments, and AI-driven workflows through practical prototypes.',
     bulletPoints: [
-      'Designing modular project blueprints across Software, Web, AI/ML, and Creative Tech',
-      'Learning clean GitHub repository organization and deployment practices',
-      'Iterating on user-centric layouts and practical automation ideas',
+      'Designing structured project slots across Software, Web, AI/ML, and Creative Tech',
+      'Practicing rapid prototyping and iterative debugging via Vibe Coding',
+      'Building clean GitHub hygiene and deployable web workflows',
     ],
   },
   {
@@ -487,24 +507,24 @@ export const JOURNEY_MILESTONES: JourneyMilestone[] = [
     tag: 'Skill Expansion',
     iconName: 'BookOpen',
     description:
-      'Expanding beyond foundational syntax into modern web development, data structures, APIs, and machine learning tooling.',
+      'Expanding systematically beyond introductory syntax into modern web development, databases, APIs, and ML tools.',
     bulletPoints: [
-      'Follow-through roadmap covering JavaScript, CSS, React, SQL, Git, APIs, and DSA',
-      'Solving beginner coding exercises to build fluency and debugging discipline',
-      'Documenting learning progress transparently for continuous improvement',
+      'Following a structured roadmap across JavaScript, CSS, React, SQL, Git, APIs, and DSA',
+      'Applying quick-learning and problem-solving habits to new developer ecosystems',
+      'Maintaining steady weekly practice and transparent documentation',
     ],
   },
   {
     title: 'Certifications & Extracurricular Activities',
-    period: '2024 – Present',
-    tag: 'Recognition & Growth',
+    period: 'Milestones',
+    tag: 'WorldQuant & Discipline',
     iconName: 'Trophy',
     description:
-      'Combining competitive quantitative challenges with athletic discipline and creative digital production.',
+      'Combining competitive quantitative research milestones with athletic discipline and creative media editing.',
     bulletPoints: [
-      'Earned WorldQuant Challenge Gold, Silver, and Bronze Certificates',
-      'Maintained regular basketball training, physical fitness, and team coordination',
-      'Produced creative digital edits strengthening visual communication skills',
+      'Earned Bronze, Silver, and Gold Level Certificates in the WorldQuant Challenge®',
+      'Active in basketball and fitness, reinforcing teamwork and time management',
+      'Practicing creative digital storytelling through video editing',
     ],
   },
 ];
@@ -514,13 +534,13 @@ export const PERSONALITY_PILLARS: PersonalityPillar[] = [
     title: 'Basketball & Fitness',
     category: 'Discipline & Teamwork',
     description:
-      'Regular basketball sessions and physical conditioning reinforce stamina, quick decision-making, court awareness, and team-first collaboration.',
+      'Regular basketball and fitness training reinforce stamina, quick decision-making, court awareness, and team-first collaboration.',
     takeaway: 'Consistent energy, composure under pressure, and collaborative spirit.',
     iconName: 'Activity',
   },
   {
     title: 'Content Creation & Video Editing',
-    category: 'Visual Storytelling',
+    category: 'Creativity & Detail',
     description:
       'Editing digital videos sharpens pacing, attention to visual detail, narrative clarity, and audience empathy.',
     takeaway: 'Strong sense of UI polish, visual hierarchy, and concise communication.',
@@ -530,81 +550,87 @@ export const PERSONALITY_PILLARS: PersonalityPillar[] = [
     title: 'Creative Experimentation',
     category: 'Curiosity & Vibe Coding',
     description:
-      'Exploring emerging AI workflows, interactive prototypes, and digital tools to see how new ideas can be turned into usable software.',
+      'Exploring emerging AI workflows, interactive prototypes, and digital tools to turn new ideas into usable software.',
     takeaway: 'Fast experimentation mindset and comfort exploring unfamiliar tools.',
     iconName: 'Sparkles',
   },
   {
     title: 'Continuous Personal Development',
-    category: 'Army Upbringing & Mindset',
+    category: 'Time Management & Mindset',
     description:
-      'Grounded in an army school background, I focus on daily accountability, active listening, and measurable self-improvement.',
-    takeaway: 'Coachable, reliable, and eager to learn from experienced mentors.',
+      'Grounded in an army school background, focusing on daily accountability, adaptability, and steady self-improvement.',
+    takeaway: 'Quick learner, coachable, and eager to learn from experienced mentors.',
     iconName: 'TrendingUp',
   },
 ];
 
 export const ATS_RESUME_DATA = {
   name: 'Harvender Singh Rawat',
-  title: 'Computer Science & AI/ML Undergraduate | Aspiring Software Engineer',
+  title: 'B.Tech CSE (Artificial Intelligence & Machine Learning) Student',
   contact: {
     email: 'harvendersinghrawat7336@gmail.com',
-    location: 'India',
+    location: 'Pune, Maharashtra, India',
     github: 'github.com/Harvender07',
-    linkedin: 'linkedin.com/in/harvender-singh-rawat',
+    linkedin: 'linkedin.com/in/harvender-singh-rawat-3407a12a1',
   },
   summary:
-    'Computer Science & AI/ML undergraduate at Newton School of Technology (2026–2030) with an army background and disciplined work ethic. Foundational experience in C++, Python, and HTML, paired with WorldQuant Challenge Gold, Silver, and Bronze Certificates. Actively seeking Software Development, Frontend Development, or AI/ML Internships to contribute with high learnability and execution rigor.',
+    'Motivated first-year B.Tech student specializing in Computer Science and Artificial Intelligence & Machine Learning at Newton School of Technology. Eager to explore software development, emerging technologies, and AI-driven solutions. Possesses foundational programming knowledge, creative problem-solving abilities, and an interest in learning through practical projects. Seeking internship opportunities to develop technical skills and gain industry experience.',
+  careerObjective:
+    'To begin my professional journey in the technology industry, contribute to meaningful projects, continuously improve my technical abilities, and grow as a software and AI/ML professional.',
+  experience:
+    'Fresher — Currently building technical knowledge and practical skills through academic learning and independent exploration.',
   education: [
     {
       institution: 'Newton School of Technology',
       degree: 'B.Tech – Computer Science & Artificial Intelligence and Machine Learning',
-      timeline: '2026 – 2030 (Currently Pursuing)',
-      details: 'Focus Areas: Programming Fundamentals (C++, Python), AI/ML Foundations, Web Technologies.',
+      timeline: '2026 – 2030 | Currently in First Year',
+      details: 'Location: Pune, Maharashtra, India | Core Focus: Programming Fundamentals, AI & Machine Learning, Practical Projects.',
     },
     {
       institution: 'SVR PU College',
-      degree: 'Class 12 (Pre-University)',
+      degree: 'Class XII – Science (PCM)',
       timeline: 'Completed',
-      details: 'Aggregate Score: 89.5%.',
+      details: 'Percentage: 89.5%',
     },
     {
       institution: 'Army Public School',
-      degree: 'Class 10 (Secondary School)',
+      degree: 'Class X',
       timeline: 'Completed',
-      details: 'Aggregate Score: 72.2% | Cultivated discipline, teamwork, and leadership.',
+      details: 'Percentage: 72.2%',
     },
   ],
   skills: {
-    programming: 'C++ (Basic), Python (Basic), HTML (Basic)',
+    programming: 'C++ – Basic, Python – Basic, HTML – Basic',
     interests: 'Software Development, Frontend Development, Artificial Intelligence, Machine Learning, Web Technologies',
-    additional: 'Vibe Coding, MS Office (Basic), Video Editing',
+    additional: 'MS Office – Basic, Video Editing, Vibe Coding',
     inProgress: 'JavaScript, CSS, React, SQL, Git, APIs, Data Structures & Algorithms, Machine Learning Tools',
   },
+  strengths: 'Quick Learner, Problem Solving, Adaptability, Teamwork, Creativity, Discipline and Time Management',
+  languages: 'Hindi – Fluent, English – Fluent',
   certifications: [
     {
-      name: 'WorldQuant Challenge – Gold Certificate',
-      issuer: 'WorldQuant Challenge',
-      desc: 'Awarded for quantitative problem-solving and analytical modeling performance.',
+      name: 'WorldQuant Challenge® – Gold Level Certificate of Accomplishment',
+      issuer: 'WorldQuant BRAIN',
+      desc: 'Awarded for reaching Gold Level in the WorldQuant Challenge (verified on LinkedIn).',
     },
     {
-      name: 'WorldQuant Challenge – Silver Certificate',
-      issuer: 'WorldQuant Challenge',
-      desc: 'Recognized for quantitative experimentation and data exploration milestones.',
+      name: 'WorldQuant Challenge® – Silver Level Certificate of Accomplishment',
+      issuer: 'WorldQuant BRAIN',
+      desc: 'Awarded for reaching Silver Level in the WorldQuant Challenge.',
     },
     {
-      name: 'WorldQuant Challenge – Bronze Certificate',
-      issuer: 'WorldQuant Challenge',
-      desc: 'Earned for completing foundational quantitative research challenges.',
+      name: 'WorldQuant Challenge® – Bronze Level Certificate of Accomplishment',
+      issuer: 'WorldQuant BRAIN',
+      desc: 'Awarded for reaching Bronze Level in the WorldQuant Challenge.',
     },
   ],
   projects: [
     {
-      name: 'Software, Web, AI/ML & Creative Tech Blueprints (Portfolio Showcase)',
-      tech: 'C++ (Basic), Python (Basic), HTML (Basic), React/TypeScript',
+      name: 'Recruiter-Focused Developer Portfolio (React + TypeScript + Tailwind)',
+      tech: 'React, TypeScript, Tailwind CSS, Vite, Vercel',
       points: [
-        'Structuring modular problem-solving projects across software development, web, AI/ML, and automation.',
-        'Built and deployed a recruiter-focused React + TypeScript + Tailwind portfolio on Vercel.',
+        'Designed and deployed a clean, minimal dark/light developer portfolio structured around recruiter usability.',
+        'Integrated verified WorldQuant certificate previews, ATS resume viewer, and FormSubmit email contact.',
       ],
     },
   ],

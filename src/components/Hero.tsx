@@ -66,7 +66,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResumeDrawer }) => {
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
                 <MapPin className="w-3.5 h-3.5 text-sky-400" />
-                India
+                {PERSONAL_INFO.location}
               </span>
             </div>
 
@@ -194,7 +194,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenResumeDrawer }) => {
                     </div>
                     <div className="p-2.5 rounded-lg bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
                       <div className="text-slate-500 dark:text-slate-500 light:text-slate-400 text-[10px] uppercase font-mono">Location</div>
-                      <div className="font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 mt-0.5">India</div>
+                      <div className="font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 mt-0.5">Pune, India</div>
                     </div>
                   </div>
                 </div>
