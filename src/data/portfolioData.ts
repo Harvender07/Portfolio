@@ -497,8 +497,8 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
     title: 'WorldQuant Challenge – Gold Certificate',
     issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Gold',
-    date: 'Gold Level (2025–2026)',
-    credentialNote: 'Certificate of Accomplishment — Gold Level in the WorldQuant Challenge®',
+    date: 'Gold Level (2026)',
+    credentialNote: 'Certificate of Accomplishment — Gold Level in the WorldQuant Challenge® (2026)',
     fileUrl: '/certificates/worldquant-gold.jpg',
     fileType: 'image',
     verificationPostUrl:
@@ -518,8 +518,8 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
     title: 'WorldQuant Challenge – Silver Certificate',
     issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Silver',
-    date: 'Silver Level (2025)',
-    credentialNote: 'Certificate of Accomplishment — Silver Level in the WorldQuant Challenge®',
+    date: 'Silver Level (2026)',
+    credentialNote: 'Certificate of Accomplishment — Silver Level in the WorldQuant Challenge® (2026)',
     fileUrl: '/certificates/worldquant-silver.jpg',
     fileType: 'image',
     verificationPostUrl:
@@ -538,8 +538,8 @@ export const CERTIFICATIONS_DATA: CertificationItem[] = [
     title: 'WorldQuant Challenge – Bronze Certificate',
     issuer: 'WorldQuant BRAIN · Presented by Nitish Maini (CSO)',
     tier: 'Bronze',
-    date: 'Bronze Level (2024–2025)',
-    credentialNote: 'Certificate of Accomplishment — Bronze Level in the WorldQuant Challenge®',
+    date: 'Bronze Level (2026)',
+    credentialNote: 'Certificate of Accomplishment — Bronze Level in the WorldQuant Challenge® (2026)',
     fileUrl: '/certificates/worldquant-bronze.jpg',
     fileType: 'image',
     verificationPostUrl:
