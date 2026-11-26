@@ -18,25 +18,39 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-3xl rounded-2xl glass-panel bg-[#0b1329] dark:bg-[#0b1329] light:bg-white border border-sky-500/20 shadow-2xl p-6 sm:p-8 space-y-6 z-10 max-h-[90vh] overflow-y-auto my-auto">
-        
+      <div
+        className="relative w-full max-w-3xl rounded-2xl shadow-2xl p-6 sm:p-8 space-y-6 z-10 max-h-[90vh] overflow-y-auto my-auto"
+        style={{
+          background: 'var(--charcoal-2)',
+          border: '1px solid var(--border-h)',
+          color: 'var(--offwhite)',
+        }}
+      >
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 pb-4 border-b border-slate-800 dark:border-slate-800 light:border-slate-200">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-sky-500/10 text-sky-400 border border-sky-500/30">
-              {project.categoryLabel}
-            </div>
-            <h2 className="text-2xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900">
+        <div
+          className="flex items-start justify-between gap-4 pb-5"
+          style={{ borderBottom: '1px solid var(--border)' }}
+        >
+          <div className="space-y-2">
+            <span className="chip chip-cobalt">{project.categoryLabel}</span>
+            <h2
+              className="font-bold text-[var(--offwhite)]"
+              style={{
+                fontFamily: "'Satoshi','Space Grotesk',sans-serif",
+                fontSize: 'clamp(1.35rem, 3vw, 1.75rem)',
+                letterSpacing: '-0.02em',
+              }}
+            >
               {project.title}
             </h2>
-            <p className="text-sm text-slate-400 dark:text-slate-400 light:text-slate-600">
+            <p className="text-sm text-[var(--grey)]" style={{ fontFamily: "'Inter',sans-serif" }}>
               {project.tagline}
             </p>
           </div>
-          
+
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 dark:hover:bg-slate-800/60 light:hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-[var(--grey)] hover:text-[var(--offwhite)] hover:bg-white/5 transition-colors cursor-pointer"
             aria-label="Close Project Modal"
           >
             <X className="w-5 h-5" />
@@ -44,29 +58,28 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         </div>
 
         {/* Overview, Problem Statement, Solution Architecture */}
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div>
-            <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-1">
-              Problem Statement
-            </h3>
-            <p className="text-sm text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
+            <h3 className="section-label text-[#60a5fa] mb-1.5">Problem Statement</h3>
+            <p className="text-sm text-[var(--grey-light)] leading-relaxed" style={{ fontFamily: "'Inter',sans-serif" }}>
               {project.problem}
             </p>
           </div>
 
           <div>
-            <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-1">
-              Solution Architecture
-            </h3>
-            <p className="text-sm text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
+            <h3 className="section-label text-[#60a5fa] mb-1.5">Solution Architecture</h3>
+            <p className="text-sm text-[var(--grey-light)] leading-relaxed" style={{ fontFamily: "'Inter',sans-serif" }}>
               {project.solutionArchitecture}
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 flex items-start gap-2.5">
+          <div
+            className="p-4 rounded-xl flex items-start gap-3"
+            style={{ background: 'var(--charcoal-3)', border: '1px solid var(--border)' }}
+          >
             <UserCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-700">
-              <strong className="text-slate-100 dark:text-slate-100 light:text-slate-900 block text-xs font-mono uppercase mb-0.5">
+            <div className="text-xs sm:text-sm text-[var(--grey-light)]" style={{ fontFamily: "'Inter',sans-serif" }}>
+              <strong className="section-label text-[var(--offwhite)] block mb-1">
                 Individual Contribution
               </strong>
               {project.individualContribution}
@@ -76,15 +89,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
         {/* Tech Stack */}
         <div>
-          <h3 className="text-xs font-mono uppercase tracking-wider text-slate-500 mb-2">
-            Tech Stack Used
-          </h3>
+          <h3 className="section-label mb-2.5">Tech Stack Used</h3>
           <div className="flex flex-wrap gap-2">
             {project.technologies.map((tech) => (
-              <span
-                key={tech}
-                className="px-3 py-1 rounded-lg text-xs font-mono font-medium bg-slate-900 dark:bg-slate-900 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-300 text-sky-400 dark:text-sky-400 light:text-sky-700"
-              >
+              <span key={tech} className="chip chip-cobalt">
                 {tech}
               </span>
             ))}
@@ -93,12 +101,14 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
         {/* Key Features */}
         <div>
-          <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-2">
-            Implemented Capabilities
-          </h3>
+          <h3 className="section-label text-[#60a5fa] mb-2.5">Implemented Capabilities</h3>
           <ul className="space-y-2">
             {project.keyFeatures.map((feature, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-700">
+              <li
+                key={idx}
+                className="flex items-start gap-2.5 text-xs sm:text-sm text-[var(--grey-light)]"
+                style={{ fontFamily: "'Inter',sans-serif" }}
+              >
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 <span>{feature}</span>
               </li>
@@ -108,13 +118,18 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
         {/* Architecture Notes */}
         <div>
-          <h3 className="text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold mb-2">
-            Architecture & Repository Structure
-          </h3>
-          <div className="p-4 rounded-xl bg-slate-950/60 dark:bg-slate-950/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 space-y-2">
+          <h3 className="section-label text-[#60a5fa] mb-2.5">Architecture & Repository Structure</h3>
+          <div
+            className="p-4 rounded-xl space-y-2"
+            style={{ background: 'var(--charcoal)', border: '1px solid var(--border)' }}
+          >
             {project.architectureHighlights.map((hl, idx) => (
-              <div key={idx} className="flex items-start gap-2 text-xs text-slate-400 dark:text-slate-400 light:text-slate-600">
-                <Layers className="w-3.5 h-3.5 text-sky-400 shrink-0 mt-0.5" />
+              <div
+                key={idx}
+                className="flex items-start gap-2 text-xs text-[var(--grey)]"
+                style={{ fontFamily: "'Inter',sans-serif" }}
+              >
+                <Layers className="w-3.5 h-3.5 text-[#60a5fa] shrink-0 mt-0.5" />
                 <span>{hl}</span>
               </div>
             ))}
@@ -122,8 +137,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
         </div>
 
         {/* Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-slate-800 dark:border-slate-800 light:border-slate-200">
-          <div className="text-xs font-mono text-slate-500">
+        <div
+          className="flex flex-wrap items-center justify-between gap-3 pt-4"
+          style={{ borderTop: '1px solid var(--border)' }}
+        >
+          <div className="section-label">
             Status: <span className="text-emerald-400">{project.status}</span>
           </div>
 
@@ -132,7 +150,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-sky-600 hover:bg-sky-500 transition-colors"
+              className="btn-primary"
+              style={{ padding: '10px 20px', fontSize: '0.82rem' }}
             >
               <GithubIcon className="w-4 h-4" />
               <span>Repository & Docs</span>
@@ -141,13 +160,13 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ project, onClose }) 
 
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 bg-slate-800 dark:bg-slate-800 light:bg-slate-200 hover:bg-slate-700 transition-colors cursor-pointer"
+              className="btn-ghost"
+              style={{ padding: '9px 20px', fontSize: '0.82rem' }}
             >
               Close
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

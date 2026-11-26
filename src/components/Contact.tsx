@@ -1,337 +1,239 @@
-import React, { useState } from 'react';
-import { Mail, Send, CheckCircle2, Copy, Check, MapPin } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { Mail, Copy, CheckCheck, Send } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './SocialIcons';
+import { useInView } from '../hooks/useInView';
 import { PERSONAL_INFO } from '../data/portfolioData';
 
-export const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 
-  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const [statusMessage, setStatusMessage] = useState('');
+export const Contact: React.FC = () => {
+  const [ref, inView] = useInView(0.08);
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle');
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText(PERSONAL_INFO.email);
-    setCopiedEmail(true);
-    setTimeout(() => setCopiedEmail(false), 2500);
-  };
-
-  const validate = () => {
-    const errors: Record<string, string> = {};
-    if (!formData.name.trim()) {
-      errors.name = 'Full name is required';
-    }
-    if (!formData.email.trim()) {
-      errors.email = 'Professional email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-    if (!formData.subject.trim()) {
-      errors.subject = 'Subject line is required';
-    }
-    if (!formData.message.trim()) {
-      errors.message = 'Message content is required';
-    } else if (formData.message.trim().length < 10) {
-      errors.message = 'Message should be at least 10 characters';
-    }
-    setFormErrors(errors);
-    return Object.keys(errors).length === 0;
+    navigator.clipboard.writeText(PERSONAL_INFO.email).then(() => {
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
-
-    setIsSubmitting(true);
-    setSubmitStatus('idle');
-
+    setFormStatus('sending');
     try {
-      const payload = {
-        name: formData.name,
-        email: formData.email,
-        _subject: `[Portfolio Recruiter Inquiry] ${formData.subject} — from ${formData.name}`,
-        message: formData.message,
-        _captcha: 'false',
-        _template: 'table'
-      };
-
-      const res = await fetch(`https://formsubmit.co/ajax/${PERSONAL_INFO.email}`, {
+      const res = await fetch('https://formsubmit.co/ajax/harvendersinghrawat7336@gmail.com', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          subject: form.subject || 'Portfolio Contact',
+          message: form.message,
+          _subject: `Portfolio Message from ${form.name}`,
+        }),
       });
-
       if (res.ok) {
-        setSubmitStatus('success');
-        setStatusMessage(`Thank you, ${formData.name}! Your message has been sent directly to Harvender's inbox.`);
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormStatus('success');
+        setForm({ name: '', email: '', subject: '', message: '' });
       } else {
-        triggerMailtoFallback();
+        setFormStatus('error');
       }
     } catch {
-      triggerMailtoFallback();
-    } finally {
-      setIsSubmitting(false);
+      setFormStatus('error');
     }
   };
 
-  const triggerMailtoFallback = () => {
-    const mailtoUrl = `mailto:${PERSONAL_INFO.email}?subject=${encodeURIComponent(
-      '[Portfolio Inquiry] ' + formData.subject
-    )}&body=${encodeURIComponent(
-      `From: ${formData.name} (${formData.email})\n\n${formData.message}`
-    )}`;
-    window.open(mailtoUrl, '_blank');
-    setSubmitStatus('success');
-    setStatusMessage('Message prepared in your default email client. Sending directly to Harvender!');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-  };
-
   return (
-    <section id="contact" className="py-24 relative overflow-hidden border-t border-slate-900/50 dark:border-slate-900/50 light:border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-medium">
-            <Mail className="w-3.5 h-3.5" />
-            DIRECT COMMUNICATION CHANNEL
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 tracking-tight">
-            Have an Opportunity or an Interesting Idea? Let's Connect.
-          </h2>
-          <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 text-sm sm:text-base leading-relaxed">
-            I am actively seeking software engineering, AI/ML, and frontend development internship opportunities. Reach out directly via email or the contact form below.
-          </p>
-        </div>
+    <section id="contact" className="relative py-28 md:py-36 overflow-hidden" ref={ref as React.RefObject<HTMLElement>}>
+      <div
+        style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse 50% 60% at 80% 50%, rgba(37,99,235,0.05) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
 
-        {/* Contact Grid: Info & Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start max-w-6xl mx-auto">
-          
-          {/* Left Column: Direct Contact Info (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            <div className="glass-panel rounded-2xl p-6 sm:p-8 space-y-5">
-              <h3 className="text-lg font-bold text-slate-100 dark:text-slate-100 light:text-slate-900">
-                Contact Channels
-              </h3>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5 }}
+          className="section-label mb-4"
+        >
+          08 — CONTACT
+        </motion.p>
 
-              <div className="space-y-3.5">
-                
-                {/* Email Card */}
-                <div className="p-4 rounded-xl bg-slate-900/70 dark:bg-slate-900/70 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 space-y-1.5">
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
-                    Email
+        <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 items-start">
+          {/* Left: headline + info */}
+          <div>
+            <motion.h2
+              initial={{ opacity: 0, y: 24 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="display-lg text-[var(--offwhite)] mb-6"
+            >
+              Have an<br />Opportunity?<br />
+              <span style={{ color: 'var(--cobalt)' }}>Let's Talk.</span>
+            </motion.h2>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="text-[var(--grey)] leading-relaxed mb-10"
+              style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.0rem' }}
+            >
+              Whether you have an internship opportunity, want to collaborate on a project, or just want to connect — my inbox is always open.
+            </motion.p>
+
+            {/* Contact cards */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="space-y-4"
+            >
+              {/* Email */}
+              <div className="premium-card p-5 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.2)' }}>
+                    <Mail size={16} style={{ color: 'var(--cobalt)' }} />
                   </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <a
-                      href={`mailto:${PERSONAL_INFO.email}`}
-                      className="text-xs sm:text-sm font-mono text-sky-400 dark:text-sky-400 light:text-sky-600 hover:underline font-semibold truncate"
-                    >
+                  <div>
+                    <p className="section-label mb-0.5">Email</p>
+                    <p className="text-[var(--offwhite)] font-medium text-sm truncate" style={{ fontFamily: "'Inter',sans-serif" }}>
                       {PERSONAL_INFO.email}
-                    </a>
-                    <button
-                      onClick={handleCopyEmail}
-                      className="p-1.5 rounded-lg bg-slate-800 dark:bg-slate-800 light:bg-slate-200 text-slate-300 dark:text-slate-300 light:text-slate-700 hover:text-sky-400 transition-colors shrink-0 cursor-pointer"
-                      title="Copy Email Address"
-                    >
-                      {copiedEmail ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                    </button>
+                    </p>
                   </div>
                 </div>
-
-                {/* Institution & Location Card */}
-                <div className="p-4 rounded-xl bg-slate-900/70 dark:bg-slate-900/70 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 space-y-1">
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
-                    Location & Institution
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                    <span>{PERSONAL_INFO.location}</span>
-                  </div>
-                  <div className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600">
-                    {PERSONAL_INFO.institution} · {PERSONAL_INFO.batch}
-                  </div>
-                </div>
-
-                {/* Professional Links */}
-                <div className="pt-2 space-y-2">
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
-                    Professional Networks
-                  </div>
-                  
-                  <div className="flex flex-col gap-2">
-                    <a
-                      href={PERSONAL_INFO.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 hover:border-sky-500/40 hover:text-sky-400 transition-all text-xs font-semibold text-slate-300 dark:text-slate-300 light:text-slate-700"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <GithubIcon className="w-4 h-4" />
-                        <span>GitHub (@Harvender07)</span>
-                      </div>
-                      <span className="text-slate-500 font-mono text-[11px]">View Repos</span>
-                    </a>
-
-                    <a
-                      href={PERSONAL_INFO.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-3 rounded-xl bg-slate-900/50 dark:bg-slate-900/50 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 hover:border-sky-500/40 hover:text-sky-400 transition-all text-xs font-semibold text-slate-300 dark:text-slate-300 light:text-slate-700"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <LinkedinIcon className="w-4 h-4" />
-                        <span>LinkedIn Profile</span>
-                      </div>
-                      <span className="text-slate-500 font-mono text-[11px]">Connect</span>
-                    </a>
-                  </div>
-                </div>
-
+                <button onClick={handleCopyEmail} className="p-2 rounded-lg hover:bg-white/5 transition-colors flex-shrink-0">
+                  {copiedEmail ? <CheckCheck size={15} style={{ color: '#4ade80' }} /> : <Copy size={15} className="text-[var(--grey)]" />}
+                </button>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs text-emerald-400 dark:text-emerald-400 light:text-emerald-700 flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>Quick Response: I check my inbox daily and respond promptly to internship opportunities.</span>
-              </div>
+              {/* GitHub */}
+              <a
+                href={PERSONAL_INFO.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="premium-card p-5 flex items-center gap-3 hover:border-[rgba(255,255,255,0.18)] transition-all block"
+              >
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <GithubIcon className="w-4 h-4 text-[var(--offwhite)]" />
+                </div>
+                <div>
+                  <p className="section-label mb-0.5">GitHub</p>
+                  <p className="text-[var(--offwhite)] font-medium text-sm" style={{ fontFamily: "'Inter',sans-serif" }}>Harvender07</p>
+                </div>
+              </a>
 
-            </div>
-
+              {/* LinkedIn */}
+              <a
+                href={PERSONAL_INFO.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="premium-card p-5 flex items-center gap-3 hover:border-[rgba(255,255,255,0.18)] transition-all block"
+              >
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'rgba(10,102,194,0.1)', border: '1px solid rgba(10,102,194,0.3)' }}>
+                  <LinkedinIcon className="w-4 h-4 text-[#60a5fa]" />
+                </div>
+                <div>
+                  <p className="section-label mb-0.5">LinkedIn</p>
+                  <p className="text-[var(--offwhite)] font-medium text-sm" style={{ fontFamily: "'Inter',sans-serif" }}>harvender-singh-rawat-3407a12a1</p>
+                </div>
+              </a>
+            </motion.div>
           </div>
 
-          {/* Right Column: Contact Form (7 cols) */}
-          <div className="lg:col-span-7">
-            <div className="glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
-              
-              <div className="space-y-1">
-                <h3 className="text-xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900">
-                  Send Direct Inquiry
+          {/* Right: Contact form */}
+          <motion.div
+            initial={{ opacity: 0, x: 24 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.3 }}
+          >
+            {formStatus === 'success' ? (
+              <div className="premium-card p-10 text-center">
+                <span className="text-5xl mb-6 block">✉️</span>
+                <h3 className="font-bold text-[var(--offwhite)] mb-3" style={{ fontFamily: "'Satoshi',sans-serif", fontSize: '1.5rem' }}>
+                  Message Sent!
                 </h3>
-                <p className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600">
-                  Fill in your details below and your inquiry will be delivered directly to {PERSONAL_INFO.email}.
+                <p className="text-[var(--grey)]" style={{ fontFamily: "'Inter',sans-serif" }}>
+                  Thanks for reaching out. I'll get back to you as soon as possible.
                 </p>
               </div>
-
-              {submitStatus === 'success' && (
-                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 text-xs flex items-start gap-2.5">
-                  <CheckCircle2 className="w-5 h-5 shrink-0" />
+            ) : (
+              <form ref={formRef} onSubmit={handleSubmit} className="premium-card p-8 space-y-5">
+                <div className="grid sm:grid-cols-2 gap-5">
                   <div>
-                    <strong className="block font-semibold">Message Dispatched!</strong>
-                    {statusMessage}
+                    <label className="section-label block mb-2">Name</label>
+                    <input
+                      type="text"
+                      placeholder="Your name"
+                      required
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="section-label block mb-2">Email</label>
+                    <input
+                      type="email"
+                      placeholder="your@email.com"
+                      required
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="form-input"
+                    />
                   </div>
                 </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                
-                <div className="space-y-1">
-                  <label className="text-xs font-mono text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                    Full Name <span className="text-sky-400">*</span>
-                  </label>
+                <div>
+                  <label className="section-label block mb-2">Subject</label>
                   <input
                     type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Alex Mercer"
-                    className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/70 dark:bg-slate-950/70 light:bg-slate-50 border ${
-                      formErrors.name ? 'border-rose-500' : 'border-slate-800 dark:border-slate-800 light:border-slate-300'
-                    } text-slate-100 dark:text-slate-100 light:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-sky-500 transition-colors`}
+                    placeholder="Internship Opportunity / Collaboration / Hello"
+                    value={form.subject}
+                    onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                    className="form-input"
                   />
-                  {formErrors.name && (
-                    <span className="text-[11px] text-rose-400 font-mono">{formErrors.name}</span>
-                  )}
                 </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-mono text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                    Professional Email <span className="text-sky-400">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="e.g. alex.mercer@company.com"
-                    className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/70 dark:bg-slate-950/70 light:bg-slate-50 border ${
-                      formErrors.email ? 'border-rose-500' : 'border-slate-800 dark:border-slate-800 light:border-slate-300'
-                    } text-slate-100 dark:text-slate-100 light:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-sky-500 transition-colors`}
-                  />
-                  {formErrors.email && (
-                    <span className="text-[11px] text-rose-400 font-mono">{formErrors.email}</span>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-mono text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                    Subject / Topic <span className="text-sky-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    placeholder="e.g. Software Engineering Internship Opportunity"
-                    className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/70 dark:bg-slate-950/70 light:bg-slate-50 border ${
-                      formErrors.subject ? 'border-rose-500' : 'border-slate-800 dark:border-slate-800 light:border-slate-300'
-                    } text-slate-100 dark:text-slate-100 light:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-sky-500 transition-colors`}
-                  />
-                  {formErrors.subject && (
-                    <span className="text-[11px] text-rose-400 font-mono">{formErrors.subject}</span>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-mono text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                    Message <span className="text-sky-400">*</span>
-                  </label>
+                <div>
+                  <label className="section-label block mb-2">Message</label>
                   <textarea
-                    rows={4}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Share role details, team information, or technical queries..."
-                    className={`w-full px-4 py-2.5 rounded-xl bg-slate-950/70 dark:bg-slate-950/70 light:bg-slate-50 border ${
-                      formErrors.message ? 'border-rose-500' : 'border-slate-800 dark:border-slate-800 light:border-slate-300'
-                    } text-slate-100 dark:text-slate-100 light:text-slate-900 text-xs sm:text-sm focus:outline-none focus:border-sky-500 transition-colors resize-none`}
+                    placeholder="Tell me about the opportunity or what you have in mind..."
+                    required
+                    rows={5}
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    className="form-input"
                   />
-                  {formErrors.message && (
-                    <span className="text-[11px] text-rose-400 font-mono">{formErrors.message}</span>
-                  )}
                 </div>
-
+                {formStatus === 'error' && (
+                  <p className="text-red-400 text-sm" style={{ fontFamily: "'Inter',sans-serif" }}>
+                    Something went wrong. Please email me directly at {PERSONAL_INFO.email}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-sm font-semibold text-white bg-sky-600 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-sky-600/25 hover:shadow-sky-500/40 transition-all cursor-pointer"
+                  disabled={formStatus === 'sending'}
+                  className="btn-primary w-full justify-center"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span>Dispatching Message...</span>
-                    </>
+                  {formStatus === 'sending' ? (
+                    'Sending...'
                   ) : (
                     <>
-                      <Send className="w-4 h-4" />
-                      <span>Send Message to Harvender</span>
+                      Send Message
+                      <Send size={15} />
                     </>
                   )}
                 </button>
-
               </form>
-
-            </div>
-          </div>
-
+            )}
+          </motion.div>
         </div>
-
       </div>
     </section>
   );

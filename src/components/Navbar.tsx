@@ -1,183 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Menu, X, FileText, Send } from 'lucide-react';
-import { PERSONAL_INFO } from '../data/portfolioData';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Download } from 'lucide-react';
 
 interface NavbarProps {
-  theme: 'dark' | 'light';
-  toggleTheme: () => void;
   onOpenResumeDrawer: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ theme, toggleTheme, onOpenResumeDrawer }) => {
+const links = [
+  { label: 'About', href: '#about' },
+  { label: 'Expertise', href: '#expertise' },
+  { label: 'Work', href: '#projects' },
+  { label: 'Contributions', href: '#contributions' },
+  { label: 'Education', href: '#education' },
+  { label: 'Contact', href: '#contact' },
+];
+
+export const Navbar: React.FC<NavbarProps> = ({ onOpenResumeDrawer }) => {
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const lastScrollY = useRef(0);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const y = window.scrollY;
+      setScrolled(y > 40);
+      setHidden(y > lastScrollY.current && y > 300);
+      lastScrollY.current = y;
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navLinks = [
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'S&AI PRs', href: '#contributions' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Education', href: '#education' },
-    { label: 'Resume', href: '#resume' },
-    { label: 'Contact', href: '#contact' },
-  ];
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault();
-    setMobileMenuOpen(false);
-    const element = document.querySelector(href);
-    if (element) {
-      const offsetTop = element.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({
-        top: offsetTop,
-        behavior: 'smooth'
-      });
-    }
+  const handleNav = (href: string) => {
+    setMenuOpen(false);
+    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-[#030712]/85 dark:bg-[#030712]/85 light:bg-[#ffffff]/90 backdrop-blur-md border-b border-sky-500/10 dark:border-sky-500/10 light:border-slate-200 shadow-lg shadow-black/20'
-          : 'bg-transparent border-b border-transparent'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo / Monogram */}
+    <>
+      <motion.header
+        initial={{ y: 0, opacity: 1 }}
+        animate={{ y: hidden ? -100 : 0, opacity: hidden ? 0 : 1 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="fixed top-0 left-0 right-0 z-50"
+        style={{
+          background: scrolled
+            ? 'rgba(13,13,15,0.88)'
+            : 'transparent',
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
+          transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease',
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-6 md:px-10 h-16 flex items-center justify-between">
+          {/* Wordmark */}
           <a
-            href="#hero"
-            onClick={(e) => handleLinkClick(e, '#hero')}
-            className="flex items-center gap-3 group cursor-pointer shrink-0"
+            href="#"
+            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="flex items-baseline gap-1 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500/20 to-blue-600/30 dark:from-sky-500/20 dark:to-blue-600/30 light:from-sky-600 light:to-blue-700 border border-sky-500/40 dark:border-sky-500/40 light:border-sky-600 flex items-center justify-center font-mono font-bold text-sky-400 dark:text-sky-400 light:text-white group-hover:border-sky-400 group-hover:scale-105 transition-all shadow-sm shadow-sky-500/20">
-              HSR
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-base tracking-tight whitespace-nowrap text-slate-100 dark:text-slate-100 light:text-slate-900 group-hover:text-sky-400 transition-colors">
-                Harvender Rawat
-              </span>
-              <span className="text-[11px] font-mono whitespace-nowrap text-sky-400/90 dark:text-sky-400/90 light:text-sky-600 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                CS & AI/ML @ NST
-              </span>
-            </div>
+            <span
+              className="font-black tracking-tight text-[var(--offwhite)] group-hover:text-[var(--cobalt)] transition-colors duration-300"
+              style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", fontSize: '1.1rem', letterSpacing: '-0.03em' }}
+            >
+              HARVENDER
+            </span>
+            <sup className="text-[var(--cobalt)] font-bold text-[0.5rem]">®</sup>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={(e) => handleLinkClick(e, link.href)}
-                className="px-2.5 py-1.5 text-xs xl:text-sm font-medium whitespace-nowrap text-slate-300 dark:text-slate-300 light:text-slate-600 hover:text-sky-400 dark:hover:text-sky-400 light:hover:text-sky-600 hover:bg-sky-500/5 rounded-lg transition-all"
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-7">
+            {links.map((l) => (
+              <button
+                key={l.href}
+                onClick={() => handleNav(l.href)}
+                className="section-label text-[var(--grey)] hover:text-[var(--offwhite)] transition-colors duration-200 cursor-pointer"
+                style={{ fontFamily: "'Inter',sans-serif" }}
               >
-                {link.label}
-              </a>
+                {l.label}
+              </button>
             ))}
+            {/* Availability indicator */}
+            <span className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}>
+              <span className="pulse-dot" />
+              <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.08em', color: '#86efac' }}>OPEN TO INTERNSHIPS</span>
+            </span>
           </nav>
 
-          {/* Action CTAs & Theme Toggle */}
-          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle Dark / Light Theme"
-              className="p-2 rounded-xl border border-slate-800 dark:border-slate-800 light:border-slate-300 bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 text-slate-400 hover:text-sky-400 dark:hover:text-sky-400 light:hover:text-sky-600 transition-colors cursor-pointer"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-sky-600" />}
-            </button>
-
-            {/* Resume Button */}
+          {/* Resume button + hamburger */}
+          <div className="flex items-center gap-3">
             <button
               onClick={onOpenResumeDrawer}
-              className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold whitespace-nowrap text-slate-200 dark:text-slate-200 light:text-slate-700 bg-slate-800/80 dark:bg-slate-800/80 light:bg-slate-200/80 border border-slate-700 dark:border-slate-700 light:border-slate-300 rounded-xl hover:border-sky-500/50 hover:text-sky-400 transition-all cursor-pointer"
+              className="hidden sm:flex items-center gap-2 btn-ghost text-sm px-4 py-2"
+              style={{ padding: '8px 18px', fontSize: '0.8rem' }}
             >
-              <FileText className="w-3.5 h-3.5 text-sky-400" />
-              <span>Resume</span>
-            </button>
-
-            {/* Quick Contact CTA */}
-            <a
-              href="#contact"
-              onClick={(e) => handleLinkClick(e, '#contact')}
-              className="flex items-center gap-2 px-4 py-2 text-xs font-semibold whitespace-nowrap text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-md shadow-sky-600/20 hover:shadow-sky-500/30 transition-all cursor-pointer"
-            >
-              <Send className="w-3.5 h-3.5" />
-              <span>Let's Connect</span>
-            </a>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex sm:hidden items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              aria-label="Toggle Theme"
-              className="p-2 rounded-lg border border-slate-800 dark:border-slate-800 light:border-slate-300 bg-slate-900/60 text-slate-300"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-sky-600" />}
-            </button>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg border border-slate-800 dark:border-slate-800 light:border-slate-300 bg-slate-900/60 text-slate-300 hover:text-sky-400"
-              aria-label="Toggle Navigation Menu"
-            >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Drawer Menu */}
-      {mobileMenuOpen && (
-        <div className="sm:hidden border-b border-sky-500/15 bg-[#030712]/95 dark:bg-[#030712]/95 light:bg-white/95 backdrop-blur-xl px-4 pt-3 pb-6 space-y-2 animate-in fade-in slide-in-from-top-4 duration-200">
-          <div className="pb-3 border-b border-slate-800 dark:border-slate-800 light:border-slate-200 flex items-center justify-between">
-            <span className="text-xs font-mono text-emerald-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              Open to Internship Opportunities
-            </span>
-            <button
-              onClick={onOpenResumeDrawer}
-              className="flex items-center gap-1 text-xs font-semibold text-sky-400 bg-sky-500/10 border border-sky-500/30 px-2.5 py-1 rounded-md"
-            >
-              <FileText className="w-3 h-3" />
+              <Download size={13} />
               Resume
             </button>
-          </div>
-          <div className="grid grid-cols-2 gap-1 pt-2">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                onClick={(e) => handleLinkClick(e, link.href)}
-                className="px-3 py-2 text-sm font-medium text-slate-300 dark:text-slate-300 light:text-slate-700 hover:text-sky-400 rounded-lg hover:bg-sky-500/5 transition-all"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-          <div className="pt-3">
-            <a
-              href="#contact"
-              onClick={(e) => handleLinkClick(e, '#contact')}
-              className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-md transition-all"
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
+              onClick={() => setMenuOpen(true)}
+              aria-label="Open menu"
             >
-              <Send className="w-4 h-4" />
-              <span>Contact Harvender</span>
-            </a>
+              <Menu size={20} className="text-[var(--offwhite)]" />
+            </button>
           </div>
         </div>
-      )}
-    </header>
+      </motion.header>
+
+      {/* Mobile full-screen menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[100] flex flex-col"
+            style={{ background: 'rgba(13,13,15,0.98)', backdropFilter: 'blur(20px)' }}
+          >
+            <div className="flex items-center justify-between px-6 h-16">
+              <span className="font-black text-[var(--offwhite)]" style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", letterSpacing: '-0.03em' }}>
+                HARVENDER<sup className="text-[var(--cobalt)] font-bold text-[0.5rem]">®</sup>
+              </span>
+              <button onClick={() => setMenuOpen(false)} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+                <X size={22} className="text-[var(--offwhite)]" />
+              </button>
+            </div>
+            <nav className="flex flex-col items-center justify-center flex-1 gap-8">
+              {links.map((l, i) => (
+                <motion.button
+                  key={l.href}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07, duration: 0.3 }}
+                  onClick={() => handleNav(l.href)}
+                  className="display-md text-[var(--offwhite)] hover:text-[var(--cobalt)] transition-colors cursor-pointer"
+                  style={{ fontSize: 'clamp(2rem,8vw,3.5rem)' }}
+                >
+                  {l.label}
+                </motion.button>
+              ))}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex items-center gap-2 mt-6"
+              >
+                <span className="pulse-dot" />
+                <span className="section-label" style={{ color: '#86efac' }}>OPEN TO INTERNSHIPS</span>
+              </motion.div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

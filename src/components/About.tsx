@@ -1,178 +1,107 @@
 import React from 'react';
-import { Shield, Zap, Cpu, Compass, Users, Sparkles, Globe2, Target } from 'lucide-react';
-import { ABOUT_PILLARS, PERSONAL_INFO } from '../data/portfolioData';
+import { motion } from 'framer-motion';
+import { useInView } from '../hooks/useInView';
+
+const pillars = [
+  { icon: '🎖️', title: 'Army Discipline', desc: 'Raised in an army household — consistency, structure, and grit are part of my foundation.' },
+  { icon: '🧠', title: 'Curious Builder', desc: 'I learn best by building. Turning ideas into working code is what drives me forward.' },
+  { icon: '🎯', title: 'Problem Solver', desc: 'I enjoy breaking down complex problems into clear, actionable steps and implementing solutions.' },
+  { icon: '🚀', title: 'Ambitious Learner', desc: 'First year, but already exploring AI, OS internals, and open-source contribution.' },
+];
+
+const infoItems = [
+  { label: 'Institution', value: 'Newton School of Technology' },
+  { label: 'Program', value: 'B.Tech CS & AI/ML' },
+  { label: 'Batch', value: '2026 – 2030 (Year 1)' },
+  { label: 'Location', value: 'Pune, Maharashtra, India' },
+];
 
 export const About: React.FC = () => {
-  const getIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'Shield':
-        return <Shield className="w-5 h-5 text-sky-400" />;
-      case 'Zap':
-        return <Zap className="w-5 h-5 text-amber-400" />;
-      case 'Cpu':
-        return <Cpu className="w-5 h-5 text-emerald-400" />;
-      case 'Compass':
-        return <Compass className="w-5 h-5 text-indigo-400" />;
-      case 'Users':
-        return <Users className="w-5 h-5 text-rose-400" />;
-      default:
-        return <Sparkles className="w-5 h-5 text-sky-400" />;
-    }
-  };
+  const [ref, inView] = useInView(0.15);
 
   return (
-    <section id="about" className="py-24 relative overflow-hidden border-t border-slate-900/50 dark:border-slate-900/50 light:border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
-            PROFESSIONAL SUMMARY & CAREER OBJECTIVE
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 tracking-tight">
-            About Harvender Singh Rawat
-          </h2>
-          <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 text-sm sm:text-base leading-relaxed">
-            First-year B.Tech CSE (Artificial Intelligence & Machine Learning) student at Newton School of Technology, Pune — focused on software development, problem solving, and continuous learning.
-          </p>
-        </div>
+    <section id="about" className="relative py-28 md:py-36 overflow-hidden" ref={ref as React.RefObject<HTMLElement>}>
+      <div className="noise-overlay" />
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
 
-        {/* Narrative & Career Objective Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
-          
-          {/* Main Narrative Block (7 cols) */}
-          <div className="lg:col-span-7 glass-panel rounded-2xl p-6 sm:p-8 space-y-5">
-            <h3 className="text-xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 flex items-center gap-2">
-              <span className="text-sky-400 font-mono text-base">01.</span>
-              Professional Summary
-            </h3>
-            
-            <p className="text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed text-base">
-              {PERSONAL_INFO.professionalSummary}
+        {/* Section label */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5 }}
+          className="section-label mb-4"
+        >
+          01 — ABOUT
+        </motion.p>
+
+        {/* Main heading */}
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="display-lg text-[var(--offwhite)] mb-16"
+          style={{ maxWidth: '700px' }}
+        >
+          More Than<br />
+          <span style={{ color: 'var(--cobalt)' }}>Just Code.</span>
+        </motion.h2>
+
+        {/* Grid */}
+        <div className="grid lg:grid-cols-[1fr_1fr] gap-16 items-start">
+
+          {/* Left: Text */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.2 }}
+          >
+            <p className="text-[var(--grey)] leading-relaxed mb-6" style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.05rem' }}>
+              I'm currently pursuing my B.Tech in <span className="text-[var(--offwhite)] font-medium">Computer Science and Artificial Intelligence & Machine Learning</span> at Newton School of Technology.
+            </p>
+            <p className="text-[var(--grey)] leading-relaxed mb-6" style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.05rem' }}>
+              I enjoy exploring technology, experimenting with ideas, and building practical solutions. My journey is driven by curiosity, creativity, and the desire to continuously improve.
+            </p>
+            <p className="text-[var(--grey)] leading-relaxed mb-10" style={{ fontFamily: "'Inter',sans-serif", fontSize: '1.05rem' }}>
+              Coming from an Army background, <span className="text-[var(--offwhite)] font-medium">discipline, adaptability, and consistency</span> are values I carry into everything I do — whether it's debugging a segfault at 2am or committing to a new skill.
             </p>
 
-            {/* Career Objective Box */}
-            <div className="p-4 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 space-y-1.5">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-sky-400 font-semibold">
-                <Target className="w-3.5 h-3.5" />
-                Career Objective
-              </div>
-              <p className="text-xs sm:text-sm text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
-                {PERSONAL_INFO.careerObjective}
-              </p>
-            </div>
-
-            {/* Quick Stat Pillows */}
-            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-slate-800 dark:border-slate-800 light:border-slate-200 text-center">
-              <div className="p-3 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                <div className="text-xl sm:text-2xl font-extrabold text-sky-400 font-mono">2026–30</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">First Year · NST</div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                <div className="text-xl sm:text-2xl font-extrabold text-amber-400 font-mono">3x</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">WorldQuant Levels</div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                <div className="text-xl sm:text-2xl font-extrabold text-emerald-400 font-mono">2</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">Fluent Languages</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Core Strengths & Spoken Languages (5 cols) */}
-          <div className="lg:col-span-5 glass-panel rounded-2xl p-6 sm:p-8 space-y-6">
-            <h3 className="text-xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 flex items-center gap-2">
-              <span className="text-sky-400 font-mono text-base">02.</span>
-              Core Strengths & Languages
-            </h3>
-
-            {/* Core Strengths Tags */}
-            <div className="space-y-2.5">
-              <div className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                Core Strengths
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {PERSONAL_INFO.coreStrengths.map((strength) => (
-                  <span
-                    key={strength}
-                    className="px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-500/10 dark:bg-sky-500/10 light:bg-sky-50 border border-sky-500/30 text-sky-300 dark:text-sky-300 light:text-sky-700"
-                  >
-                    {strength}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Languages */}
-            <div className="space-y-2.5 pt-2 border-t border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-              <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-slate-400">
-                <Globe2 className="w-3.5 h-3.5 text-sky-400" />
-                <span>Languages</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {PERSONAL_INFO.languages.map((lang) => (
-                  <div
-                    key={lang.name}
-                    className="p-3 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 flex items-center justify-between"
-                  >
-                    <span className="text-xs font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800">
-                      {lang.name}
-                    </span>
-                    <span className="text-[11px] font-mono text-emerald-400 dark:text-emerald-400 light:text-emerald-700">
-                      {lang.proficiency}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Experience Note */}
-            <div className="p-3.5 rounded-xl bg-sky-500/5 border border-sky-500/20 text-xs text-sky-300 dark:text-sky-300 light:text-sky-800 leading-relaxed">
-              <strong>Experience Status (Fresher):</strong> Currently building technical knowledge and practical skills through academic learning and independent exploration.
-            </div>
-          </div>
-
-        </div>
-
-        {/* 5 Core Pillars Cards */}
-        <div className="space-y-4">
-          <div className="text-xs font-mono uppercase tracking-wider text-slate-500 text-center sm:text-left">
-            Core Personal & Professional Attributes:
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {ABOUT_PILLARS.map((pillar, idx) => (
-              <div
-                key={pillar.title}
-                className="glass-panel rounded-xl p-5 space-y-3 flex flex-col justify-between hover:-translate-y-1 transition-all"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="p-2.5 rounded-xl bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200">
-                      {getIcon(pillar.icon)}
-                    </div>
-                    <span className="text-[11px] font-mono text-slate-500">0{idx + 1}</span>
-                  </div>
-
-                  <div>
-                    <h4 className="font-bold text-sm text-slate-100 dark:text-slate-100 light:text-slate-900 leading-snug">
-                      {pillar.title}
-                    </h4>
-                    <span className="text-[11px] font-mono text-sky-400 block mt-0.5">
-                      {pillar.subtitle}
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 leading-relaxed">
-                    {pillar.description}
-                  </p>
+            {/* Info table */}
+            <div className="grid grid-cols-2 gap-4">
+              {infoItems.map((item) => (
+                <div key={item.label} className="p-4 rounded-xl" style={{ background: 'var(--charcoal-3)', border: '1px solid var(--border)' }}>
+                  <p className="section-label mb-1">{item.label}</p>
+                  <p className="text-[var(--offwhite)] font-medium text-sm">{item.value}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
+              ))}
+            </div>
+          </motion.div>
 
+          {/* Right: Pillar cards */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="grid sm:grid-cols-2 gap-4"
+          >
+            {pillars.map((p, i) => (
+              <motion.div
+                key={p.title}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                className="premium-card p-6"
+              >
+                <span className="text-2xl mb-4 block">{p.icon}</span>
+                <h3 className="font-bold text-[var(--offwhite)] mb-2" style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", fontSize: '1rem' }}>
+                  {p.title}
+                </h3>
+                <p className="text-[var(--grey)] text-sm leading-relaxed" style={{ fontFamily: "'Inter',sans-serif" }}>
+                  {p.desc}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -1,151 +1,215 @@
 import React, { useState } from 'react';
-import { Code, Terminal, Sparkles, Layers, CheckCircle, ExternalLink } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ExternalLink } from 'lucide-react';
+import { useInView } from '../hooks/useInView';
 import { SKILLS_DATA } from '../data/portfolioData';
-import { SkillCategory, SkillItem } from '../types';
+
+const expertiseCards = [
+  {
+    index: '01',
+    title: 'Software Development',
+    color: 'var(--cobalt)',
+    desc: 'Programming fundamentals in C++ and Python, logical problem-solving, CLI tool development, and Git internals through open-source contributions.',
+    skills: ['C++', 'Python', 'Git & GitHub', 'Automated Testing'],
+    icon: '⚙️',
+  },
+  {
+    index: '02',
+    title: 'Artificial Intelligence',
+    color: 'var(--lavender)',
+    desc: 'Exploring AI/ML fundamentals, intelligent systems architecture, and transformer attention mechanisms through interactive visualizations.',
+    skills: ['AI/ML Fundamentals', 'Attention Mechanisms', 'WorldQuant BRAIN'],
+    icon: '🧠',
+  },
+  {
+    index: '03',
+    title: 'Web Technologies',
+    color: '#34d399',
+    desc: 'Semantic HTML5, interactive canvas visualizations, React with TypeScript, Tailwind CSS, and modern component-based UI architecture.',
+    skills: ['HTML & Canvas', 'React + TypeScript', 'Tailwind CSS', 'Vite'],
+    icon: '🌐',
+  },
+  {
+    index: '04',
+    title: 'Creative Technology',
+    color: '#fb923c',
+    desc: 'AI-assisted rapid prototyping (vibe coding), video editing, MS Office, and digital content creation combining technical and creative skill.',
+    skills: ['Vibe Coding', 'AI Prototyping', 'Video Editing', 'MS Office'],
+    icon: '✨',
+  },
+];
+
+const categories = ['All', 'programming', 'frameworks', 'tools'];
 
 export const Skills: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>('all');
+  const [ref, inView] = useInView(0.1);
+  const [activeCategory, setActiveCategory] = useState('All');
 
-  const tabs = [
-    { id: 'all', label: 'All Verified Skills' },
-    { id: 'programming', label: 'Programming Languages' },
-    { id: 'frameworks', label: 'Frameworks & Styling' },
-    { id: 'tools', label: 'Tools & Engineering' },
-  ];
-
-  const filteredSkills =
-    activeTab === 'all'
-      ? SKILLS_DATA
-      : SKILLS_DATA.filter((s) => s.category === activeTab);
-
-  const getCategoryIcon = (category: SkillCategory) => {
-    switch (category) {
-      case 'programming':
-        return <Code className="w-4 h-4 text-emerald-400" />;
-      case 'frameworks':
-        return <Layers className="w-4 h-4 text-sky-400" />;
-      case 'tools':
-        return <Sparkles className="w-4 h-4 text-purple-400" />;
-    }
-  };
-
-  const getStatusBadge = (proficiency: SkillItem['proficiency']) => {
-    if (proficiency === 'Applied in Projects / PRs') {
-      return (
-        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-emerald-500/10 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 border border-emerald-500/30">
-          <CheckCircle className="w-3 h-3" />
-          Applied in Projects / PRs
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-sky-500/10 text-sky-400 dark:text-sky-400 light:text-sky-700 border border-sky-500/30">
-        <Layers className="w-3 h-3" />
-        {proficiency}
-      </span>
-    );
-  };
+  const filteredSkills = SKILLS_DATA.filter(
+    (s) => activeCategory === 'All' || s.category === activeCategory
+  );
 
   return (
-    <section id="skills" className="py-24 relative overflow-hidden border-t border-slate-900/50 dark:border-slate-900/50 light:border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
-            EVIDENCE-BACKED TECHNICAL CAPABILITIES
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 tracking-tight">
-            Technical Skills
-          </h2>
-          <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 text-sm sm:text-base leading-relaxed">
-            Every skill listed below links directly to applied code, GitHub repositories, or verified S&AI open-source pull requests demonstrating hands-on usage.
-          </p>
-        </div>
+    <section id="expertise" className="relative py-28 md:py-36 overflow-hidden" ref={ref as React.RefObject<HTMLElement>}>
+      <div
+        style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(37,99,235,0.04) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }}
+      />
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
 
-        {/* Verification Notice */}
-        <div className="mb-10 max-w-4xl mx-auto p-4 rounded-xl bg-slate-900/70 dark:bg-slate-900/70 light:bg-slate-50 border border-slate-800 dark:border-slate-800 light:border-slate-200 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 flex items-start sm:items-center gap-3">
-          <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400 shrink-0">
-            <Terminal className="w-4 h-4" />
-          </div>
-          <div className="flex-1">
-            <span className="font-semibold text-slate-200 dark:text-slate-200 light:text-slate-900">Substantiated Skills:</span>{' '}
-            Click any skill&apos;s <strong className="text-sky-400">Applied Evidence</strong> link to inspect the exact pull request or repository code where it is used.
-          </div>
-        </div>
+        {/* Header */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5 }}
+          className="section-label mb-4"
+        >
+          02 — EXPERTISE
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, y: 24 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="display-lg text-[var(--offwhite)] mb-6"
+        >
+          What I Work<br />
+          <span style={{ color: 'var(--cobalt)' }}>With.</span>
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="text-[var(--grey)] mb-16"
+          style={{ fontFamily: "'Inter',sans-serif", maxWidth: '500px', fontSize: '1.0rem', lineHeight: 1.7 }}
+        >
+          First-year undergrad. All skills are verified with real code — not self-assessed percentages.
+        </motion.p>
 
-        {/* Category Filter Tabs */}
-        <div className="flex items-center justify-center flex-wrap gap-2 mb-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                activeTab === tab.id
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-sky-400 hover:bg-slate-800/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200'
-              }`}
+        {/* Expertise 4 large cards */}
+        <div className="grid md:grid-cols-2 gap-5 mb-24">
+          {expertiseCards.map((card, i) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 24 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 + i * 0.1 }}
+              className="expertise-card premium-card p-8 group cursor-default"
             >
-              {tab.label}
-            </button>
+              <div className="flex items-start justify-between mb-6">
+                <div
+                  className="expertise-index"
+                  style={{ color: card.color }}
+                >
+                  {card.index}
+                </div>
+                <span className="text-3xl">{card.icon}</span>
+              </div>
+              <h3
+                className="font-bold text-[var(--offwhite)] mb-3 group-hover:text-white transition-colors"
+                style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", fontSize: '1.4rem', letterSpacing: '-0.02em' }}
+              >
+                {card.title}
+              </h3>
+              <p
+                className="text-[var(--grey)] mb-6 leading-relaxed text-sm"
+                style={{ fontFamily: "'Inter',sans-serif" }}
+              >
+                {card.desc}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {card.skills.map((s) => (
+                  <span key={s} className="chip" style={{ borderColor: `${card.color}22`, color: card.color }}>
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
           ))}
         </div>
 
-        {/* Skills Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredSkills.map((skill) => (
-            <div
-              key={skill.name}
-              className="glass-panel rounded-2xl p-5 space-y-4 hover:-translate-y-1 transition-all flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200">
-                      {getCategoryIcon(skill.category)}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-base text-slate-100 dark:text-slate-100 light:text-slate-900">
-                        {skill.name}
-                      </h3>
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
-                        {skill.category}
-                      </span>
-                    </div>
-                  </div>
+        {/* Evidence-linked skills table */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5 }}
+        >
+          <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+            <div>
+              <h3 className="font-bold text-[var(--offwhite)]" style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", fontSize: '1.3rem' }}>
+                Evidence-Linked Skills
+              </h3>
+              <p className="text-[var(--grey)] text-sm mt-1" style={{ fontFamily: "'Inter',sans-serif" }}>
+                Every skill links to real code or PRs.
+              </p>
+            </div>
+            {/* Filter */}
+            <div className="flex gap-2 flex-wrap">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className="section-label px-3 py-1.5 rounded-full transition-all duration-200 cursor-pointer"
+                  style={{
+                    border: '1px solid',
+                    borderColor: activeCategory === cat ? 'var(--cobalt)' : 'var(--border)',
+                    color: activeCategory === cat ? '#60a5fa' : 'var(--grey)',
+                    background: activeCategory === cat ? 'rgba(37,99,235,0.1)' : 'transparent',
+                  }}
+                >
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredSkills.map((skill, i) => (
+              <motion.div
+                key={skill.name}
+                initial={{ opacity: 0, y: 12 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.05 * i, duration: 0.4 }}
+                className="premium-card p-5"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h4 className="font-semibold text-[var(--offwhite)] text-sm" style={{ fontFamily: "'Inter',sans-serif" }}>
+                    {skill.name}
+                  </h4>
+                  <span
+                    className="chip"
+                    style={{
+                      fontSize: '0.6rem',
+                      padding: '2px 8px',
+                      borderColor: skill.proficiency.includes('Applied') ? 'rgba(37,99,235,0.3)' : 'var(--border)',
+                      color: skill.proficiency.includes('Applied') ? '#60a5fa' : 'var(--grey)',
+                      background: skill.proficiency.includes('Applied') ? 'rgba(37,99,235,0.08)' : 'transparent',
+                    }}
+                  >
+                    {skill.proficiency.includes('Applied') ? 'Applied' : 'Foundational'}
+                  </span>
                 </div>
-
-                <div className="pt-1">{getStatusBadge(skill.proficiency)}</div>
-
-                <p className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600 leading-relaxed">
+                <p className="text-[var(--grey)] text-xs leading-relaxed mb-3" style={{ fontFamily: "'Inter',sans-serif" }}>
                   {skill.description}
                 </p>
-              </div>
-
-              {/* Direct Evidence Hyperlink */}
-              <div className="pt-3 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200 space-y-2.5">
-                <a
-                  href={skill.evidenceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 text-xs font-mono text-sky-400 dark:text-sky-400 light:text-sky-700 transition-colors"
-                >
-                  <span className="truncate">{skill.evidenceLabel}</span>
-                  <ExternalLink className="w-3.5 h-3.5 shrink-0" />
-                </a>
-
-                <div className="w-full h-1.5 rounded-full bg-slate-800 dark:bg-slate-800 light:bg-slate-200 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-sky-500 to-blue-600 transition-all duration-500"
-                    style={{ width: `${skill.levelPercentage}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
+                {skill.evidenceUrl && (
+                  <a
+                    href={skill.evidenceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs font-medium hover:text-[var(--cobalt)] transition-colors"
+                    style={{ color: '#60a5fa', fontFamily: "'Inter',sans-serif" }}
+                  >
+                    <ExternalLink size={11} />
+                    {skill.evidenceLabel}
+                  </a>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

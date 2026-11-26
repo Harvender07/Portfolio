@@ -1,191 +1,204 @@
-import React, { useState } from 'react';
-import { ExternalLink, Code2, Layers, Cpu, Sparkles, ArrowRight, CheckCircle2, Eye } from 'lucide-react';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { ExternalLink, ArrowRight } from 'lucide-react';
 import { GithubIcon } from './SocialIcons';
+import { useInView } from '../hooks/useInView';
 import { PROJECTS_DATA } from '../data/portfolioData';
 import { Project } from '../types';
 
 interface ProjectsProps {
-  onSelectProject: (project: Project) => void;
+  onSelectProject: (p: Project) => void;
 }
 
+const categoryColors: Record<string, string> = {
+  ai: 'var(--lavender)',
+  web: 'var(--cobalt)',
+  tools: '#34d399',
+  creative: '#fb923c',
+};
+
 export const Projects: React.FC<ProjectsProps> = ({ onSelectProject }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [ref, inView] = useInView(0.08);
 
-  const categories = [
-    { id: 'all', label: 'All Projects' },
-    { id: 'ai', label: 'AI & Machine Learning' },
-    { id: 'software', label: 'Software Development' },
-    { id: 'web', label: 'Web Development' },
-    { id: 'creative', label: 'Problem Solving' },
-  ];
-
-  const filteredProjects =
-    selectedCategory === 'all'
-      ? PROJECTS_DATA
-      : PROJECTS_DATA.filter((p) => p.category === selectedCategory);
-
-  const getCategoryIcon = (category: Project['category']) => {
-    switch (category) {
-      case 'software':
-        return <Code2 className="w-4 h-4 text-emerald-400" />;
-      case 'web':
-        return <Layers className="w-4 h-4 text-sky-400" />;
-      case 'ai':
-        return <Cpu className="w-4 h-4 text-indigo-400" />;
-      case 'creative':
-        return <Sparkles className="w-4 h-4 text-purple-400" />;
-    }
-  };
+  const featured = PROJECTS_DATA.filter((p) => p.featured);
+  const others = PROJECTS_DATA.filter((p) => !p.featured);
 
   return (
-    <section id="projects" className="py-24 relative overflow-hidden border-t border-slate-900/50 dark:border-slate-900/50 light:border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Section Header */}
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-12 space-y-3">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-mono font-medium">
-            <span className="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
-            VERIFIED TECHNICAL IMPLEMENTATIONS
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-100 dark:text-slate-100 light:text-slate-900 tracking-tight">
-            Featured Projects
-          </h2>
-          <p className="text-slate-400 dark:text-slate-400 light:text-slate-600 text-sm sm:text-base leading-relaxed">
-            Real repositories authored and maintained on GitHub — detailing problem statements, solution architectures, tech stacks, individual contributions, and documentation links.
-          </p>
+    <section id="projects" className="relative py-28 md:py-36 overflow-hidden" ref={ref as React.RefObject<HTMLElement>}>
+      <div className="noise-overlay" />
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+
+        {/* Header */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.5 }}
+          className="section-label mb-4"
+        >
+          04 — FEATURED WORK
+        </motion.p>
+        <div className="flex items-end justify-between mb-16 flex-wrap gap-6">
+          <motion.h2
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="display-lg text-[var(--offwhite)]"
+          >
+            Selected<br />
+            <span style={{ color: 'var(--cobalt)' }}>Work.</span>
+          </motion.h2>
+          <motion.a
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            href="https://github.com/Harvender07"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-ghost"
+            style={{ padding: '10px 22px', fontSize: '0.85rem' }}
+          >
+            All Repositories →
+          </motion.a>
         </div>
 
-        {/* Category Filter Tabs */}
-        <div className="flex items-center justify-center flex-wrap gap-2 mb-10">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer ${
-                selectedCategory === cat.id
-                  ? 'bg-sky-600 text-white shadow-md shadow-sky-600/30'
-                  : 'bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 text-slate-400 dark:text-slate-400 light:text-slate-600 hover:text-sky-400 hover:bg-slate-800/80 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {filteredProjects.map((project) => (
-            <div
+        {/* Featured projects — large alternating layout */}
+        <div className="space-y-6 mb-10">
+          {featured.map((project, i) => (
+            <motion.div
               key={project.id}
-              className="glass-panel rounded-2xl p-6 sm:p-7 space-y-5 flex flex-col justify-between hover:border-sky-500/40 hover:-translate-y-1 transition-all group shadow-sm hover:shadow-xl hover:shadow-sky-500/5"
+              initial={{ opacity: 0, y: 24 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.1 + i * 0.15 }}
+              className="premium-card p-8 group cursor-pointer"
+              onClick={() => onSelectProject(project)}
             >
-              <div className="space-y-4">
-                
-                {/* Top Strip: Category & Status */}
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 rounded-lg bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200">
-                      {getCategoryIcon(project.category)}
-                    </div>
-                    <span className="text-xs font-mono font-medium text-sky-400 dark:text-sky-400 light:text-sky-600">
+              <div className="flex items-start justify-between gap-6 flex-wrap">
+                <div className="flex-1 min-w-0">
+                  {/* Category & status */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <span
+                      className="chip"
+                      style={{
+                        color: categoryColors[project.category] || 'var(--cobalt)',
+                        borderColor: `${categoryColors[project.category] || 'var(--cobalt)'}33`,
+                        background: `${categoryColors[project.category] || 'var(--cobalt)'}0D`,
+                      }}
+                    >
                       {project.categoryLabel}
                     </span>
+                    {project.status === 'Active' && (
+                      <span className="chip" style={{ color: '#4ade80', borderColor: 'rgba(74,222,128,0.2)', background: 'rgba(74,222,128,0.05)' }}>
+                        ● Active
+                      </span>
+                    )}
                   </div>
 
-                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 border border-emerald-500/30">
-                    {project.status}
-                  </span>
-                </div>
-
-                {/* Title & Overview */}
-                <div>
-                  <h3 className="text-xl font-bold text-slate-100 dark:text-slate-100 light:text-slate-900 group-hover:text-sky-400 transition-colors">
+                  {/* Title */}
+                  <h3
+                    className="font-bold text-[var(--offwhite)] group-hover:text-white transition-colors mb-3"
+                    style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", fontSize: 'clamp(1.3rem,3vw,1.7rem)', letterSpacing: '-0.02em' }}
+                  >
                     {project.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 dark:text-slate-400 light:text-slate-600 mt-1">
-                    {project.overview}
-                  </p>
-                </div>
 
-                {/* Problem Statement & Solution Architecture */}
-                <div className="p-3.5 rounded-xl bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 space-y-2">
-                  <div>
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-slate-500">
-                      Problem Statement:
-                    </div>
-                    <p className="text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
-                      {project.problem}
-                    </p>
-                  </div>
-                  <div className="pt-1 border-t border-slate-800/60 dark:border-slate-800/60 light:border-slate-200">
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-sky-400">
-                      Solution Architecture:
-                    </div>
-                    <p className="text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 leading-relaxed">
-                      {project.solutionArchitecture}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Individual Contribution */}
-                <div className="text-xs text-slate-400 dark:text-slate-400 light:text-slate-600">
-                  <strong className="text-slate-200 dark:text-slate-200 light:text-slate-800">Individual Contribution:</strong>{' '}
-                  {project.individualContribution}
-                </div>
-
-                {/* Technologies */}
-                <div className="flex flex-wrap gap-1.5">
-                  {project.technologies.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-2.5 py-0.5 rounded-md text-[11px] font-mono bg-slate-900 dark:bg-slate-900 light:bg-slate-100 text-slate-300 dark:text-slate-300 light:text-slate-700 border border-slate-800 dark:border-slate-800 light:border-slate-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Key Features */}
-                <div className="space-y-1.5">
-                  {project.keyFeatures.slice(0, 2).map((feat, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-xs text-slate-400 dark:text-slate-400 light:text-slate-600">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>{feat}</span>
-                    </div>
-                  ))}
-                </div>
-
-              </div>
-
-              {/* Bottom Actions */}
-              <div className="pt-4 border-t border-slate-800/80 dark:border-slate-800/80 light:border-slate-200 flex flex-wrap items-center justify-between gap-3">
-                <button
-                  onClick={() => onSelectProject(project)}
-                  className="flex items-center gap-1.5 text-xs font-semibold text-sky-400 dark:text-sky-400 light:text-sky-600 hover:text-sky-300 transition-colors cursor-pointer"
-                >
-                  <Eye className="w-4 h-4" />
-                  <span>Full Architecture & Docs</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 text-white hover:bg-sky-500 text-xs font-medium transition-colors"
+                  <p
+                    className="text-[var(--grey)] text-sm leading-relaxed mb-5 max-w-2xl"
+                    style={{ fontFamily: "'Inter',sans-serif" }}
                   >
-                    <GithubIcon className="w-3.5 h-3.5" />
-                    <span>Repository & Docs</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
+                    {project.tagline}
+                  </p>
+
+                  {/* Tech stack */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {project.technologies.slice(0, 6).map((t) => (
+                      <span key={t} className="chip">{t}</span>
+                    ))}
+                  </div>
+
+                  {/* Links */}
+                  <div className="flex gap-3 flex-wrap">
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 text-sm font-medium text-[var(--grey)] hover:text-[var(--offwhite)] transition-colors"
+                      style={{ fontFamily: "'Inter',sans-serif" }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <GithubIcon className="w-3.5 h-3.5" />
+                      Repository
+                    </a>
+                    {project.liveUrl && project.liveUrl !== project.githubUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 text-sm font-medium text-[var(--grey)] hover:text-[var(--cobalt)] transition-colors"
+                        style={{ fontFamily: "'Inter',sans-serif" }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink size={14} />
+                        Live Demo
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--cobalt)] transition-all duration-300"
+                  style={{ background: 'var(--charcoal-3)', border: '1px solid var(--border)' }}
+                >
+                  <ArrowRight size={18} className="text-[var(--grey)] group-hover:text-white transition-colors" />
                 </div>
               </div>
-
-            </div>
+            </motion.div>
           ))}
         </div>
 
+        {/* Others — 2-col grid */}
+        {others.length > 0 && (
+          <div className="grid md:grid-cols-2 gap-5">
+            {others.map((project, i) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+                className="premium-card p-7 group cursor-pointer"
+                onClick={() => onSelectProject(project)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <span
+                    className="chip"
+                    style={{
+                      color: categoryColors[project.category] || 'var(--cobalt)',
+                      borderColor: `${categoryColors[project.category] || 'var(--cobalt)'}33`,
+                      background: `${categoryColors[project.category] || 'var(--cobalt)'}0D`,
+                    }}
+                  >
+                    {project.categoryLabel}
+                  </span>
+                  <ArrowRight size={16} className="text-[var(--grey)] group-hover:text-white group-hover:translate-x-1 transition-all" />
+                </div>
+                <h3
+                  className="font-bold text-[var(--offwhite)] mb-2 group-hover:text-white transition-colors"
+                  style={{ fontFamily: "'Satoshi','Space Grotesk',sans-serif", fontSize: '1.15rem', letterSpacing: '-0.02em' }}
+                >
+                  {project.title}
+                </h3>
+                <p className="text-[var(--grey)] text-sm leading-relaxed mb-4" style={{ fontFamily: "'Inter',sans-serif" }}>
+                  {project.tagline}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.slice(0, 4).map((t) => (
+                    <span key={t} className="chip">{t}</span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

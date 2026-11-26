@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { ArrowDown, Mail, FileText, MapPin, GraduationCap, Calendar, CheckCircle2, Camera } from 'lucide-react';
+import React, { useRef, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { ArrowDown, Mail } from 'lucide-react';
 import { GithubIcon, LinkedinIcon } from './SocialIcons';
 import { PERSONAL_INFO } from '../data/portfolioData';
 
@@ -7,215 +8,274 @@ interface HeroProps {
   onOpenResumeDrawer: () => void;
 }
 
+const floatingTags = [
+  { text: 'C++', x: '72%', y: '22%', delay: 0 },
+  { text: 'Python', x: '78%', y: '54%', delay: 0.2 },
+  { text: 'AI/ML', x: '68%', y: '72%', delay: 0.4 },
+  { text: 'HTML', x: '65%', y: '38%', delay: 0.6 },
+  { text: 'WorldQuant', x: '70%', y: '84%', delay: 0.8 },
+];
+
 export const Hero: React.FC<HeroProps> = ({ onOpenResumeDrawer }) => {
-  const [imgError, setImgError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent) => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      setMousePos({
+        x: (e.clientX - rect.left) / rect.width - 0.5,
+        y: (e.clientY - rect.top) / rect.height - 0.5,
+      });
+    };
+    const el = containerRef.current;
+    el?.addEventListener('mousemove', handleMove);
+    return () => el?.removeEventListener('mousemove', handleMove);
+  }, []);
 
   return (
-    <section id="hero" className="relative min-h-screen pt-28 pb-16 flex items-center justify-center overflow-hidden bg-tech-grid">
-      {/* Subtle animated ambient background */}
-      <div className="absolute top-1/3 left-1/2 w-[540px] h-[540px] bg-sky-500/10 dark:bg-sky-500/10 light:bg-sky-500/8 rounded-full blur-[120px] pointer-events-none -z-10 animate-subtle-drift" />
-      <div className="absolute bottom-10 right-10 w-[340px] h-[340px] bg-blue-600/10 dark:bg-blue-600/10 light:bg-blue-600/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+    <section
+      ref={containerRef}
+      id="hero"
+      className="relative min-h-screen flex flex-col justify-center overflow-hidden mesh-bg"
+      style={{ paddingTop: '80px' }}
+    >
+      {/* Noise overlay */}
+      <div className="noise-overlay" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+      {/* Animated blobs */}
+      <div
+        className="blob-1 absolute rounded-full pointer-events-none"
+        style={{
+          width: 'clamp(300px, 40vw, 600px)',
+          height: 'clamp(300px, 40vw, 600px)',
+          top: '-10%', left: '-5%',
+          background: 'radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          transform: `translate(${mousePos.x * -20}px, ${mousePos.y * -15}px)`,
+          transition: 'transform 0.6s ease',
+        }}
+      />
+      <div
+        className="blob-2 absolute rounded-full pointer-events-none"
+        style={{
+          width: 'clamp(200px, 30vw, 450px)',
+          height: 'clamp(200px, 30vw, 450px)',
+          bottom: '5%', right: '10%',
+          background: 'radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          transform: `translate(${mousePos.x * 15}px, ${mousePos.y * 12}px)`,
+          transition: 'transform 0.6s ease',
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 md:px-10 w-full">
+        <div className="grid lg:grid-cols-[1fr_auto] gap-16 items-center min-h-[calc(100vh-80px)] py-12">
           
-          {/* Left Column: Text & Content (7 cols) */}
-          <div className="lg:col-span-7 flex flex-col items-start space-y-6 text-left">
-            
-            {/* Availability Badge */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/10 light:bg-emerald-50 border border-emerald-500/30 text-emerald-400 dark:text-emerald-400 light:text-emerald-700 text-xs font-mono font-medium shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-              </span>
-              <span>{PERSONAL_INFO.status}</span>
-            </div>
+          {/* Left: Text */}
+          <div className="relative z-10 max-w-3xl">
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="flex items-center gap-3 mb-8"
+            >
+              <span className="pulse-dot" />
+              <span className="section-label" style={{ color: '#86efac' }}>OPEN TO INTERNSHIP OPPORTUNITIES</span>
+            </motion.div>
 
-            {/* Candidate Name & Designation */}
-            <div className="space-y-2">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-100 dark:text-slate-100 light:text-slate-900">
-                HARVENDER SINGH{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-blue-500">
-                  RAWAT
+            {/* Main headline */}
+            <motion.h1
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="display-xl text-[var(--offwhite)] mb-6"
+            >
+              Curious Mind.<br />
+              <span style={{ color: 'var(--cobalt)' }}>Building</span><br />
+              What's Next.
+            </motion.h1>
+
+            {/* Descriptor chips */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="flex flex-wrap gap-2 mb-8"
+            >
+              {['SOFTWARE DEVELOPMENT', 'AI/ML', 'WEB TECHNOLOGIES'].map((t) => (
+                <span key={t} className="section-label px-3 py-1 rounded-full" style={{ border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {t}
                 </span>
-              </h1>
-              <p className="text-sm sm:text-base font-mono text-sky-400 dark:text-sky-400 light:text-sky-600 font-semibold tracking-wide">
-                {PERSONAL_INFO.designation}
-              </p>
-            </div>
+              ))}
+            </motion.div>
 
-            {/* Main Headline */}
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-200 dark:text-slate-200 light:text-slate-800 leading-snug">
-              "{PERSONAL_INFO.headline}"
-            </h2>
+            {/* Supporting text */}
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="text-[var(--grey)] leading-relaxed mb-10"
+              style={{ fontFamily: "'Inter',sans-serif", fontSize: 'clamp(1rem,2vw,1.15rem)', maxWidth: '520px' }}
+            >
+              I'm Harvender Singh Rawat — a Computer Science and AI/ML undergraduate at Newton School of Technology, exploring software engineering, intelligent systems, and digital experiences.
+            </motion.p>
 
-            {/* Professional Introduction */}
-            <p className="text-base sm:text-lg text-slate-400 dark:text-slate-400 light:text-slate-600 leading-relaxed max-w-2xl">
-              {PERSONAL_INFO.bioIntro}
-            </p>
-
-            {/* Recruiter 10-Second Telemetry Chips */}
-            <div className="flex flex-wrap gap-2.5 pt-1">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                <GraduationCap className="w-3.5 h-3.5 text-sky-400" />
-                Newton School of Technology
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                <Calendar className="w-3.5 h-3.5 text-sky-400" />
-                Batch 2026–2030
-              </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-900/80 dark:bg-slate-900/80 light:bg-slate-100 border border-slate-800 dark:border-slate-800 light:border-slate-200 text-xs text-slate-300 dark:text-slate-300 light:text-slate-700 font-medium">
-                <MapPin className="w-3.5 h-3.5 text-sky-400" />
-                {PERSONAL_INFO.location}
-              </span>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-3">
-              <a
-                href="#projects"
-                className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-500 rounded-xl shadow-lg shadow-sky-600/25 hover:shadow-sky-500/40 hover:-translate-y-0.5 transition-all cursor-pointer"
-              >
-                <span>Explore Projects</span>
-                <ArrowDown className="w-4 h-4" />
-              </a>
-
+            {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.65 }}
+              className="flex flex-wrap gap-4 mb-12"
+            >
               <button
-                onClick={onOpenResumeDrawer}
-                className="flex items-center gap-2 px-6 py-3 text-sm font-semibold text-slate-200 dark:text-slate-200 light:text-slate-700 bg-slate-800/80 dark:bg-slate-800/80 light:bg-slate-100 hover:bg-slate-700 dark:hover:bg-slate-700 light:hover:bg-slate-200 border border-slate-700 dark:border-slate-700 light:border-slate-300 rounded-xl hover:border-sky-500/50 hover:text-sky-400 hover:-translate-y-0.5 transition-all cursor-pointer shadow-sm"
+                className="btn-primary"
+                onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                <FileText className="w-4 h-4 text-sky-400" />
-                <span>Download Resume</span>
+                Explore My Work
+                <ArrowDown size={15} />
               </button>
-            </div>
+              <button className="btn-ghost" onClick={onOpenResumeDrawer}>
+                Download Resume
+              </button>
+            </motion.div>
 
-            {/* Social & Direct Contact Links */}
-            <div className="flex items-center gap-4 pt-2 text-slate-400 dark:text-slate-400 light:text-slate-500">
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-500 dark:text-slate-500 light:text-slate-400">
-                Connect:
-              </span>
-              <div className="flex items-center gap-3">
-                <a
-                  href={PERSONAL_INFO.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl border border-slate-800 dark:border-slate-800 light:border-slate-300 bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 hover:text-sky-400 hover:border-sky-500/40 transition-colors"
-                  aria-label="GitHub Profile"
-                >
-                  <GithubIcon className="w-4 h-4" />
-                </a>
-                <a
-                  href={PERSONAL_INFO.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl border border-slate-800 dark:border-slate-800 light:border-slate-300 bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 hover:text-sky-400 hover:border-sky-500/40 transition-colors"
-                  aria-label="LinkedIn Profile"
-                >
-                  <LinkedinIcon className="w-4 h-4" />
-                </a>
-                <a
-                  href={`mailto:${PERSONAL_INFO.email}`}
-                  className="p-2.5 rounded-xl border border-slate-800 dark:border-slate-800 light:border-slate-300 bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-100 hover:text-sky-400 hover:border-sky-500/40 transition-colors"
-                  aria-label="Direct Email"
-                >
-                  <Mail className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
+            {/* Social links */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="flex items-center gap-4"
+            >
+              <a
+                href={PERSONAL_INFO.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-[var(--grey)] hover:text-[var(--offwhite)] transition-colors duration-200"
+                style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.82rem', fontWeight: 500 }}
+              >
+                <GithubIcon className="w-4 h-4" />
+                GitHub
+              </a>
+              <span style={{ width: 1, height: 16, background: 'var(--border-h)' }} />
+              <a
+                href={PERSONAL_INFO.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-[var(--grey)] hover:text-[var(--offwhite)] transition-colors duration-200"
+                style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.82rem', fontWeight: 500 }}
+              >
+                <LinkedinIcon className="w-4 h-4" />
+                LinkedIn
+              </a>
+              <span style={{ width: 1, height: 16, background: 'var(--border-h)' }} />
+              <a
+                href={`mailto:${PERSONAL_INFO.email}`}
+                className="flex items-center gap-2 text-[var(--grey)] hover:text-[var(--offwhite)] transition-colors duration-200"
+                style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.82rem', fontWeight: 500 }}
+              >
+                <Mail size={16} />
+                Email
+              </a>
+            </motion.div>
           </div>
 
-          {/* Right Column: Professional Profile Visual & Recruiter Metric Card (5 cols) */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end">
-            <div className="relative w-full max-w-md">
-              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-sky-500/15 via-blue-600/15 to-cyan-400/15 blur-xl opacity-75"></div>
-
-              <div className="relative rounded-2xl glass-panel p-6 sm:p-8 space-y-6">
-                
-                {/* Profile Picture / Placeholder */}
-                <div className="relative flex flex-col items-center">
-                  <div className="w-36 h-36 sm:w-40 sm:h-40 rounded-2xl p-1 bg-gradient-to-br from-sky-500 to-blue-600 shadow-xl shadow-sky-500/10">
-                    <div className="w-full h-full rounded-[14px] bg-[#0b1329] dark:bg-[#0b1329] light:bg-slate-100 flex flex-col items-center justify-center text-center border border-sky-400/20 overflow-hidden relative">
-                      {!imgError ? (
-                        <img
-                          src={PERSONAL_INFO.profileImageUrl}
-                          alt="Harvender Singh Rawat"
-                          onError={() => setImgError(true)}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="p-3 flex flex-col items-center justify-center">
-                          <div className="w-14 h-14 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-xl font-mono font-bold text-sky-400 mb-2">
-                            HSR
-                          </div>
-                          <span className="text-[10px] font-mono text-slate-400 flex items-center gap-1">
-                            <Camera className="w-3 h-3 text-sky-400" />
-                            Profile Photo Slot
-                          </span>
-                          <span className="text-[9px] font-mono text-slate-500 mt-0.5">
-                            public/profile.jpg
-                          </span>
-                        </div>
-                      )}
-                      <div className="absolute top-2 right-2 text-sky-400 bg-[#0b1329]/80 rounded-full p-0.5" title="Verified Portfolio Identity">
-                        <CheckCircle2 className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 text-center">
-                    <div className="text-base font-bold text-slate-200 dark:text-slate-200 light:text-slate-800">
-                      Harvender Singh Rawat
-                    </div>
-                    <div className="text-xs font-mono text-slate-400 dark:text-slate-400 light:text-slate-500 mt-0.5">
-                      B.Tech CS & AI/ML · Batch 2026–2030
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recruiter Quick Snapshot */}
-                <div className="space-y-3 pt-2 border-t border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                  <div className="text-xs font-mono text-sky-400 uppercase tracking-wider font-semibold">
-                    Recruiter Snapshot
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="p-2.5 rounded-lg bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                      <div className="text-slate-500 dark:text-slate-500 light:text-slate-400 text-[10px] uppercase font-mono">Background</div>
-                      <div className="font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 mt-0.5">Army Schooling</div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                      <div className="text-slate-500 dark:text-slate-500 light:text-slate-400 text-[10px] uppercase font-mono">Honors</div>
-                      <div className="font-semibold text-amber-400 mt-0.5">WorldQuant Gold</div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                      <div className="text-slate-500 dark:text-slate-500 light:text-slate-400 text-[10px] uppercase font-mono">Goal</div>
-                      <div className="font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 mt-0.5">SDE / AI / FE Intern</div>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-slate-900/60 dark:bg-slate-900/60 light:bg-slate-50 border border-slate-800/80 dark:border-slate-800/80 light:border-slate-200">
-                      <div className="text-slate-500 dark:text-slate-500 light:text-slate-400 text-[10px] uppercase font-mono">Location</div>
-                      <div className="font-semibold text-slate-200 dark:text-slate-200 light:text-slate-800 mt-0.5">Pune, India</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Direct Email Link Strip */}
-                <div className="pt-2">
-                  <a
-                    href={`mailto:${PERSONAL_INFO.email}`}
-                    className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/30 text-sky-400 dark:text-sky-400 light:text-sky-600 text-xs font-mono transition-colors text-center truncate"
-                  >
-                    <Mail className="w-3.5 h-3.5 shrink-0" />
-                    <span className="truncate">{PERSONAL_INFO.email}</span>
-                  </a>
-                </div>
-
+          {/* Right: Portrait + floating tags */}
+          <div className="hidden lg:flex relative items-center justify-center">
+            {/* Profile image */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="relative"
+              style={{
+                transform: `translate(${mousePos.x * 10}px, ${mousePos.y * 10}px)`,
+                transition: 'transform 0.5s ease',
+              }}
+            >
+              <div
+                className="relative rounded-3xl overflow-hidden"
+                style={{
+                  width: 'clamp(240px, 24vw, 340px)',
+                  height: 'clamp(300px, 30vw, 420px)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  background: 'var(--charcoal-3)',
+                }}
+              >
+                <img
+                  src="/profile.jpg"
+                  alt="Harvender Singh Rawat"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Show monogram fallback
+                    const target = e.currentTarget;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent && !parent.querySelector('.monogram-fallback')) {
+                      const div = document.createElement('div');
+                      div.className = 'monogram-fallback';
+                      div.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Satoshi,Space Grotesk,sans-serif;font-size:5rem;font-weight:900;color:rgba(37,99,235,0.3);letter-spacing:-0.04em;';
+                      div.textContent = 'HSR';
+                      parent.appendChild(div);
+                    }
+                  }}
+                />
+                {/* Gradient overlay at bottom */}
+                <div
+                  className="absolute bottom-0 left-0 right-0"
+                  style={{ height: '40%', background: 'linear-gradient(to top, var(--charcoal) 0%, transparent 100%)' }}
+                />
               </div>
-            </div>
-          </div>
 
+              {/* Location label */}
+              <div
+                className="absolute -bottom-3 left-1/2 -translate-x-1/2 chip whitespace-nowrap"
+                style={{ background: 'var(--charcoal-2)' }}
+              >
+                📍 Pune, India
+              </div>
+            </motion.div>
+
+            {/* Floating tech tags */}
+            {floatingTags.map((tag, i) => (
+              <motion.div
+                key={tag.text}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.6 + tag.delay, duration: 0.4 }}
+                className="absolute chip chip-cobalt"
+                style={{
+                  left: tag.x,
+                  top: tag.y,
+                  transform: 'translate(-50%, -50%)',
+                  animationDelay: `${i * 0.4}s`,
+                }}
+              >
+                {tag.text}
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Scroll cue */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+        onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+      >
+        <span className="section-label">SCROLL</span>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+        >
+          <ArrowDown size={16} className="text-[var(--grey)]" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 };
